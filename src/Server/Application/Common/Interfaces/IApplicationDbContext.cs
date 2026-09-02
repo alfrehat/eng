@@ -81,6 +81,23 @@ public interface IApplicationDbContext
     DbSet<Knm.Enterprise.Domain.Tenders.AwardRecommendation> AwardRecommendations { get; }
     DbSet<Knm.Enterprise.Domain.Tenders.AwardDecision> AwardDecisions { get; }
 
+    // Phase 05 Contracts Entities
+    DbSet<Knm.Enterprise.Domain.Contracts.Contract> Contracts { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractParty> ContractParties { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractPartyRole> ContractPartyRoles { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractTemplate> ContractTemplates { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractClause> ContractClauses { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractTemplateClause> ContractTemplateClauses { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractBoq> ContractBoqs { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractItem> ContractItems { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractGuarantee> ContractGuarantees { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractExtension> ContractExtensions { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractVariation> ContractVariations { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractMilestone> ContractMilestones { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractNotice> ContractNotices { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractSignature> ContractSignatures { get; }
+    DbSet<Knm.Enterprise.Domain.Contracts.ContractPaymentLink> ContractPaymentLinks { get; }
+
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

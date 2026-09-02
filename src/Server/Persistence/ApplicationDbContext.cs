@@ -95,6 +95,23 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Knm.Enterprise.Domain.Tenders.AwardRecommendation> AwardRecommendations => Set<Knm.Enterprise.Domain.Tenders.AwardRecommendation>();
     public DbSet<Knm.Enterprise.Domain.Tenders.AwardDecision> AwardDecisions => Set<Knm.Enterprise.Domain.Tenders.AwardDecision>();
 
+    // Phase 05 Contracts Entities
+    public DbSet<Knm.Enterprise.Domain.Contracts.Contract> Contracts => Set<Knm.Enterprise.Domain.Contracts.Contract>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractParty> ContractParties => Set<Knm.Enterprise.Domain.Contracts.ContractParty>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractPartyRole> ContractPartyRoles => Set<Knm.Enterprise.Domain.Contracts.ContractPartyRole>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractTemplate> ContractTemplates => Set<Knm.Enterprise.Domain.Contracts.ContractTemplate>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractClause> ContractClauses => Set<Knm.Enterprise.Domain.Contracts.ContractClause>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractTemplateClause> ContractTemplateClauses => Set<Knm.Enterprise.Domain.Contracts.ContractTemplateClause>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractBoq> ContractBoqs => Set<Knm.Enterprise.Domain.Contracts.ContractBoq>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractItem> ContractItems => Set<Knm.Enterprise.Domain.Contracts.ContractItem>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractGuarantee> ContractGuarantees => Set<Knm.Enterprise.Domain.Contracts.ContractGuarantee>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractExtension> ContractExtensions => Set<Knm.Enterprise.Domain.Contracts.ContractExtension>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractVariation> ContractVariations => Set<Knm.Enterprise.Domain.Contracts.ContractVariation>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractMilestone> ContractMilestones => Set<Knm.Enterprise.Domain.Contracts.ContractMilestone>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractNotice> ContractNotices => Set<Knm.Enterprise.Domain.Contracts.ContractNotice>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractSignature> ContractSignatures => Set<Knm.Enterprise.Domain.Contracts.ContractSignature>();
+    public DbSet<Knm.Enterprise.Domain.Contracts.ContractPaymentLink> ContractPaymentLinks => Set<Knm.Enterprise.Domain.Contracts.ContractPaymentLink>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -924,6 +941,275 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.HasOne(ad => ad.AwardRecommendation)
              .WithMany(ar => ar.Decisions)
              .HasForeignKey(ad => ad.AwardRecommendationId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ==========================================
+        // 11. PHASE 05: Contracts Engine Mappings
+        // ==========================================
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.Contract>(b =>
+        {
+            b.ToTable("contracts");
+            b.HasKey(c => c.Id);
+            b.HasIndex(c => c.ContractNumber).IsUnique();
+            b.HasIndex(c => c.ContractStatus);
+            b.HasIndex(c => c.ProjectId);
+            b.HasIndex(c => c.TenderId);
+
+            b.Property(c => c.ContractNumber).HasMaxLength(50).IsRequired();
+            b.Property(c => c.Title).HasMaxLength(250).IsRequired();
+            b.Property(c => c.ContractTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(c => c.OriginalValue).HasPrecision(18, 3);
+            b.Property(c => c.TaxAmount).HasPrecision(18, 3);
+            b.Property(c => c.TotalValue).HasPrecision(18, 3);
+            b.Property(c => c.CurrentContractValue).HasPrecision(18, 3);
+            b.Property(c => c.Currency).HasMaxLength(10).IsRequired();
+
+            b.HasOne(c => c.Project)
+             .WithMany()
+             .HasForeignKey(c => c.ProjectId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(c => c.Tender)
+             .WithMany()
+             .HasForeignKey(c => c.TenderId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(c => c.AwardRecommendation)
+             .WithMany()
+             .HasForeignKey(c => c.AwardRecommendationId)
+             .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasOne(c => c.AwardDecision)
+             .WithMany()
+             .HasForeignKey(c => c.AwardDecisionId)
+             .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasOne(c => c.ContractorParty)
+             .WithMany()
+             .HasForeignKey(c => c.ContractorPartyId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractParty>(b =>
+        {
+            b.ToTable("contract_parties");
+            b.HasKey(cp => cp.Id);
+            b.Property(cp => cp.Name).HasMaxLength(200).IsRequired();
+            b.Property(cp => cp.PartyType).HasMaxLength(50).IsRequired();
+            b.Property(cp => cp.RegistrationNumber).HasMaxLength(100);
+
+            b.HasOne(cp => cp.Bidder)
+             .WithMany()
+             .HasForeignKey(cp => cp.BidderId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractPartyRole>(b =>
+        {
+            b.ToTable("contract_party_roles");
+            b.HasKey(cpr => cpr.Id);
+            b.Property(cpr => cpr.Role).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cpr => cpr.Contract)
+             .WithMany(c => c.PartyRoles)
+             .HasForeignKey(cpr => cpr.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(cpr => cpr.ContractParty)
+             .WithMany(cp => cp.Roles)
+             .HasForeignKey(cpr => cpr.ContractPartyId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractTemplate>(b =>
+        {
+            b.ToTable("contract_templates");
+            b.HasKey(ct => ct.Id);
+            b.HasIndex(ct => ct.Code).IsUnique();
+            b.Property(ct => ct.Code).HasMaxLength(50).IsRequired();
+            b.Property(ct => ct.Name).HasMaxLength(200).IsRequired();
+            b.Property(ct => ct.ContractTypeCode).HasMaxLength(50).IsRequired();
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractClause>(b =>
+        {
+            b.ToTable("contract_clauses");
+            b.HasKey(cc => cc.Id);
+            b.Property(cc => cc.ClauseNumber).HasMaxLength(30).IsRequired();
+            b.Property(cc => cc.Title).HasMaxLength(200).IsRequired();
+            b.Property(cc => cc.Category).HasMaxLength(50).IsRequired();
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractTemplateClause>(b =>
+        {
+            b.ToTable("contract_template_clauses");
+            b.HasKey(ctc => ctc.Id);
+
+            b.HasOne(ctc => ctc.ContractTemplate)
+             .WithMany(ct => ct.Clauses)
+             .HasForeignKey(ctc => ctc.ContractTemplateId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ctc => ctc.ContractClause)
+             .WithMany()
+             .HasForeignKey(ctc => ctc.ContractClauseId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractBoq>(b =>
+        {
+            b.ToTable("contract_boqs");
+            b.HasKey(cb => cb.Id);
+            b.Property(cb => cb.Title).HasMaxLength(200).IsRequired();
+            b.Property(cb => cb.OriginalSubTotal).HasPrecision(18, 3);
+            b.Property(cb => cb.CurrentSubTotal).HasPrecision(18, 3);
+            b.Property(cb => cb.TaxRatePercent).HasPrecision(5, 2);
+            b.Property(cb => cb.TaxAmount).HasPrecision(18, 3);
+            b.Property(cb => cb.GrandTotal).HasPrecision(18, 3);
+
+            b.HasOne(cb => cb.Contract)
+             .WithMany(c => c.Boqs)
+             .HasForeignKey(cb => cb.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractItem>(b =>
+        {
+            b.ToTable("contract_items");
+            b.HasKey(ci => ci.Id);
+            b.Property(ci => ci.ItemCode).HasMaxLength(50).IsRequired();
+            b.Property(ci => ci.Description).HasMaxLength(500).IsRequired();
+            b.Property(ci => ci.Unit).HasMaxLength(30).IsRequired();
+            b.Property(ci => ci.OriginalQuantity).HasPrecision(18, 3);
+            b.Property(ci => ci.OriginalUnitPrice).HasPrecision(18, 3);
+            b.Property(ci => ci.OriginalAmount).HasPrecision(18, 3);
+            b.Property(ci => ci.CurrentQuantity).HasPrecision(18, 3);
+            b.Property(ci => ci.CurrentUnitPrice).HasPrecision(18, 3);
+            b.Property(ci => ci.CurrentAmount).HasPrecision(18, 3);
+
+            b.HasOne(ci => ci.ContractBoq)
+             .WithMany(cb => cb.Items)
+             .HasForeignKey(ci => ci.ContractBoqId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractGuarantee>(b =>
+        {
+            b.ToTable("contract_guarantees");
+            b.HasKey(cg => cg.Id);
+            b.Property(cg => cg.GuaranteeType).HasMaxLength(50).IsRequired();
+            b.Property(cg => cg.ReferenceNumber).HasMaxLength(100).IsRequired();
+            b.Property(cg => cg.BankName).HasMaxLength(150).IsRequired();
+            b.Property(cg => cg.Amount).HasPrecision(18, 3);
+            b.Property(cg => cg.Currency).HasMaxLength(10).IsRequired();
+            b.Property(cg => cg.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cg => cg.Contract)
+             .WithMany(c => c.Guarantees)
+             .HasForeignKey(cg => cg.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractExtension>(b =>
+        {
+            b.ToTable("contract_extensions");
+            b.HasKey(ce => ce.Id);
+            b.Property(ce => ce.ExtensionNumber).HasMaxLength(50).IsRequired();
+            b.Property(ce => ce.Reason).HasMaxLength(500).IsRequired();
+            b.Property(ce => ce.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(ce => ce.Contract)
+             .WithMany(c => c.Extensions)
+             .HasForeignKey(ce => ce.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractVariation>(b =>
+        {
+            b.ToTable("contract_variations");
+            b.HasKey(cv => cv.Id);
+            b.Property(cv => cv.VariationNumber).HasMaxLength(50).IsRequired();
+            b.Property(cv => cv.Reason).HasMaxLength(250).IsRequired();
+            b.Property(cv => cv.VariationType).HasMaxLength(50).IsRequired();
+            b.Property(cv => cv.OriginalQuantity).HasPrecision(18, 3);
+            b.Property(cv => cv.VariationQuantity).HasPrecision(18, 3);
+            b.Property(cv => cv.NewQuantity).HasPrecision(18, 3);
+            b.Property(cv => cv.OriginalUnitPrice).HasPrecision(18, 3);
+            b.Property(cv => cv.NewUnitPrice).HasPrecision(18, 3);
+            b.Property(cv => cv.VariationAmount).HasPrecision(18, 3);
+            b.Property(cv => cv.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cv => cv.Contract)
+             .WithMany(c => c.Variations)
+             .HasForeignKey(cv => cv.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(cv => cv.ContractItem)
+             .WithMany()
+             .HasForeignKey(cv => cv.ContractItemId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractMilestone>(b =>
+        {
+            b.ToTable("contract_milestones");
+            b.HasKey(cm => cm.Id);
+            b.Property(cm => cm.Name).HasMaxLength(200).IsRequired();
+            b.Property(cm => cm.MilestoneType).HasMaxLength(50).IsRequired();
+            b.Property(cm => cm.Percentage).HasPrecision(5, 2);
+            b.Property(cm => cm.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cm => cm.Contract)
+             .WithMany(c => c.Milestones)
+             .HasForeignKey(cm => cm.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractNotice>(b =>
+        {
+            b.ToTable("contract_notices");
+            b.HasKey(cn => cn.Id);
+            b.Property(cn => cn.NoticeType).HasMaxLength(50).IsRequired();
+            b.Property(cn => cn.ReferenceNumber).HasMaxLength(100).IsRequired();
+            b.Property(cn => cn.Subject).HasMaxLength(250).IsRequired();
+            b.Property(cn => cn.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cn => cn.Contract)
+             .WithMany(c => c.Notices)
+             .HasForeignKey(cn => cn.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractSignature>(b =>
+        {
+            b.ToTable("contract_signatures");
+            b.HasKey(cs => cs.Id);
+            b.Property(cs => cs.SignerName).HasMaxLength(150).IsRequired();
+            b.Property(cs => cs.SignerRole).HasMaxLength(50).IsRequired();
+            b.Property(cs => cs.HashAlgorithm).HasMaxLength(30).IsRequired();
+            b.Property(cs => cs.DocumentHash).HasMaxLength(128).IsRequired();
+            b.Property(cs => cs.SignatureStatus).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cs => cs.Contract)
+             .WithMany(c => c.Signatures)
+             .HasForeignKey(cs => cs.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Contracts.ContractPaymentLink>(b =>
+        {
+            b.ToTable("contract_payment_links");
+            b.HasKey(cpl => cpl.Id);
+            b.Property(cpl => cpl.ReferenceType).HasMaxLength(50).IsRequired();
+            b.Property(cpl => cpl.PaymentClaimReference).HasMaxLength(100).IsRequired();
+            b.Property(cpl => cpl.Amount).HasPrecision(18, 3);
+            b.Property(cpl => cpl.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(cpl => cpl.Contract)
+             .WithMany(c => c.PaymentLinks)
+             .HasForeignKey(cpl => cpl.ContractId)
              .OnDelete(DeleteBehavior.Cascade);
         });
     }
