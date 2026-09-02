@@ -9,6 +9,7 @@ using Knm.Enterprise.Domain.Identity;
 using Knm.Enterprise.Domain.Metadata;
 using Knm.Enterprise.Domain.Numbering;
 using Knm.Enterprise.Domain.Organization;
+using Knm.Enterprise.Domain.Projects;
 using Knm.Enterprise.Domain.ReferenceData;
 using Knm.Enterprise.Domain.Storage;
 using Knm.Enterprise.Domain.Workflow;
@@ -55,6 +56,25 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WorkflowDefinition> WorkflowDefinitions => Set<WorkflowDefinition>();
     public DbSet<WorkflowState> WorkflowStates => Set<WorkflowState>();
     public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
+
+    // Phase 03 Projects & Planning Entities
+    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<ProjectMilestone> ProjectMilestones => Set<ProjectMilestone>();
+    public DbSet<Portfolio> Portfolios => Set<Portfolio>();
+    public DbSet<PortfolioItem> PortfolioItems => Set<PortfolioItem>();
+    public DbSet<PriorityModel> PriorityModels => Set<PriorityModel>();
+    public DbSet<PriorityCriterion> PriorityCriteria => Set<PriorityCriterion>();
+    public DbSet<ProjectPriorityScore> ProjectPriorityScores => Set<ProjectPriorityScore>();
+    public DbSet<FinancialProgram> FinancialPrograms => Set<FinancialProgram>();
+    public DbSet<BudgetChapter> BudgetChapters => Set<BudgetChapter>();
+    public DbSet<BudgetItem> BudgetItems => Set<BudgetItem>();
+    public DbSet<FundingSource> FundingSources => Set<FundingSource>();
+    public DbSet<ProjectAllocation> ProjectAllocations => Set<ProjectAllocation>();
+    public DbSet<ProjectExpenditure> ProjectExpenditures => Set<ProjectExpenditure>();
+    public DbSet<ProjectDependency> ProjectDependencies => Set<ProjectDependency>();
+    public DbSet<ProjectSchedule> ProjectSchedules => Set<ProjectSchedule>();
+    public DbSet<ScheduleActivity> ScheduleActivities => Set<ScheduleActivity>();
+    public DbSet<ActivityDependency> ActivityDependencies => Set<ActivityDependency>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,7 +159,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // 4. Audit Log Configuration
+        // 4. Audit Log
         modelBuilder.Entity<AuditLog>(b =>
         {
             b.ToTable("audit_logs");
@@ -151,7 +171,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.Property(a => a.EntityName).HasMaxLength(100).IsRequired();
         });
 
-        // 5. System Settings Configuration
+        // 5. System Settings
         modelBuilder.Entity<SystemSetting>(b =>
         {
             b.ToTable("system_settings");
@@ -161,7 +181,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.Property(s => s.Key).HasMaxLength(100).IsRequired();
         });
 
-        // 6. Stored Files Configuration
+        // 6. Stored Files
         modelBuilder.Entity<StoredFile>(b =>
         {
             b.ToTable("stored_files");
@@ -183,7 +203,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.HasIndex(sf => sf.Geometry).HasMethod("GIST");
         });
 
-        // 8. Phase 02 Metadata Tables
+        // 8. Phase 02 Metadata
         modelBuilder.Entity<SystemModule>(b =>
         {
             b.ToTable("system_modules");
@@ -257,7 +277,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // 9. Dynamic Records (JSONB document store with GIN index)
         modelBuilder.Entity<DynamicRecord>(b =>
         {
             b.ToTable("dynamic_records");
@@ -265,14 +284,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.Property(dr => dr.DataJson).HasColumnType("jsonb").IsRequired();
             b.HasIndex(dr => dr.ScreenId);
             b.HasIndex(dr => dr.ReferenceNumber);
-            b.HasIndex(dr => dr.DataJson).HasMethod("GIN"); // GIN index for fast JSONB querying
+            b.HasIndex(dr => dr.DataJson).HasMethod("GIN");
             b.HasOne(dr => dr.Screen)
              .WithMany()
              .HasForeignKey(dr => dr.ScreenId)
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // 10. Organization Units
         modelBuilder.Entity<OrganizationUnit>(b =>
         {
             b.ToTable("organization_units");
@@ -286,7 +304,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
              .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // 11. Reference Data Lists & Items
         modelBuilder.Entity<ReferenceList>(b =>
         {
             b.ToTable("reference_lists");
@@ -309,7 +326,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // 12. Numbering Definitions
         modelBuilder.Entity<NumberingDefinition>(b =>
         {
             b.ToTable("numbering_definitions");
@@ -319,7 +335,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.Property(nd => nd.Name).HasMaxLength(150).IsRequired();
         });
 
-        // 13. Workflows
         modelBuilder.Entity<WorkflowDefinition>(b =>
         {
             b.ToTable("workflow_definitions");
@@ -350,6 +365,271 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.HasOne(wt => wt.WorkflowDefinition)
              .WithMany(w => w.Transitions)
              .HasForeignKey(wt => wt.WorkflowDefinitionId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ==========================================
+        // 9. PHASE 03: Projects & Planning Mappings
+        // ==========================================
+
+        modelBuilder.Entity<Project>(b =>
+        {
+            b.ToTable("projects");
+            b.HasKey(p => p.Id);
+            b.HasIndex(p => p.ProjectNumber).IsUnique();
+            b.HasIndex(p => p.Status);
+            b.HasIndex(p => p.ProjectTypeCode);
+            b.Property(p => p.ProjectNumber).HasMaxLength(50).IsRequired();
+            b.Property(p => p.Name).HasMaxLength(250).IsRequired();
+            b.Property(p => p.ProjectTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(p => p.CategoryCode).HasMaxLength(50).IsRequired();
+            b.Property(p => p.PriorityLevel).HasMaxLength(20).IsRequired();
+            b.Property(p => p.EstimatedCost).HasPrecision(18, 3);
+            b.Property(p => p.ContractValue).HasPrecision(18, 3);
+            b.Property(p => p.ActualExpenditure).HasPrecision(18, 3);
+            b.Property(p => p.ProgressPercentage).HasPrecision(5, 2);
+
+            // PostGIS Geometry for project location (Point / LineString / Polygon)
+            b.Property(p => p.LocationGeometry).HasColumnType("geometry");
+            b.HasIndex(p => p.LocationGeometry).HasMethod("GIST");
+
+            b.HasOne(p => p.OrganizationUnit)
+             .WithMany()
+             .HasForeignKey(p => p.OrganizationUnitId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ProjectMilestone>(b =>
+        {
+            b.ToTable("project_milestones");
+            b.HasKey(m => m.Id);
+            b.Property(m => m.Name).HasMaxLength(150).IsRequired();
+            b.HasOne(m => m.Project)
+             .WithMany(p => p.Milestones)
+             .HasForeignKey(m => m.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Portfolio>(b =>
+        {
+            b.ToTable("portfolios");
+            b.HasKey(p => p.Id);
+            b.HasIndex(p => p.Code).IsUnique();
+            b.Property(p => p.Code).HasMaxLength(50).IsRequired();
+            b.Property(p => p.Name).HasMaxLength(150).IsRequired();
+            b.Property(p => p.TotalBudget).HasPrecision(18, 3);
+        });
+
+        modelBuilder.Entity<PortfolioItem>(b =>
+        {
+            b.ToTable("portfolio_items");
+            b.HasKey(pi => pi.Id);
+            b.HasIndex(pi => new { pi.PortfolioId, pi.ProjectId }).IsUnique();
+            b.Property(pi => pi.AllocatedAmount).HasPrecision(18, 3);
+
+            b.HasOne(pi => pi.Portfolio)
+             .WithMany(p => p.Items)
+             .HasForeignKey(pi => pi.PortfolioId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(pi => pi.Project)
+             .WithMany(p => p.PortfolioItems)
+             .HasForeignKey(pi => pi.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PriorityModel>(b =>
+        {
+            b.ToTable("priority_models");
+            b.HasKey(pm => pm.Id);
+            b.HasIndex(pm => pm.Code).IsUnique();
+            b.Property(pm => pm.Code).HasMaxLength(50).IsRequired();
+            b.Property(pm => pm.Name).HasMaxLength(150).IsRequired();
+        });
+
+        modelBuilder.Entity<PriorityCriterion>(b =>
+        {
+            b.ToTable("priority_criteria");
+            b.HasKey(pc => pc.Id);
+            b.Property(pc => pc.Name).HasMaxLength(150).IsRequired();
+            b.Property(pc => pc.WeightPercentage).HasPrecision(5, 2);
+
+            b.HasOne(pc => pc.PriorityModel)
+             .WithMany(pm => pm.Criteria)
+             .HasForeignKey(pc => pc.PriorityModelId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ProjectPriorityScore>(b =>
+        {
+            b.ToTable("project_priority_scores");
+            b.HasKey(pps => pps.Id);
+            b.HasIndex(pps => new { pps.ProjectId, pps.PriorityCriterionId }).IsUnique();
+            b.Property(pps => pps.RawScore).HasPrecision(5, 2);
+            b.Property(pps => pps.WeightedScore).HasPrecision(5, 2);
+
+            b.HasOne(pps => pps.Project)
+             .WithMany(p => p.PriorityScores)
+             .HasForeignKey(pps => pps.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(pps => pps.PriorityCriterion)
+             .WithMany()
+             .HasForeignKey(pps => pps.PriorityCriterionId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FinancialProgram>(b =>
+        {
+            b.ToTable("financial_programs");
+            b.HasKey(fp => fp.Id);
+            b.HasIndex(fp => fp.Code).IsUnique();
+            b.Property(fp => fp.Code).HasMaxLength(50).IsRequired();
+            b.Property(fp => fp.Name).HasMaxLength(150).IsRequired();
+            b.Property(fp => fp.TotalBudget).HasPrecision(18, 3);
+        });
+
+        modelBuilder.Entity<BudgetChapter>(b =>
+        {
+            b.ToTable("budget_chapters");
+            b.HasKey(bc => bc.Id);
+            b.HasIndex(bc => new { bc.FinancialProgramId, bc.Code }).IsUnique();
+            b.Property(bc => bc.Code).HasMaxLength(50).IsRequired();
+            b.Property(bc => bc.Name).HasMaxLength(150).IsRequired();
+
+            b.HasOne(bc => bc.FinancialProgram)
+             .WithMany(fp => fp.Chapters)
+             .HasForeignKey(bc => bc.FinancialProgramId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BudgetItem>(b =>
+        {
+            b.ToTable("budget_items");
+            b.HasKey(bi => bi.Id);
+            b.HasIndex(bi => new { bi.BudgetChapterId, bi.Code }).IsUnique();
+            b.Property(bi => bi.Code).HasMaxLength(50).IsRequired();
+            b.Property(bi => bi.Name).HasMaxLength(150).IsRequired();
+            b.Property(bi => bi.AllocatedAmount).HasPrecision(18, 3);
+
+            b.HasOne(bi => bi.BudgetChapter)
+             .WithMany(bc => bc.Items)
+             .HasForeignKey(bi => bi.BudgetChapterId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FundingSource>(b =>
+        {
+            b.ToTable("funding_sources");
+            b.HasKey(fs => fs.Id);
+            b.HasIndex(fs => fs.Code).IsUnique();
+            b.Property(fs => fs.Code).HasMaxLength(50).IsRequired();
+            b.Property(fs => fs.Name).HasMaxLength(150).IsRequired();
+        });
+
+        modelBuilder.Entity<ProjectAllocation>(b =>
+        {
+            b.ToTable("project_allocations");
+            b.HasKey(pa => pa.Id);
+            b.Property(pa => pa.AllocatedAmount).HasPrecision(18, 3);
+            b.Property(pa => pa.CommittedAmount).HasPrecision(18, 3);
+
+            b.HasOne(pa => pa.Project)
+             .WithMany(p => p.Allocations)
+             .HasForeignKey(pa => pa.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(pa => pa.BudgetItem)
+             .WithMany()
+             .HasForeignKey(pa => pa.BudgetItemId)
+             .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasOne(pa => pa.FundingSource)
+             .WithMany()
+             .HasForeignKey(pa => pa.FundingSourceId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ProjectExpenditure>(b =>
+        {
+            b.ToTable("project_expenditures");
+            b.HasKey(pe => pe.Id);
+            b.Property(pe => pe.Amount).HasPrecision(18, 3);
+            b.Property(pe => pe.VoucherNumber).HasMaxLength(100).IsRequired();
+
+            b.HasOne(pe => pe.Project)
+             .WithMany(p => p.Expenditures)
+             .HasForeignKey(pe => pe.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(pe => pe.ProjectAllocation)
+             .WithMany()
+             .HasForeignKey(pe => pe.ProjectAllocationId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ProjectDependency>(b =>
+        {
+            b.ToTable("project_dependencies");
+            b.HasKey(pd => pd.Id);
+            b.HasIndex(pd => new { pd.PredecessorProjectId, pd.SuccessorProjectId }).IsUnique();
+
+            b.HasOne(pd => pd.PredecessorProject)
+             .WithMany()
+             .HasForeignKey(pd => pd.PredecessorProjectId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(pd => pd.SuccessorProject)
+             .WithMany()
+             .HasForeignKey(pd => pd.SuccessorProjectId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ProjectSchedule>(b =>
+        {
+            b.ToTable("project_schedules");
+            b.HasKey(ps => ps.Id);
+
+            b.HasOne(ps => ps.Project)
+             .WithMany(p => p.Schedules)
+             .HasForeignKey(ps => ps.ProjectId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ScheduleActivity>(b =>
+        {
+            b.ToTable("schedule_activities");
+            b.HasKey(sa => sa.Id);
+            b.HasIndex(sa => new { sa.ProjectScheduleId, sa.ActivityCode }).IsUnique();
+            b.Property(sa => sa.ActivityCode).HasMaxLength(50).IsRequired();
+            b.Property(sa => sa.Name).HasMaxLength(200).IsRequired();
+            b.Property(sa => sa.ProgressPercent).HasPrecision(5, 2);
+
+            b.HasOne(sa => sa.ProjectSchedule)
+             .WithMany(ps => ps.Activities)
+             .HasForeignKey(sa => sa.ProjectScheduleId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ActivityDependency>(b =>
+        {
+            b.ToTable("activity_dependencies");
+            b.HasKey(ad => ad.Id);
+            b.HasIndex(ad => new { ad.ProjectScheduleId, ad.PredecessorActivityId, ad.SuccessorActivityId }).IsUnique();
+
+            b.HasOne(ad => ad.ProjectSchedule)
+             .WithMany(ps => ps.Dependencies)
+             .HasForeignKey(ad => ad.ProjectScheduleId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ad => ad.PredecessorActivity)
+             .WithMany(sa => sa.Successors)
+             .HasForeignKey(ad => ad.PredecessorActivityId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ad => ad.SuccessorActivity)
+             .WithMany(sa => sa.Predecessors)
+             .HasForeignKey(ad => ad.SuccessorActivityId)
              .OnDelete(DeleteBehavior.Cascade);
         });
     }

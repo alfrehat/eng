@@ -7,6 +7,8 @@ import { HealthCheckPage } from '../pages/HealthCheckPage';
 import { LoginPage } from '../pages/LoginPage';
 import { AdminStudioPage } from '../pages/AdminStudio/AdminStudioPage';
 import { DynamicScreenRenderer } from '../components/DynamicRenderer/DynamicScreenRenderer';
+import { ProjectsListPage } from '../pages/Projects/ProjectsListPage';
+import { ProjectWorkspacePage } from '../pages/Projects/ProjectWorkspacePage';
 
 export const App: React.FC = () => {
   return (
@@ -17,6 +19,8 @@ export const App: React.FC = () => {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="projects" element={<ProjectsListPage />} />
+          <Route path="projects/:id" element={<ProjectWorkspacePage />} />
           <Route path="admin" element={<AdminFoundationPage />} />
           <Route path="admin/studio" element={<AdminStudioPage />} />
           <Route path="health-check" element={<HealthCheckPage />} />

@@ -12,6 +12,8 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeService, SystemDateTimeService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IFileStorageService, FileStorageService>();
+        services.AddScoped<Knm.Enterprise.Application.Projects.ICpmCalculationService, Knm.Enterprise.Application.Projects.CpmCalculationService>();
+        services.AddScoped<Knm.Enterprise.Application.Projects.IProjectPriorityService, Knm.Enterprise.Application.Projects.ProjectPriorityService>();
 
         return services;
     }

@@ -6,6 +6,7 @@ using Knm.Enterprise.Domain.Identity;
 using Knm.Enterprise.Domain.Metadata;
 using Knm.Enterprise.Domain.Numbering;
 using Knm.Enterprise.Domain.Organization;
+using Knm.Enterprise.Domain.Projects;
 using Knm.Enterprise.Domain.ReferenceData;
 using Knm.Enterprise.Domain.Storage;
 using Knm.Enterprise.Domain.Workflow;
@@ -41,6 +42,25 @@ public interface IApplicationDbContext
     DbSet<WorkflowDefinition> WorkflowDefinitions { get; }
     DbSet<WorkflowState> WorkflowStates { get; }
     DbSet<WorkflowTransition> WorkflowTransitions { get; }
+
+    // Phase 03 Projects & Planning Entities
+    DbSet<Project> Projects { get; }
+    DbSet<ProjectMilestone> ProjectMilestones { get; }
+    DbSet<Portfolio> Portfolios { get; }
+    DbSet<PortfolioItem> PortfolioItems { get; }
+    DbSet<PriorityModel> PriorityModels { get; }
+    DbSet<PriorityCriterion> PriorityCriteria { get; }
+    DbSet<ProjectPriorityScore> ProjectPriorityScores { get; }
+    DbSet<FinancialProgram> FinancialPrograms { get; }
+    DbSet<BudgetChapter> BudgetChapters { get; }
+    DbSet<BudgetItem> BudgetItems { get; }
+    DbSet<FundingSource> FundingSources { get; }
+    DbSet<ProjectAllocation> ProjectAllocations { get; }
+    DbSet<ProjectExpenditure> ProjectExpenditures { get; }
+    DbSet<ProjectDependency> ProjectDependencies { get; }
+    DbSet<ProjectSchedule> ProjectSchedules { get; }
+    DbSet<ScheduleActivity> ScheduleActivities { get; }
+    DbSet<ActivityDependency> ActivityDependencies { get; }
 
     DatabaseFacade Database { get; }
 
