@@ -1,0 +1,205 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Application\\Knm.Enterprise.Application.csproj": {}
+  },
+  "projects": {
+    "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Application\\Knm.Enterprise.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Application\\Knm.Enterprise.Application.csproj",
+        "projectName": "Knm.Enterprise.Application",
+        "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Application\\Knm.Enterprise.Application.csproj",
+        "packagesPath": "C:\\Users\\Alfrehat-eng\\.nuget\\packages\\",
+        "outputPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alfrehat-eng\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj": {
+                "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj"
+              },
+              "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj": {
+                "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.423/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj",
+        "projectName": "Knm.Enterprise.Domain",
+        "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj",
+        "packagesPath": "C:\\Users\\Alfrehat-eng\\.nuget\\packages\\",
+        "outputPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alfrehat-eng\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj": {
+                "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "NetTopologySuite": {
+              "target": "Package",
+              "version": "[2.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.423/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj",
+        "projectName": "Knm.Enterprise.Shared",
+        "projectPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\Knm.Enterprise.Shared.csproj",
+        "packagesPath": "C:\\Users\\Alfrehat-eng\\.nuget\\packages\\",
+        "outputPath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Shared\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alfrehat-eng\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.423/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

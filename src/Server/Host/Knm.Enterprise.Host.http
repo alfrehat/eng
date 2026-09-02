@@ -1,0 +1,6 @@
+@Knm.Enterprise.Host_HostAddress = http://localhost:5103
+
+GET {{Knm.Enterprise.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,17 @@
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Application.deps.json
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Application.dll
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Application.pdb
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Domain.dll
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Shared.dll
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Domain.pdb
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\bin\Debug\net8.0\Knm.Enterprise.Shared.pdb
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.csproj.AssemblyReference.cache
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.AssemblyInfoInputs.cache
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.AssemblyInfo.cs
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.csproj.CoreCompileInputs.cache
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Ente.9EE3FD07.Up2Date
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.dll
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\refint\Knm.Enterprise.Application.dll
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\Knm.Enterprise.Application.pdb
+D:\28-7\28-7\نظام ادارة المشاريع\نسخة - Copy (2)\src\Server\Application\obj\Debug\net8.0\ref\Knm.Enterprise.Application.dll

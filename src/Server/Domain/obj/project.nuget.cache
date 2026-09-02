@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "hPbdd7+tQUE=",
+  "success": true,
+  "projectFilePath": "D:\\28-7\\28-7\\نظام ادارة المشاريع\\نسخة - Copy (2)\\src\\Server\\Domain\\Knm.Enterprise.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Alfrehat-eng\\.nuget\\packages\\nettopologysuite\\2.5.0\\nettopologysuite.2.5.0.nupkg.sha512",
+    "C:\\Users\\Alfrehat-eng\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512"
+  ],
+  "logs": []
+}
