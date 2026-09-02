@@ -62,6 +62,25 @@ public interface IApplicationDbContext
     DbSet<ScheduleActivity> ScheduleActivities { get; }
     DbSet<ActivityDependency> ActivityDependencies { get; }
 
+    // Phase 04 Tenders Entities
+    DbSet<Knm.Enterprise.Domain.Tenders.Tender> Tenders { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderDocument> TenderDocuments { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderDocumentRequirement> TenderDocumentRequirements { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderBoq> TenderBoqs { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderBoqItem> TenderBoqItems { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.Bidder> Bidders { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.Bid> Bids { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.BidItem> BidItems { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.BidGuarantee> BidGuarantees { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderOpening> TenderOpenings { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.TenderOpeningEntry> TenderOpeningEntries { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.EvaluationCommittee> EvaluationCommittees { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.EvaluationMember> EvaluationMembers { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.EvaluationCriteria> EvaluationCriteriaList { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.EvaluationResult> EvaluationResults { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.AwardRecommendation> AwardRecommendations { get; }
+    DbSet<Knm.Enterprise.Domain.Tenders.AwardDecision> AwardDecisions { get; }
+
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

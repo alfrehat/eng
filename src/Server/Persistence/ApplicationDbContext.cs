@@ -76,6 +76,25 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<ScheduleActivity> ScheduleActivities => Set<ScheduleActivity>();
     public DbSet<ActivityDependency> ActivityDependencies => Set<ActivityDependency>();
 
+    // Phase 04 Tenders Entities
+    public DbSet<Knm.Enterprise.Domain.Tenders.Tender> Tenders => Set<Knm.Enterprise.Domain.Tenders.Tender>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderDocument> TenderDocuments => Set<Knm.Enterprise.Domain.Tenders.TenderDocument>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderDocumentRequirement> TenderDocumentRequirements => Set<Knm.Enterprise.Domain.Tenders.TenderDocumentRequirement>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderBoq> TenderBoqs => Set<Knm.Enterprise.Domain.Tenders.TenderBoq>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderBoqItem> TenderBoqItems => Set<Knm.Enterprise.Domain.Tenders.TenderBoqItem>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.Bidder> Bidders => Set<Knm.Enterprise.Domain.Tenders.Bidder>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.Bid> Bids => Set<Knm.Enterprise.Domain.Tenders.Bid>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.BidItem> BidItems => Set<Knm.Enterprise.Domain.Tenders.BidItem>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.BidGuarantee> BidGuarantees => Set<Knm.Enterprise.Domain.Tenders.BidGuarantee>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderOpening> TenderOpenings => Set<Knm.Enterprise.Domain.Tenders.TenderOpening>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.TenderOpeningEntry> TenderOpeningEntries => Set<Knm.Enterprise.Domain.Tenders.TenderOpeningEntry>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.EvaluationCommittee> EvaluationCommittees => Set<Knm.Enterprise.Domain.Tenders.EvaluationCommittee>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.EvaluationMember> EvaluationMembers => Set<Knm.Enterprise.Domain.Tenders.EvaluationMember>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.EvaluationCriteria> EvaluationCriteriaList => Set<Knm.Enterprise.Domain.Tenders.EvaluationCriteria>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.EvaluationResult> EvaluationResults => Set<Knm.Enterprise.Domain.Tenders.EvaluationResult>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.AwardRecommendation> AwardRecommendations => Set<Knm.Enterprise.Domain.Tenders.AwardRecommendation>();
+    public DbSet<Knm.Enterprise.Domain.Tenders.AwardDecision> AwardDecisions => Set<Knm.Enterprise.Domain.Tenders.AwardDecision>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -630,6 +649,281 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.HasOne(ad => ad.SuccessorActivity)
              .WithMany(sa => sa.Predecessors)
              .HasForeignKey(ad => ad.SuccessorActivityId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ==========================================
+        // 10. PHASE 04: Tenders Engine Mappings
+        // ==========================================
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.Tender>(b =>
+        {
+            b.ToTable("tenders");
+            b.HasKey(t => t.Id);
+            b.HasIndex(t => t.TenderNumber).IsUnique();
+            b.HasIndex(t => t.Status);
+            b.HasIndex(t => t.ProjectId);
+            b.Property(t => t.TenderNumber).HasMaxLength(50).IsRequired();
+            b.Property(t => t.Title).HasMaxLength(250).IsRequired();
+            b.Property(t => t.TenderTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(t => t.TenderMethodCode).HasMaxLength(50).IsRequired();
+            b.Property(t => t.CategoryCode).HasMaxLength(50).IsRequired();
+            b.Property(t => t.EstimatedValue).HasPrecision(18, 3);
+            b.Property(t => t.Currency).HasMaxLength(10).IsRequired();
+
+            b.HasOne(t => t.Project)
+             .WithMany()
+             .HasForeignKey(t => t.ProjectId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(t => t.OrganizationUnit)
+             .WithMany()
+             .HasForeignKey(t => t.OrganizationUnitId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderDocument>(b =>
+        {
+            b.ToTable("tender_documents");
+            b.HasKey(td => td.Id);
+            b.Property(td => td.Title).HasMaxLength(200).IsRequired();
+            b.Property(td => td.DocumentTypeCode).HasMaxLength(50).IsRequired();
+
+            b.HasOne(td => td.Tender)
+             .WithMany(t => t.Documents)
+             .HasForeignKey(td => td.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(td => td.StoredFile)
+             .WithMany()
+             .HasForeignKey(td => td.StoredFileId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderDocumentRequirement>(b =>
+        {
+            b.ToTable("tender_document_requirements");
+            b.HasKey(tr => tr.Id);
+            b.HasIndex(tr => new { tr.TenderTypeCode, tr.DocumentTypeCode }).IsUnique();
+            b.Property(tr => tr.TenderTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(tr => tr.DocumentTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(tr => tr.Title).HasMaxLength(200).IsRequired();
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderBoq>(b =>
+        {
+            b.ToTable("tender_boqs");
+            b.HasKey(tb => tb.Id);
+            b.Property(tb => tb.Title).HasMaxLength(200).IsRequired();
+            b.Property(tb => tb.SubTotal).HasPrecision(18, 3);
+            b.Property(tb => tb.TaxRatePercent).HasPrecision(5, 2);
+            b.Property(tb => tb.TaxAmount).HasPrecision(18, 3);
+            b.Property(tb => tb.GrandTotal).HasPrecision(18, 3);
+
+            b.HasOne(tb => tb.Tender)
+             .WithMany(t => t.Boqs)
+             .HasForeignKey(tb => tb.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderBoqItem>(b =>
+        {
+            b.ToTable("tender_boq_items");
+            b.HasKey(tbi => tbi.Id);
+            b.HasIndex(tbi => new { tbi.TenderBoqId, tbi.ItemNumber }).IsUnique();
+            b.Property(tbi => tbi.Description).HasMaxLength(500).IsRequired();
+            b.Property(tbi => tbi.Unit).HasMaxLength(30).IsRequired();
+            b.Property(tbi => tbi.Quantity).HasPrecision(18, 3);
+            b.Property(tbi => tbi.EstimatedUnitPrice).HasPrecision(18, 3);
+            b.Property(tbi => tbi.EstimatedTotal).HasPrecision(18, 3);
+
+            b.HasOne(tbi => tbi.TenderBoq)
+             .WithMany(tb => tb.Items)
+             .HasForeignKey(tbi => tbi.TenderBoqId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.Bidder>(b =>
+        {
+            b.ToTable("bidders");
+            b.HasKey(bd => bd.Id);
+            b.HasIndex(bd => bd.CommercialRegisterNumber).IsUnique();
+            b.Property(bd => bd.Name).HasMaxLength(200).IsRequired();
+            b.Property(bd => bd.CommercialRegisterNumber).HasMaxLength(100).IsRequired();
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.Bid>(b =>
+        {
+            b.ToTable("bids");
+            b.HasKey(bd => bd.Id);
+            b.HasIndex(bd => new { bd.TenderId, bd.BidderId }).IsUnique();
+            b.Property(bd => bd.OfferedAmount).HasPrecision(18, 3);
+            b.Property(bd => bd.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(bd => bd.Tender)
+             .WithMany(t => t.Bids)
+             .HasForeignKey(bd => bd.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(bd => bd.Bidder)
+             .WithMany(bdr => bdr.Bids)
+             .HasForeignKey(bd => bd.BidderId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.BidItem>(b =>
+        {
+            b.ToTable("bid_items");
+            b.HasKey(bi => bi.Id);
+            b.Property(bi => bi.OfferedUnitPrice).HasPrecision(18, 3);
+            b.Property(bi => bi.OfferedTotal).HasPrecision(18, 3);
+
+            b.HasOne(bi => bi.Bid)
+             .WithMany(b => b.Items)
+             .HasForeignKey(bi => bi.BidId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(bi => bi.TenderBoqItem)
+             .WithMany()
+             .HasForeignKey(bi => bi.TenderBoqItemId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.BidGuarantee>(b =>
+        {
+            b.ToTable("bid_guarantees");
+            b.HasKey(bg => bg.Id);
+            b.HasIndex(bg => bg.GuaranteeNumber);
+            b.Property(bg => bg.GuaranteeTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(bg => bg.GuaranteeNumber).HasMaxLength(100).IsRequired();
+            b.Property(bg => bg.BankName).HasMaxLength(150).IsRequired();
+            b.Property(bg => bg.Amount).HasPrecision(18, 3);
+            b.Property(bg => bg.Currency).HasMaxLength(10).IsRequired();
+            b.Property(bg => bg.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(bg => bg.Bid)
+             .WithMany(b => b.Guarantees)
+             .HasForeignKey(bg => bg.BidId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderOpening>(b =>
+        {
+            b.ToTable("tender_openings");
+            b.HasKey(to => to.Id);
+            b.Property(to => to.ConductedBy).HasMaxLength(150).IsRequired();
+
+            b.HasOne(to => to.Tender)
+             .WithMany(t => t.Openings)
+             .HasForeignKey(to => to.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.TenderOpeningEntry>(b =>
+        {
+            b.ToTable("tender_opening_entries");
+            b.HasKey(toe => toe.Id);
+            b.Property(toe => toe.ReadOutAmount).HasPrecision(18, 3);
+
+            b.HasOne(toe => toe.TenderOpening)
+             .WithMany(to => to.Entries)
+             .HasForeignKey(toe => toe.TenderOpeningId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(toe => toe.Bid)
+             .WithMany()
+             .HasForeignKey(toe => toe.BidId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.EvaluationCommittee>(b =>
+        {
+            b.ToTable("evaluation_committees");
+            b.HasKey(ec => ec.Id);
+            b.Property(ec => ec.CommitteeName).HasMaxLength(150).IsRequired();
+            b.Property(ec => ec.HeadOfCommittee).HasMaxLength(150).IsRequired();
+
+            b.HasOne(ec => ec.Tender)
+             .WithMany(t => t.EvaluationCommittees)
+             .HasForeignKey(ec => ec.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.EvaluationMember>(b =>
+        {
+            b.ToTable("evaluation_members");
+            b.HasKey(em => em.Id);
+            b.Property(em => em.FullName).HasMaxLength(150).IsRequired();
+            b.Property(em => em.RoleOrTitle).HasMaxLength(100).IsRequired();
+
+            b.HasOne(em => em.EvaluationCommittee)
+             .WithMany(ec => ec.Members)
+             .HasForeignKey(em => em.EvaluationCommitteeId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.EvaluationCriteria>(b =>
+        {
+            b.ToTable("evaluation_criteria");
+            b.HasKey(ecr => ecr.Id);
+            b.Property(ecr => ecr.CriterionName).HasMaxLength(150).IsRequired();
+            b.Property(ecr => ecr.MaxScore).HasPrecision(5, 2);
+            b.Property(ecr => ecr.WeightPercentage).HasPrecision(5, 2);
+
+            b.HasOne(ecr => ecr.EvaluationCommittee)
+             .WithMany(ec => ec.Criteria)
+             .HasForeignKey(ecr => ecr.EvaluationCommitteeId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.EvaluationResult>(b =>
+        {
+            b.ToTable("evaluation_results");
+            b.HasKey(er => er.Id);
+            b.HasIndex(er => new { er.EvaluationCriteriaId, er.BidId }).IsUnique();
+            b.Property(er => er.ScoreGiven).HasPrecision(5, 2);
+
+            b.HasOne(er => er.EvaluationCriteria)
+             .WithMany()
+             .HasForeignKey(er => er.EvaluationCriteriaId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(er => er.Bid)
+             .WithMany()
+             .HasForeignKey(er => er.BidId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.AwardRecommendation>(b =>
+        {
+            b.ToTable("award_recommendations");
+            b.HasKey(ar => ar.Id);
+            b.Property(ar => ar.RecommendedAmount).HasPrecision(18, 3);
+            b.Property(ar => ar.Justification).HasMaxLength(500).IsRequired();
+            b.Property(ar => ar.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(ar => ar.Tender)
+             .WithMany(t => t.AwardRecommendations)
+             .HasForeignKey(ar => ar.TenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ar => ar.SelectedBid)
+             .WithMany()
+             .HasForeignKey(ar => ar.SelectedBidId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Tenders.AwardDecision>(b =>
+        {
+            b.ToTable("award_decisions");
+            b.HasKey(ad => ad.Id);
+            b.Property(ad => ad.CouncilDecisionNumber).HasMaxLength(100).IsRequired();
+            b.Property(ad => ad.DecisionStatus).HasMaxLength(50).IsRequired();
+            b.Property(ad => ad.FinalAwardedAmount).HasPrecision(18, 3);
+
+            b.HasOne(ad => ad.AwardRecommendation)
+             .WithMany(ar => ar.Decisions)
+             .HasForeignKey(ad => ad.AwardRecommendationId)
              .OnDelete(DeleteBehavior.Cascade);
         });
     }

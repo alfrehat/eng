@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<Knm.Enterprise.Application.Projects.ICpmCalculationService, Knm.Enterprise.Application.Projects.CpmCalculationService>();
         services.AddScoped<Knm.Enterprise.Application.Projects.IProjectPriorityService, Knm.Enterprise.Application.Projects.ProjectPriorityService>();
+        services.AddScoped<Knm.Enterprise.Application.Tenders.ITenderCalculationService, Knm.Enterprise.Application.Tenders.TenderCalculationService>();
 
         return services;
     }
