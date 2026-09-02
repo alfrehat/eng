@@ -1,0 +1,44 @@
+[
+  {
+    "id": "WF-CLAIMS-01",
+    "name": "مسار تدقيق واعتماد المطالبات المالية للمشاريع",
+    "entityType": "claims",
+    "description": "سلسلة اعتماد مطالبات المقاولين من المهندس المشرف حتى المحاسبة والمدير العام",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"تدقيق وتنسيب مهندس الإشراف\",\"targetRole\":\"R-004\",\"allowReject\":true},{\"stepIndex\":2,\"label\":\"مراجعة وتأكيد رئيس قسم العطاءات والمشاريع\",\"targetRole\":\"R-003\",\"allowReject\":true},{\"stepIndex\":3,\"label\":\"التدقيق المالي والمحاسبي\",\"targetRole\":\"R-006\",\"allowReject\":true},{\"stepIndex\":4,\"label\":\"الاعتماد النهائي من المدير الهندسي\",\"targetRole\":\"R-001\",\"allowReject\":true}]"
+  },
+  {
+    "id": "WF-PERMITS-01",
+    "name": "مسار إصدار واعتماد تصاريح الحفر وربط الخدمات",
+    "entityType": "excavation_permits",
+    "description": "إجراءات الكشف الميداني واحتساب كلفة التعبيد والتأمينات وإصدار التصريح",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"معاينة الموقع وتقدير الأضرار (المراقب الميداني)\",\"targetRole\":\"R-005\",\"allowReject\":true},{\"stepIndex\":2,\"label\":\"تدقيق المخططات والتأمين المالي (مهندس الأشغال)\",\"targetRole\":\"R-004\",\"allowReject\":true},{\"stepIndex\":3,\"label\":\"الموافقة الرسمية وإصدار التصريح (رئيس القسم)\",\"targetRole\":\"R-003\",\"allowReject\":true}]"
+  },
+  {
+    "id": "WF-PAVING-01",
+    "name": "مسار احتساب وتحصيل عوائد التعبيد والأرصفة",
+    "entityType": "paving_returns",
+    "description": "حساب المسطحات والواجهات المساحية والتحصيل المالي",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"حساب المسطحات والواجهات المساحية (مهندس الأشغال)\",\"targetRole\":\"R-004\",\"allowReject\":true},{\"stepIndex\":2,\"label\":\"الاحتساب المالي والتدقيق النهائي (المحاسب)\",\"targetRole\":\"R-006\",\"allowReject\":true},{\"stepIndex\":3,\"label\":\"الاعتماد المالي والترحيل (رئيس القسم)\",\"targetRole\":\"R-003\",\"allowReject\":true}]"
+  },
+  {
+    "id": "WF-TASKS-01",
+    "name": "مسار التكليفات والكشوفات الفنية الميدانية",
+    "entityType": "tasks",
+    "description": "إسناد المهام والكشف الميداني ورفع التقارير الموثقة بالإحداثيات",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"إسناد وتكليف المهمة الميدانية (رئيس القسم)\",\"targetRole\":\"R-003\",\"allowReject\":false},{\"stepIndex\":2,\"label\":\"التنفيذ ورفع التقرير والصور GPS (المراقب الميداني)\",\"targetRole\":\"R-005\",\"allowReject\":false},{\"stepIndex\":3,\"label\":\"المراجعة والاعتماد الفني النهائي (رئيس القسم)\",\"targetRole\":\"R-003\",\"allowReject\":true}]"
+  },
+  {
+    "id": "WF-VARIATIONS-01",
+    "name": "مسار دراسة واعتماد أوامر التغيير للمشاريع",
+    "entityType": "variation_orders",
+    "description": "دراسة أوامر التغيير الهندسية ضمن النسبة القانونية 25% والاعتماد المالي والإداري",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"إعداد الدراسة الفنية ومبررات التغيير (مهندس الإشراف)\",\"targetRole\":\"R-004\",\"allowReject\":true},{\"stepIndex\":2,\"label\":\"تدقيق وتنسيب رئيس قسم المشاريع\",\"targetRole\":\"R-003\",\"allowReject\":true},{\"stepIndex\":3,\"label\":\"التدقيق المالي وتوفر المخصصات (المحاسب)\",\"targetRole\":\"R-006\",\"allowReject\":true},{\"stepIndex\":4,\"label\":\"المصادقة الإدارية العليا (المدير الهندسي)\",\"targetRole\":\"R-001\",\"allowReject\":true}]"
+  },
+  {
+    "id": "WF-PURCHASES-01",
+    "name": "مسار تدقيق واعتماد المشتريات واللوازم والتوريدات",
+    "entityType": "purchases",
+    "description": "سلسلة تدقيق طلبات الشراء والصيانة واللوازم والمصادقة وتوثيق الاستلام والإغلاق",
+    "stepsJson": "[{\"stepIndex\":1,\"label\":\"تنظيم طلب الشراء والصيانة وإدخال المواصفات الفنية\",\"targetRole\":\"R-004\",\"allowReject\":false},{\"stepIndex\":2,\"label\":\"تدقيق ومراجعة رئيس قسم اللوازم والمشاريع\",\"targetRole\":\"R-003\",\"allowReject\":true},{\"stepIndex\":3,\"label\":\"المصادقة والاعتماد النهائي وإصدار أمر الشراء (المدير الهندسي)\",\"targetRole\":\"R-001\",\"allowReject\":true},{\"stepIndex\":4,\"label\":\"فحص واستلام المواد وتوثيق سند الإدخال وإغلاق المعاملة (المستودعات والتدقيق المالي)\",\"targetRole\":\"R-006\",\"allowReject\":true}]"
+  }
+]

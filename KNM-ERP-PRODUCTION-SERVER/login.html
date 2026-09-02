@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة تسجيل الدخول الآمنة — بلدية كفرنجة الجديدة</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-light: #14b8a6;
+      --primary-dark: #0d9488;
+      --accent-gold: #f59e0b;
+      --accent-emerald: #10b981;
+      --bg-dark: #090f1d;
+      --card-bg: rgba(15, 23, 42, 0.88);
+      --input-bg: rgba(30, 41, 59, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.16);
+      --border-focus: #14b8a6;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(15, 118, 110, 0.35) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(2, 132, 199, 0.25) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.95) 0px, var(--bg-dark) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+      padding: 24px 16px;
+    }
+
+    /* Ambient Animated Grid & Light Beams */
+    .bg-mesh {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.35;
+      animation: floatGlow 14s ease-in-out infinite alternate;
+    }
+
+    .glow-1 { top: -120px; right: -80px; background: #0f766e; }
+    .glow-2 { bottom: -140px; left: -100px; background: #0284c7; }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-30px, 30px) scale(1.15); }
+    }
+
+    /* Top Status Bar */
+    .top-status-pill {
+      position: fixed;
+      top: 20px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-glass);
+      border-radius: 50px;
+      backdrop-filter: blur(14px);
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 12px #10b981;
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Main Container */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 460px;
+      margin: auto;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 38px 32px;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
+                  0 0 0 1px rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      animation: cardAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #14b8a6, #0284c7, #f59e0b, #14b8a6);
+      background-size: 300% 100%;
+      animation: gradientSlide 6s linear infinite;
+    }
+
+    @keyframes gradientSlide {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Official Crest & Header */
+    .crest-container {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .crest-ring {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+      padding: 4px;
+      border: 2px solid rgba(20, 184, 166, 0.5);
+      box-shadow: 0 12px 30px rgba(15, 118, 110, 0.45);
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .crest-ring:hover {
+      transform: scale(1.05);
+    }
+
+    .crest-ring img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 2px;
+    }
+
+    .header-titles {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header-titles .royal-tag {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #5eead4;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .header-titles h1 {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .header-titles p {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 13px 44px 13px 44px;
+      background: var(--input-bg);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.25s ease;
+      user-select: text;
+    }
+
+    .input-wrapper input::placeholder {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .input-wrapper input:focus {
+      border-color: #14b8a6;
+      background: rgba(30, 41, 59, 0.98);
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.25);
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 14px;
+      color: #94a3b8;
+      font-size: 1.15rem;
+      pointer-events: none;
+      transition: color 0.25s;
+    }
+
+    .input-wrapper input:focus ~ .input-icon {
+      color: #14b8a6;
+    }
+
+    .toggle-password {
+      position: absolute;
+      left: 12px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 6px;
+      font-size: 1.15rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .toggle-password:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .caps-warning {
+      display: none;
+      font-size: 0.78rem;
+      color: #fbbf24;
+      margin-top: 6px;
+      font-weight: 600;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Remember & Forgot Row */
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      font-size: 0.84rem;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .remember-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #14b8a6;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .forgot-link {
+      color: #5eead4;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .forgot-link:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 24px -5px rgba(15, 118, 110, 0.6);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px -5px rgba(15, 118, 110, 0.8);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Security Notice */
+    .security-badge {
+      margin-top: 22px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .security-badge span.icon {
+      font-size: 1.4rem;
+    }
+
+    /* Error & Alert Banner */
+    .alert-banner {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      line-height: 1.45;
+      animation: shake 0.45s ease-in-out;
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fcd34d;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* Footer */
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #64748b;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-mesh"></div>
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Top Server Connectivity Status -->
+  <div class="top-status-pill">
+    <div class="status-dot" id="serverDot"></div>
+    <span id="serverStatusText">خادم البلدية: متصل ومؤمن (v5.0 Enterprise)</span>
+  </div>
+
+  <main class="login-wrapper">
+    <div class="login-card">
+
+      <!-- Emblem & Titles -->
+      <div class="crest-container">
+        <div class="crest-ring">
+          <img id="login-logo-img" src="/logo.jpg" alt="شعار بلدية كفرنجة" onerror="this.src='/logo.jpg'">
+        </div>
+      </div>
+
+      <div class="header-titles">
+        <span class="royal-tag">المملكة الأردنية الهاشمية</span>
+        <h1 id="login-municipality-title">بلدية كفرنجة الجديدة</h1>
+        <p id="login-directorate-title">مديرية الأشغال والخدمات الهندسية — المنظومة الموحدة</p>
+      </div>
+
+      <!-- Alert Box -->
+      <div id="alertBanner" class="alert-banner alert-danger"></div>
+
+      <!-- Login Form with strict JS submission interception -->
+      <form id="loginForm" method="POST" action="javascript:void(0);" onsubmit="handleLoginSubmit(event)" autocomplete="off">
+        
+        <div class="form-group">
+          <label for="loginUsername">
+            <span>اسم المستخدم أو البريد الإلكتروني</span>
+            <small style="color:#5eead4; font-weight:normal;">المعتمد في النظام</small>
+          </label>
+          <div class="input-wrapper">
+            <input type="text" id="loginUsername" name="username" placeholder="أدخل اسم المستخدم المعتمد" required autofocus />
+            <span class="input-icon">👤</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">
+            <span>كلمة المرور</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="password" id="loginPassword" name="password" placeholder="أدخل كلمة المرور" required />
+            <span class="input-icon">🔒</span>
+            <button type="button" class="toggle-password" id="togglePasswordBtn" title="إظهار / إخفاء كلمة المرور">👁️</button>
+          </div>
+          <div class="caps-warning" id="capsLockWarning">⚠️ تنبيه: زر الأحرف الكبيرة (Caps Lock) مفعل!</div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-label">
+            <input type="checkbox" id="rememberMe" checked />
+            <span>تذكر بيانات الجلسة على هذا الجهاز</span>
+          </label>
+          <a href="#" class="forgot-link" onclick="handleForgotPassword(event)">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span class="btn-spinner" id="btnSpinner"></span>
+          <span id="btnText">تسجيل الدخول الآمن 🛡️</span>
+        </button>
+
+      </form>
+
+      <!-- Security Notice -->
+      <div class="security-badge">
+        <span class="icon">🛡️</span>
+        <div>
+          <strong style="color:#ffffff;">نظام محمي ومراقب أمنياً</strong><br>
+          الدخول مصرح به فقط للكوادر الهندسية والإدارية المعتمدة في بلدية كفرنجة الجديدة. تسجل كافة العمليات في سجل الرقابة والتدقيق المركزي.
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="login-footer">
+      جميع الحقوق محفوظة &copy; 2026 بلدية كفرنجة الجديدة — المملكة الأردنية الهاشمية<br>
+      <small style="color:#64748b;">مديرية الأشغال والخدمات الهندسية | الإصدار المعتمد v5.0</small>
+    </footer>
+  </main>
+
+  <script>
+    function showAlert(msg, type = 'danger') {
+      const alertBanner = document.getElementById('alertBanner');
+      if (alertBanner) {
+        alertBanner.className = `alert-banner alert-${type}`;
+        alertBanner.textContent = msg;
+        alertBanner.style.display = 'block';
+      }
+    }
+
+    function hideAlert() {
+      const alertBanner = document.getElementById('alertBanner');
+      if (alertBanner) alertBanner.style.display = 'none';
+    }
+
+    function setLoading(isLoading) {
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpinner = document.getElementById('btnSpinner');
+      if (submitBtn) submitBtn.disabled = isLoading;
+      if (btnSpinner) btnSpinner.style.display = isLoading ? 'block' : 'none';
+      if (btnText) {
+        btnText.textContent = isLoading ? 'جاري التحقق من الهوية...' : 'تسجيل الدخول الآمن 🛡️';
+      }
+    }
+
+    // Main Login Action
+    async function handleLoginSubmit(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      const usernameInput = document.getElementById('loginUsername');
+      const passwordInput = document.getElementById('loginPassword');
+      const btnText = document.getElementById('btnText');
+
+      const username = usernameInput ? usernameInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value.trim() : '';
+
+      if (!username || !password) {
+        showAlert('يرجى إدخال اسم المستخدم وكلمة المرور.', 'danger');
+        return false;
+      }
+
+      setLoading(true);
+      hideAlert();
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          if (btnText) btnText.textContent = '✅ تم التحقق، جاري الدخول...';
+          
+          const engineeringUser = { ...data.user, token: data.token };
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('engineeringUser', JSON.stringify(engineeringUser));
+          sessionStorage.setItem('token', data.token);
+          sessionStorage.setItem('user', JSON.stringify(data.user));
+          sessionStorage.setItem('engineeringUser', JSON.stringify(engineeringUser));
+
+          setTimeout(() => {
+            window.location.replace('/index.html');
+          }, 200);
+          return true;
+        } else {
+          showAlert(data.error || '❌ بيانات الدخول غير صحيحة. يرجى التحقق وإعادة المحاولة.', 'danger');
+          setLoading(false);
+          return false;
+        }
+      } catch (err) {
+        showAlert('💥 تعذر الاتصال بخادم البلدية. يرجى التأكد من تشغيل السيرفر وحالة الشبكة.', 'danger');
+        setLoading(false);
+        return false;
+      }
+    }
+
+    window.handleForgotPassword = function(e) {
+      if (e) e.preventDefault();
+      showAlert('ℹ️ يرجى التواصل مع مدير النظام في مديرية الأشغال والخدمات الهندسية لإعادة ضبط كلمة المرور الخاصة بك.', 'warning');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const passwordInput = document.getElementById('loginPassword');
+      const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+      const capsLockWarning = document.getElementById('capsLockWarning');
+
+      // 1. Password visibility toggle
+      if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', () => {
+          const isPass = passwordInput.type === 'password';
+          passwordInput.type = isPass ? 'text' : 'password';
+          togglePasswordBtn.textContent = isPass ? '🙈' : '👁️';
+        });
+      }
+
+      // 2. CapsLock detector
+      if (passwordInput && capsLockWarning) {
+        passwordInput.addEventListener('keyup', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            capsLockWarning.style.display = 'flex';
+          } else {
+            capsLockWarning.style.display = 'none';
+          }
+        });
+      }
+
+      // 3. Inspect URL query params for reasons or auto-login fallback
+      const urlParams = new URLSearchParams(window.location.search);
+      const reason = urlParams.get('reason');
+      const qUser = urlParams.get('username');
+      const qPass = urlParams.get('password');
+
+      if (reason === 'inactivity_timeout') {
+        showAlert('⏱️ تم قفل وتسجيل الخروج من الجلسة تلقائياً لعدم وجود نشاط في النظام حفاظاً على أمان وسرية البيانات.', 'warning');
+      } else if (reason === 'expired') {
+        showAlert('🔒 انتهت صلاحية جلسة العمل الخاصة بك، يرجى تسجيل الدخول مجدداً.', 'warning');
+      } else if (reason === 'logged_out') {
+        showAlert('🚪 تم تسجيل الخروج الآمن بنجاح.', 'success');
+      }
+
+      // If URL contains credentials (from a previous browser GET submit), clean URL and log in automatically!
+      if (qUser && qPass) {
+        if (document.getElementById('loginUsername')) document.getElementById('loginUsername').value = qUser;
+        if (document.getElementById('loginPassword')) document.getElementById('loginPassword').value = qPass;
+        window.history.replaceState({}, document.title, window.location.pathname);
+        handleLoginSubmit();
+      }
+
+      // 4. Fetch dynamic system branding
+      fetch('/api/settings/identity')
+        .then(r => r.json())
+        .then(json => {
+          const data = json.data;
+          if (data) {
+            if (data.municipality_name) document.getElementById('login-municipality-title').textContent = data.municipality_name;
+            if (data.directorate_name) document.getElementById('login-directorate-title').textContent = data.directorate_name + ' — المنظومة الموحدة';
+            const logo = data.header_logo_b64 || data.logo_path || '/logo.jpg';
+            if (logo) document.getElementById('login-logo-img').src = logo;
+          }
+        })
+        .catch(() => null);
+
+      // 5. Server Health Check
+      fetch('/api/health')
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('serverDot').style.background = '#10b981';
+          document.getElementById('serverStatusText').textContent = `خادم البلدية: متصل (${data.database || 'نشط'})`;
+        })
+        .catch(() => {
+          document.getElementById('serverDot').style.background = '#f59e0b';
+          document.getElementById('serverStatusText').textContent = 'جاري الاتصال بخادم البلدية...';
+        });
+    });
+  </script>
+</body>
+</html>

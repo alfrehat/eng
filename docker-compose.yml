@@ -1,0 +1,93 @@
+# docker-compose.yml
+# البنية التنسيقية المتكاملة لحاويات نظام بلدية كفرنجة ERP v4.0
+
+version: '3.8'
+
+services:
+  # 1. العقدة الرئيسية لقاعدة البيانات الجغرافية والعلائقية
+  kfranjah-postgres-db:
+    image: postgres:15-postgis-3
+    container_name: kfranjah-postgres-db
+    environment:
+      POSTGRES_DB: kafr_inja_engineering
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    command: >
+      postgres
+      -c wal_level=replica
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+      -c hot_standby=on
+    ports:
+      - "5432:5432"
+    volumes:
+      - primary_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kafr_inja_engineering"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. نسخة القراءة والتحليلات المتطابقة (Read-Replica Node)
+  kfranjah-db-replica:
+    image: postgres:15-postgis-3
+    container_name: kfranjah-db-replica
+    environment:
+      POSTGRES_DB: kafr_inja_engineering
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432" # تشغيل النسخة المستنسخة على المنفذ 5433 للتحليلات ولوحات الـ BI
+    depends_on:
+      kfranjah-postgres-db:
+        condition: service_healthy
+    command: >
+      bash -c "
+      until pg_isready -h kfranjah-postgres-db -U postgres; do echo 'waiting for primary...'; sleep 1; done;
+      if [ ! -s /var/lib/postgresql/data/pgdata/PG_VERSION ]; then
+        pg_basebackup -h kfranjah-postgres-db -D /var/lib/postgresql/data/pgdata -U postgres -v -P -X stream -R;
+      fi;
+      exec postgres -c hot_standby=on
+      "
+    volumes:
+      - replica_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # 3. خادم التطبيق والواجهة الخلفية الرئيسي (Node.js/Express App Server)
+  kfranjah-erp-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kfranjah-erp-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3005
+      - PGHOST=kfranjah-postgres-db
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=kafr_inja_engineering
+      - G2G_API_KEY=kfranjah-g2g-secret-key
+      - G2G_IP_WHITELIST=127.0.0.1,::1,kfranjah-erp-backend
+    ports:
+      - "3005:3005"
+    depends_on:
+      kfranjah-postgres-db:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/usr/src/app/uploads
+      - logs_data:/usr/src/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3005/').then(res => res.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  primary_data:
+  replica_data:
+  uploads_data:
+  logs_data:

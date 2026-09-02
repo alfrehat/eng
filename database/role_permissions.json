@@ -1,0 +1,6680 @@
+[
+  {
+    "id": "rp-0001",
+    "roleId": "R-001",
+    "role_id": "R-001",
+    "permissionId": "*",
+    "permission_id": "*",
+    "permission_code": "*",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0002",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0003",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0004",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0005",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0006",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PERMITS.VIEW",
+    "permission_id": "PERMITS.VIEW",
+    "permission_code": "PERMITS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0007",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PAVING.VIEW",
+    "permission_id": "PAVING.VIEW",
+    "permission_code": "PAVING.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0008",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0009",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0010",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PURCHASES.VIEW",
+    "permission_id": "PURCHASES.VIEW",
+    "permission_code": "PURCHASES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0011",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.VIEW",
+    "permission_id": "CONTRACTS.VIEW",
+    "permission_code": "CONTRACTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0012",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0013",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0014",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "BUDGET.VIEW",
+    "permission_id": "BUDGET.VIEW",
+    "permission_code": "BUDGET.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0015",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0016",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "SETTINGS.VIEW",
+    "permission_id": "SETTINGS.VIEW",
+    "permission_code": "SETTINGS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0017",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "AUDIT.VIEW",
+    "permission_id": "AUDIT.VIEW",
+    "permission_code": "AUDIT.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0018",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0019",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0020",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.ASSIGN",
+    "permission_id": "OPERATIONS.ASSIGN",
+    "permission_code": "OPERATIONS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0021",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.REASSIGN",
+    "permission_id": "OPERATIONS.REASSIGN",
+    "permission_code": "OPERATIONS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0022",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0023",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0024",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0025",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0026",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0027",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0028",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0029",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.REVIEW",
+    "permission_id": "OPERATIONS.REVIEW",
+    "permission_code": "OPERATIONS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0030",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.APPROVE",
+    "permission_id": "OPERATIONS.APPROVE",
+    "permission_code": "OPERATIONS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0031",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.REJECT",
+    "permission_id": "OPERATIONS.REJECT",
+    "permission_code": "OPERATIONS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0032",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0033",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.VERIFY",
+    "permission_id": "OPERATIONS.VERIFY",
+    "permission_code": "OPERATIONS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0034",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "OPERATIONS.CLOSE",
+    "permission_id": "OPERATIONS.CLOSE",
+    "permission_code": "OPERATIONS.CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0035",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0036",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0037",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.ASSIGN",
+    "permission_id": "TASKS.ASSIGN",
+    "permission_code": "TASKS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0038",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.REASSIGN",
+    "permission_id": "TASKS.REASSIGN",
+    "permission_code": "TASKS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0039",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0040",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0041",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0042",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0043",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0044",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0045",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0046",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.REVIEW",
+    "permission_id": "TASKS.REVIEW",
+    "permission_code": "TASKS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0047",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.APPROVE",
+    "permission_id": "TASKS.APPROVE",
+    "permission_code": "TASKS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0048",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.REJECT",
+    "permission_id": "TASKS.REJECT",
+    "permission_code": "TASKS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0049",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0050",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.VERIFY",
+    "permission_id": "TASKS.VERIFY",
+    "permission_code": "TASKS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0051",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.CLOSE",
+    "permission_id": "TASKS.CLOSE",
+    "permission_code": "TASKS.CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0052",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.ARCHIVE",
+    "permission_id": "TASKS.ARCHIVE",
+    "permission_code": "TASKS.ARCHIVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0053",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0054",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0055",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0056",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TASKS.FILES.VERSION",
+    "permission_id": "TASKS.FILES.VERSION",
+    "permission_code": "TASKS.FILES.VERSION",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0057",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.CREATE",
+    "permission_id": "PROJECTS.CREATE",
+    "permission_code": "PROJECTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0058",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.EDIT",
+    "permission_id": "PROJECTS.EDIT",
+    "permission_code": "PROJECTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0059",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.SUBMIT",
+    "permission_id": "PROJECTS.SUBMIT",
+    "permission_code": "PROJECTS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0060",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.REVIEW",
+    "permission_id": "PROJECTS.REVIEW",
+    "permission_code": "PROJECTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0061",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.APPROVE",
+    "permission_id": "PROJECTS.APPROVE",
+    "permission_code": "PROJECTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0062",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.COMPLETE",
+    "permission_id": "PROJECTS.COMPLETE",
+    "permission_code": "PROJECTS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0063",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.CLOSE",
+    "permission_id": "PROJECTS.CLOSE",
+    "permission_code": "PROJECTS.CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0064",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.PRINT",
+    "permission_id": "PROJECTS.PRINT",
+    "permission_code": "PROJECTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0065",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PROJECTS.EXPORT",
+    "permission_id": "PROJECTS.EXPORT",
+    "permission_code": "PROJECTS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0066",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0067",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0068",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.APPROVE",
+    "permission_id": "TENDERS.APPROVE",
+    "permission_code": "TENDERS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0069",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0070",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "TENDERS.EXPORT",
+    "permission_id": "TENDERS.EXPORT",
+    "permission_code": "TENDERS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0071",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CLAIMS.AUDIT",
+    "permission_id": "CLAIMS.AUDIT",
+    "permission_code": "CLAIMS.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0072",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CLAIMS.APPROVE",
+    "permission_id": "CLAIMS.APPROVE",
+    "permission_code": "CLAIMS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0073",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0074",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CLAIMS.EXPORT",
+    "permission_id": "CLAIMS.EXPORT",
+    "permission_code": "CLAIMS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0075",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "BUDGET.CREATE",
+    "permission_id": "BUDGET.CREATE",
+    "permission_code": "BUDGET.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0076",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "BUDGET.EDIT",
+    "permission_id": "BUDGET.EDIT",
+    "permission_code": "BUDGET.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0077",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "BUDGET.ALLOCATE",
+    "permission_id": "BUDGET.ALLOCATE",
+    "permission_code": "BUDGET.ALLOCATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0078",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "BUDGET.EXPORT",
+    "permission_id": "BUDGET.EXPORT",
+    "permission_code": "BUDGET.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0079",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.CREATE",
+    "permission_id": "CONTRACTS.CREATE",
+    "permission_code": "CONTRACTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0080",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.EDIT",
+    "permission_id": "CONTRACTS.EDIT",
+    "permission_code": "CONTRACTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0081",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.APPROVE",
+    "permission_id": "CONTRACTS.APPROVE",
+    "permission_code": "CONTRACTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0082",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.PRINT",
+    "permission_id": "CONTRACTS.PRINT",
+    "permission_code": "CONTRACTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0083",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "CONTRACTS.EXPORT",
+    "permission_id": "CONTRACTS.EXPORT",
+    "permission_code": "CONTRACTS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0084",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PURCHASES.CREATE",
+    "permission_id": "PURCHASES.CREATE",
+    "permission_code": "PURCHASES.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0085",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PURCHASES.EDIT",
+    "permission_id": "PURCHASES.EDIT",
+    "permission_code": "PURCHASES.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0086",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PURCHASES.APPROVE",
+    "permission_id": "PURCHASES.APPROVE",
+    "permission_code": "PURCHASES.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0087",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "PURCHASES.PRINT",
+    "permission_id": "PURCHASES.PRINT",
+    "permission_code": "PURCHASES.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0088",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ROADS.CREATE",
+    "permission_id": "ROADS.CREATE",
+    "permission_code": "ROADS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0089",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ROADS.EDIT",
+    "permission_id": "ROADS.EDIT",
+    "permission_code": "ROADS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0090",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0091",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ROADS.EXPORT",
+    "permission_id": "ROADS.EXPORT",
+    "permission_code": "ROADS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0092",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.CREATE",
+    "permission_id": "ENERGY.CREATE",
+    "permission_code": "ENERGY.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0093",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.EDIT",
+    "permission_id": "ENERGY.EDIT",
+    "permission_code": "ENERGY.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0094",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.APPROVE",
+    "permission_id": "ENERGY.APPROVE",
+    "permission_code": "ENERGY.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0095",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.SOLAR",
+    "permission_id": "ENERGY.SOLAR",
+    "permission_code": "ENERGY.SOLAR",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0096",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.MAINTENANCE",
+    "permission_id": "ENERGY.MAINTENANCE",
+    "permission_code": "ENERGY.MAINTENANCE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0097",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.AUDIT",
+    "permission_id": "ENERGY.AUDIT",
+    "permission_code": "ENERGY.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0098",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "ENERGY.EXPORT",
+    "permission_id": "ENERGY.EXPORT",
+    "permission_code": "ENERGY.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0099",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "QUANTITIES.REVIEW",
+    "permission_id": "QUANTITIES.REVIEW",
+    "permission_code": "QUANTITIES.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0100",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "QUANTITIES.APPROVE",
+    "permission_id": "QUANTITIES.APPROVE",
+    "permission_code": "QUANTITIES.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0101",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "QUALITY.TEST_REVIEW",
+    "permission_id": "QUALITY.TEST_REVIEW",
+    "permission_code": "QUALITY.TEST_REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0102",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "QUALITY.NCR_CLOSE",
+    "permission_id": "QUALITY.NCR_CLOSE",
+    "permission_code": "QUALITY.NCR_CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0103",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "DAILY_REPORTS.REVIEW",
+    "permission_id": "DAILY_REPORTS.REVIEW",
+    "permission_code": "DAILY_REPORTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0104",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "DAILY_REPORTS.APPROVE",
+    "permission_id": "DAILY_REPORTS.APPROVE",
+    "permission_code": "DAILY_REPORTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0105",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0106",
+    "roleId": "R-002",
+    "role_id": "R-002",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0107",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0108",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0109",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.VIEW",
+    "permission_id": "PERMITS.VIEW",
+    "permission_code": "PERMITS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0110",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PAVING.VIEW",
+    "permission_id": "PAVING.VIEW",
+    "permission_code": "PAVING.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0111",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0112",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0113",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CONTRACTS.VIEW",
+    "permission_id": "CONTRACTS.VIEW",
+    "permission_code": "CONTRACTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0114",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0115",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0116",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0117",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0118",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0119",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.ASSIGN",
+    "permission_id": "OPERATIONS.ASSIGN",
+    "permission_code": "OPERATIONS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0120",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.REASSIGN",
+    "permission_id": "OPERATIONS.REASSIGN",
+    "permission_code": "OPERATIONS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0121",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0122",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0123",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0124",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0125",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0126",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0127",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0128",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.REVIEW",
+    "permission_id": "OPERATIONS.REVIEW",
+    "permission_code": "OPERATIONS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0129",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.APPROVE",
+    "permission_id": "OPERATIONS.APPROVE",
+    "permission_code": "OPERATIONS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0130",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.REJECT",
+    "permission_id": "OPERATIONS.REJECT",
+    "permission_code": "OPERATIONS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0131",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0132",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OPERATIONS.VERIFY",
+    "permission_id": "OPERATIONS.VERIFY",
+    "permission_code": "OPERATIONS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0133",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0134",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0135",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.ASSIGN",
+    "permission_id": "TASKS.ASSIGN",
+    "permission_code": "TASKS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0136",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.REASSIGN",
+    "permission_id": "TASKS.REASSIGN",
+    "permission_code": "TASKS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0137",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0138",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0139",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0140",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0141",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0142",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0143",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0144",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.REVIEW",
+    "permission_id": "TASKS.REVIEW",
+    "permission_code": "TASKS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0145",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.APPROVE",
+    "permission_id": "TASKS.APPROVE",
+    "permission_code": "TASKS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0146",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.REJECT",
+    "permission_id": "TASKS.REJECT",
+    "permission_code": "TASKS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0147",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0148",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.VERIFY",
+    "permission_id": "TASKS.VERIFY",
+    "permission_code": "TASKS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0149",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0150",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0151",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0152",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.CREATE",
+    "permission_id": "PROJECTS.CREATE",
+    "permission_code": "PROJECTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0153",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.EDIT",
+    "permission_id": "PROJECTS.EDIT",
+    "permission_code": "PROJECTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0154",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.SUBMIT",
+    "permission_id": "PROJECTS.SUBMIT",
+    "permission_code": "PROJECTS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0155",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.REVIEW",
+    "permission_id": "PROJECTS.REVIEW",
+    "permission_code": "PROJECTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0156",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PROJECTS.PRINT",
+    "permission_id": "PROJECTS.PRINT",
+    "permission_code": "PROJECTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0157",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0158",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0159",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0160",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "TENDERS.EXPORT",
+    "permission_id": "TENDERS.EXPORT",
+    "permission_code": "TENDERS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0161",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CLAIMS.CREATE",
+    "permission_id": "CLAIMS.CREATE",
+    "permission_code": "CLAIMS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0162",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CLAIMS.EDIT",
+    "permission_id": "CLAIMS.EDIT",
+    "permission_code": "CLAIMS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0163",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CLAIMS.AUDIT",
+    "permission_id": "CLAIMS.AUDIT",
+    "permission_code": "CLAIMS.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0164",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0165",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ROADS.CREATE",
+    "permission_id": "ROADS.CREATE",
+    "permission_code": "ROADS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0166",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ROADS.EDIT",
+    "permission_id": "ROADS.EDIT",
+    "permission_code": "ROADS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0167",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0168",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "ROADS.EXPORT",
+    "permission_id": "ROADS.EXPORT",
+    "permission_code": "ROADS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0169",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.CREATE",
+    "permission_id": "PERMITS.CREATE",
+    "permission_code": "PERMITS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0170",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.EDIT",
+    "permission_id": "PERMITS.EDIT",
+    "permission_code": "PERMITS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0171",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.APPROVE",
+    "permission_id": "PERMITS.APPROVE",
+    "permission_code": "PERMITS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0172",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.INSPECT",
+    "permission_id": "PERMITS.INSPECT",
+    "permission_code": "PERMITS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0173",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PERMITS.REINSTATE",
+    "permission_id": "PERMITS.REINSTATE",
+    "permission_code": "PERMITS.REINSTATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0174",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PAVING.CREATE",
+    "permission_id": "PAVING.CREATE",
+    "permission_code": "PAVING.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0175",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PAVING.EDIT",
+    "permission_id": "PAVING.EDIT",
+    "permission_code": "PAVING.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0176",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PAVING.CALCULATE",
+    "permission_id": "PAVING.CALCULATE",
+    "permission_code": "PAVING.CALCULATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0177",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "PAVING.EXPORT",
+    "permission_id": "PAVING.EXPORT",
+    "permission_code": "PAVING.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0178",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "QUANTITIES.REVIEW",
+    "permission_id": "QUANTITIES.REVIEW",
+    "permission_code": "QUANTITIES.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0179",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "QUANTITIES.APPROVE",
+    "permission_id": "QUANTITIES.APPROVE",
+    "permission_code": "QUANTITIES.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0180",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0181",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0182",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "QUALITY.NCR_CLOSE",
+    "permission_id": "QUALITY.NCR_CLOSE",
+    "permission_code": "QUALITY.NCR_CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0183",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "DAILY_REPORTS.REVIEW",
+    "permission_id": "DAILY_REPORTS.REVIEW",
+    "permission_code": "DAILY_REPORTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0184",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "DAILY_REPORTS.APPROVE",
+    "permission_id": "DAILY_REPORTS.APPROVE",
+    "permission_code": "DAILY_REPORTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0185",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0186",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0187",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0188",
+    "roleId": "R-003",
+    "role_id": "R-003",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0189",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0190",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0191",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0192",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0193",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CONTRACTS.VIEW",
+    "permission_id": "CONTRACTS.VIEW",
+    "permission_code": "CONTRACTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0194",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0195",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0196",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0197",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0198",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0199",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.ASSIGN",
+    "permission_id": "OPERATIONS.ASSIGN",
+    "permission_code": "OPERATIONS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0200",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.REASSIGN",
+    "permission_id": "OPERATIONS.REASSIGN",
+    "permission_code": "OPERATIONS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0201",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0202",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0203",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0204",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0205",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0206",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0207",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0208",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.REVIEW",
+    "permission_id": "OPERATIONS.REVIEW",
+    "permission_code": "OPERATIONS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0209",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.APPROVE",
+    "permission_id": "OPERATIONS.APPROVE",
+    "permission_code": "OPERATIONS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0210",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.REJECT",
+    "permission_id": "OPERATIONS.REJECT",
+    "permission_code": "OPERATIONS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0211",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0212",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OPERATIONS.VERIFY",
+    "permission_id": "OPERATIONS.VERIFY",
+    "permission_code": "OPERATIONS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0213",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0214",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0215",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.ASSIGN",
+    "permission_id": "TASKS.ASSIGN",
+    "permission_code": "TASKS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0216",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.REASSIGN",
+    "permission_id": "TASKS.REASSIGN",
+    "permission_code": "TASKS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0217",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0218",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0219",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0220",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0221",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0222",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0223",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0224",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.REVIEW",
+    "permission_id": "TASKS.REVIEW",
+    "permission_code": "TASKS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0225",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.APPROVE",
+    "permission_id": "TASKS.APPROVE",
+    "permission_code": "TASKS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0226",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.REJECT",
+    "permission_id": "TASKS.REJECT",
+    "permission_code": "TASKS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0227",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0228",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.VERIFY",
+    "permission_id": "TASKS.VERIFY",
+    "permission_code": "TASKS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0229",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0230",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0231",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0232",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.CREATE",
+    "permission_id": "PROJECTS.CREATE",
+    "permission_code": "PROJECTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0233",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.EDIT",
+    "permission_id": "PROJECTS.EDIT",
+    "permission_code": "PROJECTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0234",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.SUBMIT",
+    "permission_id": "PROJECTS.SUBMIT",
+    "permission_code": "PROJECTS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0235",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.REVIEW",
+    "permission_id": "PROJECTS.REVIEW",
+    "permission_code": "PROJECTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0236",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "PROJECTS.PRINT",
+    "permission_id": "PROJECTS.PRINT",
+    "permission_code": "PROJECTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0237",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0238",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0239",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0240",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "TENDERS.EXPORT",
+    "permission_id": "TENDERS.EXPORT",
+    "permission_code": "TENDERS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0241",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CLAIMS.CREATE",
+    "permission_id": "CLAIMS.CREATE",
+    "permission_code": "CLAIMS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0242",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CLAIMS.EDIT",
+    "permission_id": "CLAIMS.EDIT",
+    "permission_code": "CLAIMS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0243",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CLAIMS.AUDIT",
+    "permission_id": "CLAIMS.AUDIT",
+    "permission_code": "CLAIMS.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0244",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0245",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ASSETS.CREATE",
+    "permission_id": "ASSETS.CREATE",
+    "permission_code": "ASSETS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0246",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ASSETS.EDIT",
+    "permission_id": "ASSETS.EDIT",
+    "permission_code": "ASSETS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0247",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0248",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "ASSETS.EXPORT",
+    "permission_id": "ASSETS.EXPORT",
+    "permission_code": "ASSETS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0249",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "QUANTITIES.REVIEW",
+    "permission_id": "QUANTITIES.REVIEW",
+    "permission_code": "QUANTITIES.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0250",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "QUANTITIES.APPROVE",
+    "permission_id": "QUANTITIES.APPROVE",
+    "permission_code": "QUANTITIES.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0251",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0252",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0253",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "QUALITY.NCR_CLOSE",
+    "permission_id": "QUALITY.NCR_CLOSE",
+    "permission_code": "QUALITY.NCR_CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0254",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "DAILY_REPORTS.REVIEW",
+    "permission_id": "DAILY_REPORTS.REVIEW",
+    "permission_code": "DAILY_REPORTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0255",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "DAILY_REPORTS.APPROVE",
+    "permission_id": "DAILY_REPORTS.APPROVE",
+    "permission_code": "DAILY_REPORTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0256",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0257",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0258",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0259",
+    "roleId": "R-004",
+    "role_id": "R-004",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0260",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0261",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0262",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0263",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0264",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0265",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0266",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0267",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0268",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0269",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.ASSIGN",
+    "permission_id": "OPERATIONS.ASSIGN",
+    "permission_code": "OPERATIONS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0270",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.REASSIGN",
+    "permission_id": "OPERATIONS.REASSIGN",
+    "permission_code": "OPERATIONS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0271",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0272",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0273",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0274",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0275",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0276",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0277",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0278",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.REVIEW",
+    "permission_id": "OPERATIONS.REVIEW",
+    "permission_code": "OPERATIONS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0279",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.APPROVE",
+    "permission_id": "OPERATIONS.APPROVE",
+    "permission_code": "OPERATIONS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0280",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.REJECT",
+    "permission_id": "OPERATIONS.REJECT",
+    "permission_code": "OPERATIONS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0281",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0282",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OPERATIONS.VERIFY",
+    "permission_id": "OPERATIONS.VERIFY",
+    "permission_code": "OPERATIONS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0283",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0284",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0285",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.ASSIGN",
+    "permission_id": "TASKS.ASSIGN",
+    "permission_code": "TASKS.ASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0286",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.REASSIGN",
+    "permission_id": "TASKS.REASSIGN",
+    "permission_code": "TASKS.REASSIGN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0287",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0288",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0289",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0290",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0291",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0292",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0293",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0294",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.REVIEW",
+    "permission_id": "TASKS.REVIEW",
+    "permission_code": "TASKS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0295",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.APPROVE",
+    "permission_id": "TASKS.APPROVE",
+    "permission_code": "TASKS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0296",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.REJECT",
+    "permission_id": "TASKS.REJECT",
+    "permission_code": "TASKS.REJECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0297",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0298",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.VERIFY",
+    "permission_id": "TASKS.VERIFY",
+    "permission_code": "TASKS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0299",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0300",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0301",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0302",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.CREATE",
+    "permission_id": "ENERGY.CREATE",
+    "permission_code": "ENERGY.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0303",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.EDIT",
+    "permission_id": "ENERGY.EDIT",
+    "permission_code": "ENERGY.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0304",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.MAINTENANCE",
+    "permission_id": "ENERGY.MAINTENANCE",
+    "permission_code": "ENERGY.MAINTENANCE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0305",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.MAINT_EXECUTE",
+    "permission_id": "ENERGY.MAINT_EXECUTE",
+    "permission_code": "ENERGY.MAINT_EXECUTE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0306",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.SOLAR",
+    "permission_id": "ENERGY.SOLAR",
+    "permission_code": "ENERGY.SOLAR",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0307",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.EMERGENCY",
+    "permission_id": "ENERGY.EMERGENCY",
+    "permission_code": "ENERGY.EMERGENCY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0308",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.APPROVE",
+    "permission_id": "ENERGY.APPROVE",
+    "permission_code": "ENERGY.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0309",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.AUDIT",
+    "permission_id": "ENERGY.AUDIT",
+    "permission_code": "ENERGY.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0310",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.GIS",
+    "permission_id": "ENERGY.GIS",
+    "permission_code": "ENERGY.GIS",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0311",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ENERGY.EXPORT",
+    "permission_id": "ENERGY.EXPORT",
+    "permission_code": "ENERGY.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0312",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ASSETS.CREATE",
+    "permission_id": "ASSETS.CREATE",
+    "permission_code": "ASSETS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0313",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ASSETS.EDIT",
+    "permission_id": "ASSETS.EDIT",
+    "permission_code": "ASSETS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0314",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0315",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "ASSETS.EXPORT",
+    "permission_id": "ASSETS.EXPORT",
+    "permission_code": "ASSETS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0316",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0317",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0318",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "QUALITY.NCR_CLOSE",
+    "permission_id": "QUALITY.NCR_CLOSE",
+    "permission_code": "QUALITY.NCR_CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0319",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "DAILY_REPORTS.REVIEW",
+    "permission_id": "DAILY_REPORTS.REVIEW",
+    "permission_code": "DAILY_REPORTS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0320",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "DAILY_REPORTS.APPROVE",
+    "permission_id": "DAILY_REPORTS.APPROVE",
+    "permission_code": "DAILY_REPORTS.APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0321",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0322",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0323",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0324",
+    "roleId": "R-005",
+    "role_id": "R-005",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0325",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0326",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0327",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PERMITS.VIEW",
+    "permission_id": "PERMITS.VIEW",
+    "permission_code": "PERMITS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0328",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PAVING.VIEW",
+    "permission_id": "PAVING.VIEW",
+    "permission_code": "PAVING.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0329",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0330",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0331",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0332",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0333",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0334",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0335",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0336",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0337",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0338",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0339",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0340",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0341",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0342",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0343",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0344",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0345",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0346",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0347",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0348",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0349",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0350",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0351",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0352",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0353",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0354",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0355",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0356",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0357",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PROJECTS.CREATE",
+    "permission_id": "PROJECTS.CREATE",
+    "permission_code": "PROJECTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0358",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PROJECTS.EDIT",
+    "permission_id": "PROJECTS.EDIT",
+    "permission_code": "PROJECTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0359",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PROJECTS.PRINT",
+    "permission_id": "PROJECTS.PRINT",
+    "permission_code": "PROJECTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0360",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0361",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0362",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0363",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "CLAIMS.CREATE",
+    "permission_id": "CLAIMS.CREATE",
+    "permission_code": "CLAIMS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0364",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "CLAIMS.EDIT",
+    "permission_id": "CLAIMS.EDIT",
+    "permission_code": "CLAIMS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0365",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0366",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ROADS.CREATE",
+    "permission_id": "ROADS.CREATE",
+    "permission_code": "ROADS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0367",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ROADS.EDIT",
+    "permission_id": "ROADS.EDIT",
+    "permission_code": "ROADS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0368",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0369",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "ROADS.EXPORT",
+    "permission_id": "ROADS.EXPORT",
+    "permission_code": "ROADS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0370",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PERMITS.CREATE",
+    "permission_id": "PERMITS.CREATE",
+    "permission_code": "PERMITS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0371",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PERMITS.EDIT",
+    "permission_id": "PERMITS.EDIT",
+    "permission_code": "PERMITS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0372",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PERMITS.INSPECT",
+    "permission_id": "PERMITS.INSPECT",
+    "permission_code": "PERMITS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0373",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PAVING.CREATE",
+    "permission_id": "PAVING.CREATE",
+    "permission_code": "PAVING.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0374",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PAVING.EDIT",
+    "permission_id": "PAVING.EDIT",
+    "permission_code": "PAVING.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0375",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "PAVING.CALCULATE",
+    "permission_id": "PAVING.CALCULATE",
+    "permission_code": "PAVING.CALCULATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0376",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "QUANTITIES.CREATE",
+    "permission_id": "QUANTITIES.CREATE",
+    "permission_code": "QUANTITIES.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0377",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "QUANTITIES.EDIT",
+    "permission_id": "QUANTITIES.EDIT",
+    "permission_code": "QUANTITIES.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0378",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0379",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0380",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0381",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0382",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0383",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0384",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0385",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0386",
+    "roleId": "R-006",
+    "role_id": "R-006",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0387",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0388",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0389",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0390",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0391",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0392",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0393",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0394",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0395",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0396",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0397",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0398",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0399",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0400",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0401",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0402",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0403",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0404",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0405",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0406",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0407",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0408",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0409",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0410",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0411",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0412",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0413",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0414",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0415",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0416",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0417",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "PROJECTS.CREATE",
+    "permission_id": "PROJECTS.CREATE",
+    "permission_code": "PROJECTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0418",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "PROJECTS.EDIT",
+    "permission_id": "PROJECTS.EDIT",
+    "permission_code": "PROJECTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0419",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "PROJECTS.PRINT",
+    "permission_id": "PROJECTS.PRINT",
+    "permission_code": "PROJECTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0420",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0421",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0422",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0423",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "CLAIMS.CREATE",
+    "permission_id": "CLAIMS.CREATE",
+    "permission_code": "CLAIMS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0424",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "CLAIMS.EDIT",
+    "permission_id": "CLAIMS.EDIT",
+    "permission_code": "CLAIMS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0425",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0426",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "ASSETS.CREATE",
+    "permission_id": "ASSETS.CREATE",
+    "permission_code": "ASSETS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0427",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "ASSETS.EDIT",
+    "permission_id": "ASSETS.EDIT",
+    "permission_code": "ASSETS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0428",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0429",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "QUANTITIES.CREATE",
+    "permission_id": "QUANTITIES.CREATE",
+    "permission_code": "QUANTITIES.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0430",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "QUANTITIES.EDIT",
+    "permission_id": "QUANTITIES.EDIT",
+    "permission_code": "QUANTITIES.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0431",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0432",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0433",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0434",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0435",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0436",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0437",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0438",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0439",
+    "roleId": "R-007",
+    "role_id": "R-007",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0440",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0441",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0442",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0443",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0444",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0445",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0446",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0447",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0448",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0449",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0450",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0451",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0452",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0453",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0454",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0455",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0456",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0457",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0458",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0459",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0460",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0461",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0462",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0463",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0464",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0465",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0466",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0467",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0468",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0469",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.CREATE",
+    "permission_id": "ENERGY.CREATE",
+    "permission_code": "ENERGY.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0470",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.EDIT",
+    "permission_id": "ENERGY.EDIT",
+    "permission_code": "ENERGY.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0471",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.MAINTENANCE",
+    "permission_id": "ENERGY.MAINTENANCE",
+    "permission_code": "ENERGY.MAINTENANCE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0472",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.MAINT_EXECUTE",
+    "permission_id": "ENERGY.MAINT_EXECUTE",
+    "permission_code": "ENERGY.MAINT_EXECUTE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0473",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.EMERGENCY",
+    "permission_id": "ENERGY.EMERGENCY",
+    "permission_code": "ENERGY.EMERGENCY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0474",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.SOLAR",
+    "permission_id": "ENERGY.SOLAR",
+    "permission_code": "ENERGY.SOLAR",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0475",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.GIS",
+    "permission_id": "ENERGY.GIS",
+    "permission_code": "ENERGY.GIS",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0476",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ENERGY.EXPORT",
+    "permission_id": "ENERGY.EXPORT",
+    "permission_code": "ENERGY.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0477",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ASSETS.CREATE",
+    "permission_id": "ASSETS.CREATE",
+    "permission_code": "ASSETS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0478",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ASSETS.EDIT",
+    "permission_id": "ASSETS.EDIT",
+    "permission_code": "ASSETS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0479",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0480",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0481",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0482",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0483",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0484",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0485",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0486",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0487",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0488",
+    "roleId": "R-008",
+    "role_id": "R-008",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0489",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0490",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0491",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0492",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0493",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0494",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0495",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0496",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0497",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0498",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0499",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.ESCALATE",
+    "permission_id": "OPERATIONS.ESCALATE",
+    "permission_code": "OPERATIONS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0500",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.DELEGATE",
+    "permission_id": "OPERATIONS.DELEGATE",
+    "permission_code": "OPERATIONS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0501",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0502",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0503",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0504",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OPERATIONS.COMPLETE",
+    "permission_id": "OPERATIONS.COMPLETE",
+    "permission_code": "OPERATIONS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0505",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0506",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0507",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0508",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0509",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.DELEGATE",
+    "permission_id": "TASKS.DELEGATE",
+    "permission_code": "TASKS.DELEGATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0510",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.ESCALATE",
+    "permission_id": "TASKS.ESCALATE",
+    "permission_code": "TASKS.ESCALATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0511",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0512",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0513",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0514",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.COMPLETE",
+    "permission_id": "TASKS.COMPLETE",
+    "permission_code": "TASKS.COMPLETE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0515",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0516",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0517",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0518",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.CREATE",
+    "permission_id": "ENERGY.CREATE",
+    "permission_code": "ENERGY.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0519",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.EDIT",
+    "permission_id": "ENERGY.EDIT",
+    "permission_code": "ENERGY.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0520",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.SOLAR",
+    "permission_id": "ENERGY.SOLAR",
+    "permission_code": "ENERGY.SOLAR",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0521",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.AUDIT",
+    "permission_id": "ENERGY.AUDIT",
+    "permission_code": "ENERGY.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0522",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.MAINTENANCE",
+    "permission_id": "ENERGY.MAINTENANCE",
+    "permission_code": "ENERGY.MAINTENANCE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0523",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.GIS",
+    "permission_id": "ENERGY.GIS",
+    "permission_code": "ENERGY.GIS",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0524",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ENERGY.EXPORT",
+    "permission_id": "ENERGY.EXPORT",
+    "permission_code": "ENERGY.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0525",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ASSETS.CREATE",
+    "permission_id": "ASSETS.CREATE",
+    "permission_code": "ASSETS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0526",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ASSETS.EDIT",
+    "permission_id": "ASSETS.EDIT",
+    "permission_code": "ASSETS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0527",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0528",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0529",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0530",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0531",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0532",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0533",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0534",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0535",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0536",
+    "roleId": "R-009",
+    "role_id": "R-009",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0537",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0538",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0539",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CLAIMS.VIEW",
+    "permission_id": "CLAIMS.VIEW",
+    "permission_code": "CLAIMS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0540",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CONTRACTS.VIEW",
+    "permission_id": "CONTRACTS.VIEW",
+    "permission_code": "CONTRACTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0541",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0542",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0543",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0544",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0545",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "PAVING.VIEW",
+    "permission_id": "PAVING.VIEW",
+    "permission_code": "PAVING.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0546",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0547",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0548",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0549",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0550",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0551",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0552",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0553",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0554",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0555",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0556",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0557",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0558",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0559",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0560",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0561",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0562",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0563",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TENDERS.CREATE",
+    "permission_id": "TENDERS.CREATE",
+    "permission_code": "TENDERS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0564",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TENDERS.EDIT",
+    "permission_id": "TENDERS.EDIT",
+    "permission_code": "TENDERS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0565",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "TENDERS.PRINT",
+    "permission_id": "TENDERS.PRINT",
+    "permission_code": "TENDERS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0566",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CLAIMS.CREATE",
+    "permission_id": "CLAIMS.CREATE",
+    "permission_code": "CLAIMS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0567",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CLAIMS.EDIT",
+    "permission_id": "CLAIMS.EDIT",
+    "permission_code": "CLAIMS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0568",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CLAIMS.AUDIT",
+    "permission_id": "CLAIMS.AUDIT",
+    "permission_code": "CLAIMS.AUDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0569",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CLAIMS.PRINT",
+    "permission_id": "CLAIMS.PRINT",
+    "permission_code": "CLAIMS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0570",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "PAVING.CALCULATE",
+    "permission_id": "PAVING.CALCULATE",
+    "permission_code": "PAVING.CALCULATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0571",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "PAVING.PRINT",
+    "permission_id": "PAVING.PRINT",
+    "permission_code": "PAVING.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0572",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CONTRACTS.VIEW",
+    "permission_id": "CONTRACTS.VIEW",
+    "permission_code": "CONTRACTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0573",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "CONTRACTS.PRINT",
+    "permission_id": "CONTRACTS.PRINT",
+    "permission_code": "CONTRACTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0574",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "REPORTS.EXPORT",
+    "permission_id": "REPORTS.EXPORT",
+    "permission_code": "REPORTS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0575",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "QUANTITIES.CREATE",
+    "permission_id": "QUANTITIES.CREATE",
+    "permission_code": "QUANTITIES.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0576",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "QUANTITIES.EDIT",
+    "permission_id": "QUANTITIES.EDIT",
+    "permission_code": "QUANTITIES.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0577",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "QUANTITIES.REVIEW",
+    "permission_id": "QUANTITIES.REVIEW",
+    "permission_code": "QUANTITIES.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0578",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0579",
+    "roleId": "R-010",
+    "role_id": "R-010",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0580",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0581",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0582",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "PERMITS.VIEW",
+    "permission_id": "PERMITS.VIEW",
+    "permission_code": "PERMITS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0583",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0584",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0585",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0586",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0587",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0588",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0589",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0590",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0591",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0592",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0593",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0594",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0595",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0596",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0597",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0598",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0599",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0600",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0601",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0602",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0603",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "PERMITS.INSPECT",
+    "permission_id": "PERMITS.INSPECT",
+    "permission_code": "PERMITS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0604",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "PERMITS.REINSTATE",
+    "permission_id": "PERMITS.REINSTATE",
+    "permission_code": "PERMITS.REINSTATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0605",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0606",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0607",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0608",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0609",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0610",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0611",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0612",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0613",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0614",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0615",
+    "roleId": "R-011",
+    "role_id": "R-011",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0616",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0617",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0618",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0619",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0620",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0621",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0622",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0623",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0624",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0625",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0626",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0627",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0628",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0629",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0630",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0631",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0632",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0633",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0634",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0635",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0636",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0637",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0638",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ENERGY.MAINTENANCE",
+    "permission_id": "ENERGY.MAINTENANCE",
+    "permission_code": "ENERGY.MAINTENANCE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0639",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ENERGY.EMERGENCY",
+    "permission_id": "ENERGY.EMERGENCY",
+    "permission_code": "ENERGY.EMERGENCY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0640",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ENERGY.GIS",
+    "permission_id": "ENERGY.GIS",
+    "permission_code": "ENERGY.GIS",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0641",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0642",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0643",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "DAILY_REPORTS.EDIT",
+    "permission_id": "DAILY_REPORTS.EDIT",
+    "permission_code": "DAILY_REPORTS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0644",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "DAILY_REPORTS.FORWARD",
+    "permission_id": "DAILY_REPORTS.FORWARD",
+    "permission_code": "DAILY_REPORTS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0645",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0646",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "OBSERVATIONS.RESOLVE",
+    "permission_id": "OBSERVATIONS.RESOLVE",
+    "permission_code": "OBSERVATIONS.RESOLVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0647",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0648",
+    "roleId": "R-012",
+    "role_id": "R-012",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0649",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0650",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "ENERGY.VIEW",
+    "permission_id": "ENERGY.VIEW",
+    "permission_code": "ENERGY.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0651",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0652",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0653",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0654",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0655",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0656",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0657",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0658",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0659",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0660",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0661",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "ENERGY.MAINT_EXECUTE",
+    "permission_id": "ENERGY.MAINT_EXECUTE",
+    "permission_code": "ENERGY.MAINT_EXECUTE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0662",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "ENERGY.EMERGENCY",
+    "permission_id": "ENERGY.EMERGENCY",
+    "permission_code": "ENERGY.EMERGENCY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0663",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "DAILY_REPORTS.CREATE",
+    "permission_id": "DAILY_REPORTS.CREATE",
+    "permission_code": "DAILY_REPORTS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0664",
+    "roleId": "R-013",
+    "role_id": "R-013",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0665",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0666",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0667",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0668",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TENDERS.VIEW",
+    "permission_id": "TENDERS.VIEW",
+    "permission_code": "TENDERS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0669",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0670",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0671",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0672",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0673",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0674",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0675",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0676",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.REVIEW",
+    "permission_id": "OPERATIONS.REVIEW",
+    "permission_code": "OPERATIONS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0677",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "OPERATIONS.VERIFY",
+    "permission_id": "OPERATIONS.VERIFY",
+    "permission_code": "OPERATIONS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0678",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0679",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0680",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0681",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0682",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0683",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0684",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0685",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.REVIEW",
+    "permission_id": "TASKS.REVIEW",
+    "permission_code": "TASKS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0686",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.VERIFY",
+    "permission_id": "TASKS.VERIFY",
+    "permission_code": "TASKS.VERIFY",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0687",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0688",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0689",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0690",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0691",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0692",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "PROJECTS.VIEW",
+    "permission_id": "PROJECTS.VIEW",
+    "permission_code": "PROJECTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0693",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0694",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "ASSETS.INSPECT",
+    "permission_id": "ASSETS.INSPECT",
+    "permission_code": "ASSETS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0695",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "REPORTS.PRINT",
+    "permission_id": "REPORTS.PRINT",
+    "permission_code": "REPORTS.PRINT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0696",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "REPORTS.EXPORT",
+    "permission_id": "REPORTS.EXPORT",
+    "permission_code": "REPORTS.EXPORT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0697",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.TEST_REQUEST",
+    "permission_id": "QUALITY.TEST_REQUEST",
+    "permission_code": "QUALITY.TEST_REQUEST",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0698",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.TEST_RECORD",
+    "permission_id": "QUALITY.TEST_RECORD",
+    "permission_code": "QUALITY.TEST_RECORD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0699",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.TEST_REVIEW",
+    "permission_id": "QUALITY.TEST_REVIEW",
+    "permission_code": "QUALITY.TEST_REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0700",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.TEST_APPROVE",
+    "permission_id": "QUALITY.TEST_APPROVE",
+    "permission_code": "QUALITY.TEST_APPROVE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0701",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.NCR_CREATE",
+    "permission_id": "QUALITY.NCR_CREATE",
+    "permission_code": "QUALITY.NCR_CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0702",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "QUALITY.NCR_CLOSE",
+    "permission_id": "QUALITY.NCR_CLOSE",
+    "permission_code": "QUALITY.NCR_CLOSE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0703",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0704",
+    "roleId": "R-014",
+    "role_id": "R-014",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0705",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "DASHBOARD.VIEW",
+    "permission_id": "DASHBOARD.VIEW",
+    "permission_code": "DASHBOARD.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0706",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ROADS.VIEW",
+    "permission_id": "ROADS.VIEW",
+    "permission_code": "ROADS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0707",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "PERMITS.VIEW",
+    "permission_id": "PERMITS.VIEW",
+    "permission_code": "PERMITS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0708",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "PAVING.VIEW",
+    "permission_id": "PAVING.VIEW",
+    "permission_code": "PAVING.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0709",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.VIEW",
+    "permission_id": "TASKS.VIEW",
+    "permission_code": "TASKS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0710",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.VIEW",
+    "permission_id": "OPERATIONS.VIEW",
+    "permission_code": "OPERATIONS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0711",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.FORWARD",
+    "permission_id": "OPERATIONS.FORWARD",
+    "permission_code": "OPERATIONS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0712",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.RETURN",
+    "permission_id": "OPERATIONS.RETURN",
+    "permission_code": "OPERATIONS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0713",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.ACCEPT",
+    "permission_id": "OPERATIONS.ACCEPT",
+    "permission_code": "OPERATIONS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0714",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.START",
+    "permission_id": "OPERATIONS.START",
+    "permission_code": "OPERATIONS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0715",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OPERATIONS.SUBMIT",
+    "permission_id": "OPERATIONS.SUBMIT",
+    "permission_code": "OPERATIONS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0716",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.CREATE",
+    "permission_id": "TASKS.CREATE",
+    "permission_code": "TASKS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0717",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.EDIT",
+    "permission_id": "TASKS.EDIT",
+    "permission_code": "TASKS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0718",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.FORWARD",
+    "permission_id": "TASKS.FORWARD",
+    "permission_code": "TASKS.FORWARD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0719",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.RETURN",
+    "permission_id": "TASKS.RETURN",
+    "permission_code": "TASKS.RETURN",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0720",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.ACCEPT",
+    "permission_id": "TASKS.ACCEPT",
+    "permission_code": "TASKS.ACCEPT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0721",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.START",
+    "permission_id": "TASKS.START",
+    "permission_code": "TASKS.START",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0722",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.SUBMIT",
+    "permission_id": "TASKS.SUBMIT",
+    "permission_code": "TASKS.SUBMIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0723",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.FILES.VIEW",
+    "permission_id": "TASKS.FILES.VIEW",
+    "permission_code": "TASKS.FILES.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0724",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.FILES.UPLOAD",
+    "permission_id": "TASKS.FILES.UPLOAD",
+    "permission_code": "TASKS.FILES.UPLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0725",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "TASKS.FILES.DOWNLOAD",
+    "permission_id": "TASKS.FILES.DOWNLOAD",
+    "permission_code": "TASKS.FILES.DOWNLOAD",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0726",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "REPORTS.VIEW",
+    "permission_id": "REPORTS.VIEW",
+    "permission_code": "REPORTS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0727",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ARCHIVE.VIEW",
+    "permission_id": "ARCHIVE.VIEW",
+    "permission_code": "ARCHIVE.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0728",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ASSETS.VIEW",
+    "permission_id": "ASSETS.VIEW",
+    "permission_code": "ASSETS.VIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0729",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ROADS.CREATE",
+    "permission_id": "ROADS.CREATE",
+    "permission_code": "ROADS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0730",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ROADS.EDIT",
+    "permission_id": "ROADS.EDIT",
+    "permission_code": "ROADS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0731",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "ROADS.PCI",
+    "permission_id": "ROADS.PCI",
+    "permission_code": "ROADS.PCI",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0732",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "PAVING.CREATE",
+    "permission_id": "PAVING.CREATE",
+    "permission_code": "PAVING.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0733",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "PAVING.CALCULATE",
+    "permission_id": "PAVING.CALCULATE",
+    "permission_code": "PAVING.CALCULATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0734",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "PERMITS.INSPECT",
+    "permission_id": "PERMITS.INSPECT",
+    "permission_code": "PERMITS.INSPECT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0735",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "SURVEYS.CREATE",
+    "permission_id": "SURVEYS.CREATE",
+    "permission_code": "SURVEYS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0736",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "SURVEYS.EDIT",
+    "permission_id": "SURVEYS.EDIT",
+    "permission_code": "SURVEYS.EDIT",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0737",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "SURVEYS.REVIEW",
+    "permission_id": "SURVEYS.REVIEW",
+    "permission_code": "SURVEYS.REVIEW",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0738",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "SURVEYS.MEASURE",
+    "permission_id": "SURVEYS.MEASURE",
+    "permission_code": "SURVEYS.MEASURE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0739",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "QUANTITIES.CREATE",
+    "permission_id": "QUANTITIES.CREATE",
+    "permission_code": "QUANTITIES.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0740",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "OBSERVATIONS.CREATE",
+    "permission_id": "OBSERVATIONS.CREATE",
+    "permission_code": "OBSERVATIONS.CREATE",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0741",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "INSPECTION.INTERIM",
+    "permission_id": "INSPECTION.INTERIM",
+    "permission_code": "INSPECTION.INTERIM",
+    "is_granted": 1
+  },
+  {
+    "id": "rp-0742",
+    "roleId": "R-015",
+    "role_id": "R-015",
+    "permissionId": "INSPECTION.FINAL",
+    "permission_id": "INSPECTION.FINAL",
+    "permission_code": "INSPECTION.FINAL",
+    "is_granted": 1
+  }
+]

@@ -1,0 +1,60 @@
+/* theme-light.css */
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --accent: #0284c7;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #0284c7;
+  
+  --bg: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-surface: #f8fafc;
+  --border: #cbd5e1;
+  --border-subtle: #e2e8f0;
+  
+  --text: #0f172a;
+  --text-muted: #475569;
+  
+  --sidebar-width: 280px;
+  --topbar-height: 68px;
+  --radius: 16px;
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 12px 28px rgba(37, 99, 235, 0.12);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  
+  /* Inputs */
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --input-placeholder: #94a3b8;
+  
+  /* Table Header */
+  --table-header-bg: #e2e8f0;
+  --table-header-text: #0f172a;
+  
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-header-bg: #f1f5f9;
+  
+  /* Status Badges */
+  --badge-open-bg: #eff6ff;
+  --badge-open-text: #1d4ed8;
+  --badge-done-bg: #ecfdf5;
+  --badge-done-text: #047857;
+  --badge-warn-bg: #fffbeb;
+  --badge-warn-text: #b45309;
+  --badge-danger-bg: #fef2f2;
+  --badge-danger-text: #b91c1c;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}

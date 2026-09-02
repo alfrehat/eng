@@ -1,0 +1,32 @@
+[
+  {
+    "id": "uou-001",
+    "userId": "U-001",
+    "orgUnitId": "OU-01",
+    "roleId": "R-001"
+  },
+  {
+    "id": "uou-002",
+    "userId": "U-002",
+    "orgUnitId": "OU-02",
+    "roleId": "R-004"
+  },
+  {
+    "id": "uou-003",
+    "userId": "U-003",
+    "orgUnitId": "OU-03",
+    "roleId": "R-002"
+  },
+  {
+    "id": "uou-004",
+    "userId": "U-004",
+    "orgUnitId": "OU-04",
+    "roleId": "R-003"
+  },
+  {
+    "id": "uou-005",
+    "userId": "U-005",
+    "orgUnitId": "OU-05",
+    "roleId": "R-005"
+  }
+]

@@ -1,0 +1,11 @@
+[
+  { "id": "LKP-001", "group": "TENDER_TYPES", "code": "ROADS", "valueAr": "عطاءات تعبيد وفتح طرق", "sortOrder": 1, "isActive": true },
+  { "id": "LKP-002", "group": "TENDER_TYPES", "code": "STRUCTURES", "valueAr": "عطاءات إنشاءات ومباني وجدران", "sortOrder": 2, "isActive": true },
+  { "id": "LKP-003", "group": "TENDER_TYPES", "code": "INFRA", "valueAr": "عطاءات شبكات بنية تحتية وإنارة", "sortOrder": 3, "isActive": true },
+  { "id": "LKP-004", "group": "PRIORITIES", "code": "HIGH", "valueAr": "عالية جداً / طارئ", "sortOrder": 1, "isActive": true },
+  { "id": "LKP-005", "group": "PRIORITIES", "code": "MEDIUM", "valueAr": "متوسطة / اعتيادي", "sortOrder": 2, "isActive": true },
+  { "id": "LKP-006", "group": "PRIORITIES", "code": "LOW", "valueAr": "منخفضة / مجدولة", "sortOrder": 3, "isActive": true },
+  { "id": "LKP-007", "group": "PROJECT_STATUSES", "code": "IN_PROGRESS", "valueAr": "قيد التنفيذ الميداني", "sortOrder": 1, "isActive": true },
+  { "id": "LKP-008", "group": "PROJECT_STATUSES", "code": "COMPLETED", "valueAr": "منجز ومسلم استلاماً أولياً", "sortOrder": 2, "isActive": true },
+  { "id": "LKP-009", "group": "PROJECT_STATUSES", "code": "PAUSED", "valueAr": "متوقف / معلق مؤقتاً", "sortOrder": 3, "isActive": true }
+]
