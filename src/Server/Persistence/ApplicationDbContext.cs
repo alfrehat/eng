@@ -112,6 +112,20 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Knm.Enterprise.Domain.Contracts.ContractSignature> ContractSignatures => Set<Knm.Enterprise.Domain.Contracts.ContractSignature>();
     public DbSet<Knm.Enterprise.Domain.Contracts.ContractPaymentLink> ContractPaymentLinks => Set<Knm.Enterprise.Domain.Contracts.ContractPaymentLink>();
 
+    // Phase 06 Claims & Financial Execution Entities
+    public DbSet<Knm.Enterprise.Domain.Claims.ContractClaim> ContractClaims => Set<Knm.Enterprise.Domain.Claims.ContractClaim>();
+    public DbSet<Knm.Enterprise.Domain.Claims.ClaimItem> ClaimItems => Set<Knm.Enterprise.Domain.Claims.ClaimItem>();
+    public DbSet<Knm.Enterprise.Domain.Claims.MeasurementRecord> MeasurementRecords => Set<Knm.Enterprise.Domain.Claims.MeasurementRecord>();
+    public DbSet<Knm.Enterprise.Domain.Claims.MeasurementItem> MeasurementItems => Set<Knm.Enterprise.Domain.Claims.MeasurementItem>();
+    public DbSet<Knm.Enterprise.Domain.Claims.ProgressRecord> ProgressRecords => Set<Knm.Enterprise.Domain.Claims.ProgressRecord>();
+    public DbSet<Knm.Enterprise.Domain.Claims.PaymentCertificate> PaymentCertificates => Set<Knm.Enterprise.Domain.Claims.PaymentCertificate>();
+    public DbSet<Knm.Enterprise.Domain.Claims.CertificateDeduction> CertificateDeductions => Set<Knm.Enterprise.Domain.Claims.CertificateDeduction>();
+    public DbSet<Knm.Enterprise.Domain.Claims.RetentionRecord> RetentionRecords => Set<Knm.Enterprise.Domain.Claims.RetentionRecord>();
+    public DbSet<Knm.Enterprise.Domain.Claims.AdvanceRecovery> AdvanceRecoveries => Set<Knm.Enterprise.Domain.Claims.AdvanceRecovery>();
+    public DbSet<Knm.Enterprise.Domain.Claims.ClaimAdjustment> ClaimAdjustments => Set<Knm.Enterprise.Domain.Claims.ClaimAdjustment>();
+    public DbSet<Knm.Enterprise.Domain.Claims.ClaimDocument> ClaimDocuments => Set<Knm.Enterprise.Domain.Claims.ClaimDocument>();
+    public DbSet<Knm.Enterprise.Domain.Claims.ClaimPaymentLink> ClaimPaymentLinks => Set<Knm.Enterprise.Domain.Claims.ClaimPaymentLink>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -1210,6 +1224,249 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             b.HasOne(cpl => cpl.Contract)
              .WithMany(c => c.PaymentLinks)
              .HasForeignKey(cpl => cpl.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ==========================================
+        // 12. PHASE 06: Claims & Financial Execution Mappings
+        // ==========================================
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ContractClaim>(b =>
+        {
+            b.ToTable("contract_claims");
+            b.HasKey(c => c.Id);
+            b.HasIndex(c => c.ClaimNumber).IsUnique();
+            b.HasIndex(c => c.ContractId);
+            b.HasIndex(c => c.Status);
+
+            b.Property(c => c.ClaimNumber).HasMaxLength(50).IsRequired();
+            b.Property(c => c.ClaimTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(c => c.GrossAmount).HasPrecision(18, 3);
+            b.Property(c => c.DeductionAmount).HasPrecision(18, 3);
+            b.Property(c => c.NetAmount).HasPrecision(18, 3);
+            b.Property(c => c.PreviousCertifiedAmount).HasPrecision(18, 3);
+            b.Property(c => c.CurrentCertifiedAmount).HasPrecision(18, 3);
+            b.Property(c => c.CumulativeCertifiedAmount).HasPrecision(18, 3);
+
+            b.HasOne(c => c.Contract)
+             .WithMany()
+             .HasForeignKey(c => c.ContractId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ClaimItem>(b =>
+        {
+            b.ToTable("claim_items");
+            b.HasKey(ci => ci.Id);
+            b.Property(ci => ci.Unit).HasMaxLength(30).IsRequired();
+            b.Property(ci => ci.PreviousQuantity).HasPrecision(18, 3);
+            b.Property(ci => ci.CurrentQuantity).HasPrecision(18, 3);
+            b.Property(ci => ci.CumulativeQuantity).HasPrecision(18, 3);
+            b.Property(ci => ci.UnitPrice).HasPrecision(18, 3);
+            b.Property(ci => ci.CurrentAmount).HasPrecision(18, 3);
+            b.Property(ci => ci.CumulativeAmount).HasPrecision(18, 3);
+
+            b.HasOne(ci => ci.Claim)
+             .WithMany(c => c.Items)
+             .HasForeignKey(ci => ci.ClaimId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ci => ci.ContractItem)
+             .WithMany()
+             .HasForeignKey(ci => ci.ContractItemId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(ci => ci.MeasurementRecord)
+             .WithMany()
+             .HasForeignKey(ci => ci.MeasurementRecordId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.MeasurementRecord>(b =>
+        {
+            b.ToTable("measurement_records");
+            b.HasKey(mr => mr.Id);
+            b.HasIndex(mr => mr.MeasurementNumber).IsUnique();
+            b.Property(mr => mr.MeasurementNumber).HasMaxLength(50).IsRequired();
+            b.Property(mr => mr.Location).HasMaxLength(250).IsRequired();
+            b.Property(mr => mr.Engineer).HasMaxLength(150).IsRequired();
+            b.Property(mr => mr.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(mr => mr.Contract)
+             .WithMany()
+             .HasForeignKey(mr => mr.ContractId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(mr => mr.Claim)
+             .WithMany(c => c.Measurements)
+             .HasForeignKey(mr => mr.ClaimId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.MeasurementItem>(b =>
+        {
+            b.ToTable("measurement_items");
+            b.HasKey(mi => mi.Id);
+            b.Property(mi => mi.Description).HasMaxLength(500).IsRequired();
+            b.Property(mi => mi.Unit).HasMaxLength(30).IsRequired();
+            b.Property(mi => mi.MeasuredQuantity).HasPrecision(18, 3);
+
+            b.HasOne(mi => mi.MeasurementRecord)
+             .WithMany(mr => mr.Items)
+             .HasForeignKey(mi => mi.MeasurementRecordId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(mi => mi.ContractItem)
+             .WithMany()
+             .HasForeignKey(mi => mi.ContractItemId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ProgressRecord>(b =>
+        {
+            b.ToTable("progress_records");
+            b.HasKey(pr => pr.Id);
+            b.Property(pr => pr.PhysicalProgress).HasPrecision(5, 2);
+            b.Property(pr => pr.FinancialProgress).HasPrecision(5, 2);
+            b.Property(pr => pr.OverallProgress).HasPrecision(5, 2);
+            b.Property(pr => pr.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(pr => pr.Contract)
+             .WithMany()
+             .HasForeignKey(pr => pr.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(pr => pr.Claim)
+             .WithMany(c => c.ProgressRecords)
+             .HasForeignKey(pr => pr.ClaimId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.PaymentCertificate>(b =>
+        {
+            b.ToTable("payment_certificates");
+            b.HasKey(pc => pc.Id);
+            b.HasIndex(pc => pc.CertificateNumber).IsUnique();
+            b.Property(pc => pc.CertificateNumber).HasMaxLength(50).IsRequired();
+            b.Property(pc => pc.GrossCertified).HasPrecision(18, 3);
+            b.Property(pc => pc.PreviousCertified).HasPrecision(18, 3);
+            b.Property(pc => pc.CurrentCertified).HasPrecision(18, 3);
+            b.Property(pc => pc.CumulativeCertified).HasPrecision(18, 3);
+            b.Property(pc => pc.DeductionsTotal).HasPrecision(18, 3);
+            b.Property(pc => pc.NetCertified).HasPrecision(18, 3);
+            b.Property(pc => pc.Status).HasMaxLength(50).IsRequired();
+
+            b.HasOne(pc => pc.ContractClaim)
+             .WithMany(c => c.Certificates)
+             .HasForeignKey(pc => pc.ContractClaimId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.CertificateDeduction>(b =>
+        {
+            b.ToTable("certificate_deductions");
+            b.HasKey(cd => cd.Id);
+            b.Property(cd => cd.DeductionTypeCode).HasMaxLength(50).IsRequired();
+            b.Property(cd => cd.Description).HasMaxLength(250).IsRequired();
+            b.Property(cd => cd.Rate).HasPrecision(5, 2);
+            b.Property(cd => cd.Amount).HasPrecision(18, 3);
+
+            b.HasOne(cd => cd.ContractClaim)
+             .WithMany(c => c.Deductions)
+             .HasForeignKey(cd => cd.ContractClaimId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(cd => cd.PaymentCertificate)
+             .WithMany(pc => pc.Deductions)
+             .HasForeignKey(cd => cd.PaymentCertificateId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.RetentionRecord>(b =>
+        {
+            b.ToTable("retention_records");
+            b.HasKey(rr => rr.Id);
+            b.Property(rr => rr.Rate).HasPrecision(5, 2);
+            b.Property(rr => rr.Amount).HasPrecision(18, 3);
+            b.Property(rr => rr.CumulativeRetention).HasPrecision(18, 3);
+            b.Property(rr => rr.ReleasedAmount).HasPrecision(18, 3);
+            b.Property(rr => rr.RemainingRetention).HasPrecision(18, 3);
+
+            b.HasOne(rr => rr.Contract)
+             .WithMany()
+             .HasForeignKey(rr => rr.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(rr => rr.PaymentCertificate)
+             .WithMany(pc => pc.RetentionRecords)
+             .HasForeignKey(rr => rr.PaymentCertificateId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.AdvanceRecovery>(b =>
+        {
+            b.ToTable("advance_recoveries");
+            b.HasKey(ar => ar.Id);
+            b.Property(ar => ar.OriginalAdvance).HasPrecision(18, 3);
+            b.Property(ar => ar.RecoveredToDate).HasPrecision(18, 3);
+            b.Property(ar => ar.CurrentRecovery).HasPrecision(18, 3);
+            b.Property(ar => ar.RemainingAdvance).HasPrecision(18, 3);
+
+            b.HasOne(ar => ar.Contract)
+             .WithMany()
+             .HasForeignKey(ar => ar.ContractId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(ar => ar.PaymentCertificate)
+             .WithMany(pc => pc.AdvanceRecoveries)
+             .HasForeignKey(ar => ar.PaymentCertificateId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ClaimAdjustment>(b =>
+        {
+            b.ToTable("claim_adjustments");
+            b.HasKey(ca => ca.Id);
+            b.Property(ca => ca.AdjustmentType).HasMaxLength(50).IsRequired();
+            b.Property(ca => ca.Description).HasMaxLength(250).IsRequired();
+            b.Property(ca => ca.Amount).HasPrecision(18, 3);
+            b.Property(ca => ca.Reason).HasMaxLength(500).IsRequired();
+
+            b.HasOne(ca => ca.ContractClaim)
+             .WithMany(c => c.Adjustments)
+             .HasForeignKey(ca => ca.ContractClaimId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ClaimDocument>(b =>
+        {
+            b.ToTable("claim_documents");
+            b.HasKey(cd => cd.Id);
+            b.Property(cd => cd.DocumentType).HasMaxLength(50).IsRequired();
+            b.Property(cd => cd.Title).HasMaxLength(200).IsRequired();
+
+            b.HasOne(cd => cd.ContractClaim)
+             .WithMany()
+             .HasForeignKey(cd => cd.ContractClaimId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(cd => cd.StoredFile)
+             .WithMany()
+             .HasForeignKey(cd => cd.StoredFileId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Knm.Enterprise.Domain.Claims.ClaimPaymentLink>(b =>
+        {
+            b.ToTable("claim_payment_links");
+            b.HasKey(cpl => cpl.Id);
+            b.Property(cpl => cpl.Reference).HasMaxLength(100).IsRequired();
+            b.Property(cpl => cpl.PaymentStatus).HasMaxLength(50).IsRequired();
+            b.Property(cpl => cpl.Amount).HasPrecision(18, 3);
+
+            b.HasOne(cpl => cpl.PaymentCertificate)
+             .WithMany(pc => pc.PaymentLinks)
+             .HasForeignKey(cpl => cpl.PaymentCertificateId)
              .OnDelete(DeleteBehavior.Cascade);
         });
     }

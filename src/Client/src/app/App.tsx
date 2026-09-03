@@ -13,6 +13,8 @@ import { TendersListPage } from '../pages/Tenders/TendersListPage';
 import { TenderWorkspacePage } from '../pages/Tenders/TenderWorkspacePage';
 import { ContractsListPage } from '../pages/Contracts/ContractsListPage';
 import { ContractWorkspacePage } from '../pages/Contracts/ContractWorkspacePage';
+import { ClaimsListPage } from '../pages/Claims/ClaimsListPage';
+import { ClaimWorkspacePage } from '../pages/Claims/ClaimWorkspacePage';
 
 export const App: React.FC = () => {
   return (
@@ -29,6 +31,8 @@ export const App: React.FC = () => {
           <Route path="tenders/:id" element={<TenderWorkspacePage />} />
           <Route path="contracts" element={<ContractsListPage />} />
           <Route path="contracts/:id" element={<ContractWorkspacePage />} />
+          <Route path="claims" element={<ClaimsListPage />} />
+          <Route path="claims/:id" element={<ClaimWorkspacePage />} />
           <Route path="admin" element={<AdminFoundationPage />} />
           <Route path="admin/studio" element={<AdminStudioPage />} />
           <Route path="health-check" element={<HealthCheckPage />} />

@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<Knm.Enterprise.Application.Projects.IProjectPriorityService, Knm.Enterprise.Application.Projects.ProjectPriorityService>();
         services.AddScoped<Knm.Enterprise.Application.Tenders.ITenderCalculationService, Knm.Enterprise.Application.Tenders.TenderCalculationService>();
         services.AddScoped<Knm.Enterprise.Application.Contracts.IContractCalculationService, Knm.Enterprise.Application.Contracts.ContractCalculationService>();
+        services.AddScoped<Knm.Enterprise.Application.Claims.IClaimsCalculationService, Knm.Enterprise.Application.Claims.ClaimsCalculationService>();
 
         return services;
     }

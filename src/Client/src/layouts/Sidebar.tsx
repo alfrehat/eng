@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Sliders, Activity, Layers, LogIn, FileText, Wrench, FolderKanban, Award, FileCheck2 } from 'lucide-react';
+import { LayoutDashboard, Sliders, Activity, Layers, LogIn, FileText, Wrench, FolderKanban, Award, FileCheck2, Receipt } from 'lucide-react';
 import { apiClient } from '../api/apiClient';
 
 export const Sidebar: React.FC = () => {
@@ -22,6 +22,7 @@ export const Sidebar: React.FC = () => {
     { label: 'سجل المشاريع والتخطيط', path: '/projects', icon: FolderKanban },
     { label: 'سجل العطاءات والمناقصات', path: '/tenders', icon: Award },
     { label: 'سجل العقود والاتفاقيات', path: '/contracts', icon: FileCheck2 },
+    { label: 'المستخلصات والمطالبات المالية', path: '/claims', icon: Receipt },
     { label: 'استوديو الإدارة (Zero-Code)', path: '/admin/studio', icon: Wrench },
     { label: 'إعدادات المنظومة', path: '/admin', icon: Sliders },
     { label: 'فحص المحركات والاتصال', path: '/health-check', icon: Activity },

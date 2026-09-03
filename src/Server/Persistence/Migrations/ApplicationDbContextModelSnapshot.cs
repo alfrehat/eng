@@ -88,6 +88,951 @@ namespace Knm.Enterprise.Persistence.Migrations
                     b.ToTable("audit_logs", (string)null);
                 });
 
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.AdvanceRecovery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CurrentRecovery")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("OriginalAdvance")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid?>("PaymentCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("RecoveredToDate")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("RemainingAdvance")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("PaymentCertificateId");
+
+                    b.ToTable("advance_recoveries", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.CertificateDeduction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid>("ContractClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DeductionTypeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PaymentCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractClaimId");
+
+                    b.HasIndex("PaymentCertificateId");
+
+                    b.ToTable("certificate_deductions", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimAdjustment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdjustmentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("ApprovalDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ContractClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractClaimId");
+
+                    b.ToTable("claim_adjustments", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("StoredFileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractClaimId");
+
+                    b.HasIndex("StoredFileId");
+
+                    b.ToTable("claim_documents", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CumulativeAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("CumulativeQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("CurrentAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("CurrentQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("MeasurementRecordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("PreviousQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId");
+
+                    b.HasIndex("ContractItemId");
+
+                    b.HasIndex("MeasurementRecordId");
+
+                    b.ToTable("claim_items", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimPaymentLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid?>("BudgetItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ConfirmedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ContractClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FinancialProgramId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FundingSourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PaymentCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ReferredDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractClaimId");
+
+                    b.HasIndex("PaymentCertificateId");
+
+                    b.ToTable("claim_payment_links", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ContractClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClaimNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("ClaimPeriodFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ClaimPeriodTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ClaimTypeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CumulativeCertifiedAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("CurrentCertifiedAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("DeductionAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("GrossAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("NetAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("PreviousCertifiedAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SubmissionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimNumber")
+                        .IsUnique();
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("contract_claims", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.MeasurementItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("EvidenceDocument")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("MeasuredQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime>("MeasurementDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("MeasurementRecordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reference")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractItemId");
+
+                    b.HasIndex("MeasurementRecordId");
+
+                    b.ToTable("measurement_items", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.MeasurementRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Engineer")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<DateTime>("MeasurementDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MeasurementNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("MeasurementNumber")
+                        .IsUnique();
+
+                    b.ToTable("measurement_records", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.PaymentCertificate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CertificateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CertificateNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("CertificationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CertifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ContractClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CumulativeCertified")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("CurrentCertified")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("DeductionsTotal")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("GrossCertified")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("NetCertified")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("PreviousCertified")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateNumber")
+                        .IsUnique();
+
+                    b.HasIndex("ContractClaimId");
+
+                    b.ToTable("payment_certificates", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ProgressRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ApprovalDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ClaimId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FinancialProgress")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("OverallProgress")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<DateTime>("PeriodFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PeriodTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("PhysicalProgress")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("progress_records", (string)null);
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.RetentionRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CumulativeRetention")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PaymentCertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<decimal>("ReleasedAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("RemainingRetention")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("PaymentCertificateId");
+
+                    b.ToTable("retention_records", (string)null);
+                });
+
             modelBuilder.Entity("Knm.Enterprise.Domain.Configuration.SystemSetting", b =>
                 {
                     b.Property<Guid>("Id")
@@ -243,6 +1188,9 @@ namespace Knm.Enterprise.Persistence.Migrations
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("TaxAmount")
                         .HasPrecision(18, 3)
@@ -4815,6 +5763,207 @@ namespace Knm.Enterprise.Persistence.Migrations
                     b.ToTable("workflow_transitions", (string)null);
                 });
 
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.AdvanceRecovery", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.PaymentCertificate", "PaymentCertificate")
+                        .WithMany("AdvanceRecoveries")
+                        .HasForeignKey("PaymentCertificateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("PaymentCertificate");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.CertificateDeduction", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "ContractClaim")
+                        .WithMany("Deductions")
+                        .HasForeignKey("ContractClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.PaymentCertificate", "PaymentCertificate")
+                        .WithMany("Deductions")
+                        .HasForeignKey("PaymentCertificateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ContractClaim");
+
+                    b.Navigation("PaymentCertificate");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimAdjustment", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "ContractClaim")
+                        .WithMany("Adjustments")
+                        .HasForeignKey("ContractClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContractClaim");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimDocument", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "ContractClaim")
+                        .WithMany()
+                        .HasForeignKey("ContractClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Storage.StoredFile", "StoredFile")
+                        .WithMany()
+                        .HasForeignKey("StoredFileId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ContractClaim");
+
+                    b.Navigation("StoredFile");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimItem", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "Claim")
+                        .WithMany("Items")
+                        .HasForeignKey("ClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.ContractItem", "ContractItem")
+                        .WithMany()
+                        .HasForeignKey("ContractItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.MeasurementRecord", "MeasurementRecord")
+                        .WithMany()
+                        .HasForeignKey("MeasurementRecordId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Claim");
+
+                    b.Navigation("ContractItem");
+
+                    b.Navigation("MeasurementRecord");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ClaimPaymentLink", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", null)
+                        .WithMany("PaymentLinks")
+                        .HasForeignKey("ContractClaimId");
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.PaymentCertificate", "PaymentCertificate")
+                        .WithMany("PaymentLinks")
+                        .HasForeignKey("PaymentCertificateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentCertificate");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ContractClaim", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.MeasurementItem", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.ContractItem", "ContractItem")
+                        .WithMany()
+                        .HasForeignKey("ContractItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.MeasurementRecord", "MeasurementRecord")
+                        .WithMany("Items")
+                        .HasForeignKey("MeasurementRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContractItem");
+
+                    b.Navigation("MeasurementRecord");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.MeasurementRecord", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "Claim")
+                        .WithMany("Measurements")
+                        .HasForeignKey("ClaimId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Claim");
+
+                    b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.PaymentCertificate", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "ContractClaim")
+                        .WithMany("Certificates")
+                        .HasForeignKey("ContractClaimId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContractClaim");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ProgressRecord", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Claims.ContractClaim", "Claim")
+                        .WithMany("ProgressRecords")
+                        .HasForeignKey("ClaimId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Claim");
+
+                    b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.RetentionRecord", b =>
+                {
+                    b.HasOne("Knm.Enterprise.Domain.Contracts.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Knm.Enterprise.Domain.Claims.PaymentCertificate", "PaymentCertificate")
+                        .WithMany("RetentionRecords")
+                        .HasForeignKey("PaymentCertificateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("PaymentCertificate");
+                });
+
             modelBuilder.Entity("Knm.Enterprise.Domain.Contracts.Contract", b =>
                 {
                     b.HasOne("Knm.Enterprise.Domain.Tenders.AwardDecision", "AwardDecision")
@@ -5584,6 +6733,39 @@ namespace Knm.Enterprise.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("WorkflowDefinition");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.ContractClaim", b =>
+                {
+                    b.Navigation("Adjustments");
+
+                    b.Navigation("Certificates");
+
+                    b.Navigation("Deductions");
+
+                    b.Navigation("Items");
+
+                    b.Navigation("Measurements");
+
+                    b.Navigation("PaymentLinks");
+
+                    b.Navigation("ProgressRecords");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.MeasurementRecord", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Knm.Enterprise.Domain.Claims.PaymentCertificate", b =>
+                {
+                    b.Navigation("AdvanceRecoveries");
+
+                    b.Navigation("Deductions");
+
+                    b.Navigation("PaymentLinks");
+
+                    b.Navigation("RetentionRecords");
                 });
 
             modelBuilder.Entity("Knm.Enterprise.Domain.Contracts.Contract", b =>

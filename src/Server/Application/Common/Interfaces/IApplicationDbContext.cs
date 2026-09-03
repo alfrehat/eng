@@ -98,6 +98,20 @@ public interface IApplicationDbContext
     DbSet<Knm.Enterprise.Domain.Contracts.ContractSignature> ContractSignatures { get; }
     DbSet<Knm.Enterprise.Domain.Contracts.ContractPaymentLink> ContractPaymentLinks { get; }
 
+    // Phase 06 Claims & Financial Execution Entities
+    DbSet<Knm.Enterprise.Domain.Claims.ContractClaim> ContractClaims { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.ClaimItem> ClaimItems { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.MeasurementRecord> MeasurementRecords { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.MeasurementItem> MeasurementItems { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.ProgressRecord> ProgressRecords { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.PaymentCertificate> PaymentCertificates { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.CertificateDeduction> CertificateDeductions { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.RetentionRecord> RetentionRecords { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.AdvanceRecovery> AdvanceRecoveries { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.ClaimAdjustment> ClaimAdjustments { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.ClaimDocument> ClaimDocuments { get; }
+    DbSet<Knm.Enterprise.Domain.Claims.ClaimPaymentLink> ClaimPaymentLinks { get; }
+
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
