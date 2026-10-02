@@ -1,0 +1,35 @@
+[
+  {
+    "id": "COM-2026-0001",
+    "committee_number": "COM-2026-0001",
+    "committeeNumber": "COM-2026-0001",
+    "name": "لجنة استلام أولي لعطاء تعبيد شوارع كفرنجة",
+    "committee_type": "PRELIMINARY_HANDOVER",
+    "committeeType": "PRELIMINARY_HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tenderId": "TEN-2026-0001",
+    "project_id": "PRJ-2026-0001",
+    "projectId": "PRJ-2026-0001",
+    "members": [
+      {
+        "name": "م. أحمد فريحات",
+        "role": "رئيس اللجنة"
+      },
+      {
+        "name": "م. خالد الصمادي",
+        "role": "عضو مهندس"
+      },
+      {
+        "name": "السيد مندوب ديوان المحاسبة",
+        "role": "عضو مراقب"
+      }
+    ],
+    "minutes": [],
+    "status": "CLOSED",
+    "notes": "تم تشكيل اللجنة بقرار المجلس البلدي رقم 45/2026",
+    "created_at": "2026-09-10T20:10:36.140Z",
+    "updated_at": "2026-09-10T20:10:36.142Z",
+    "createdAt": "2026-09-10T20:10:36.140Z",
+    "updatedAt": "2026-09-10T20:10:36.140Z"
+  }
+]

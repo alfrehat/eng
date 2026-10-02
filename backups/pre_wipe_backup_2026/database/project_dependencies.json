@@ -1,0 +1,15 @@
+[]  {
+    "id": "DEP-mtvw738s-145",
+    "predecessor_project_id": "PRJ-2026-001",
+    "successor_project_id": "PRJ-2026-002",
+    "dependency_type": "FS",
+    "lag_days": 0,
+    "description": "",
+    "notes": "",
+    "status": "ACTIVE",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-10T19:00:27.820Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-10T19:00:27.820Z"
+  }
+]

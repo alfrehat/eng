@@ -1,0 +1,13 @@
+[
+  {
+    "id": "RUL-2026-0001",
+    "code": "RUL-VO-LIMIT",
+    "rule_name": "قاعدة فحص الحد الأعلى للأوامر التغييرية",
+    "category": "CONTRACT_COMPLIANCE",
+    "expression": "totalVariationOrders <= contractValue * 0.25",
+    "description": "الأوامر التغييرية يجب ألا تتجاوز 25% من قيمة العقد الإجمالية",
+    "active": true,
+    "created_at": "2026-09-10T19:54:21.302Z",
+    "updated_at": "2026-09-10T19:54:21.302Z"
+  }
+]

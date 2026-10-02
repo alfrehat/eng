@@ -1,0 +1,290 @@
+[
+  {
+    "id": "5c5533c5-e7d4-4da9-b718-03ac8dfd6ee4",
+    "request_id": "5639b708-528a-4af6-beb8-9999e6986c47",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "506cde9801ee7348aca7d6d5865b10a7ec7d7bc7327aaebb1ed5d7420201ec56",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "name": "مشروع تعبيد كفرنجة",
+      "projectNumber": "PRJ-2026-0001"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "ADMIN",
+    "created_at": "2026-09-05T13:45:40.698Z",
+    "updated_by": "ADMIN",
+    "updated_at": "2026-09-05T13:45:40.698Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "1d75f76f-3d1c-4b03-9f29-9114bb54287e",
+    "request_id": "a1bb8e38-981b-4fd7-b4ce-f93cf24baa7b",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "1baf881588b3dd051a677b5976e5dbb9d829e4780b22d5e9ae28cc6458f519fd",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "allocatedBudget": null,
+      "govApprovalDate": null,
+      "externalRefNumber": "PRJ-100"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.727Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.727Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "838e8d4e-f9e6-4062-89b8-ac55015455d4",
+    "request_id": "1bdec4ad-2d0d-4589-835d-847f7932e75e",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "d92026e50fa216ba1b18692cd23822b063d6966562e5df9bb25c8bbe0a0dd52d",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "event": "PROJECT_APPROVED_BY_MINISTRY",
+      "refNumber": "PRJ-100"
+    },
+    "direction": "INBOUND",
+    "status": "PENDING",
+    "created_by": "GOVERNMENT_CALLBACK",
+    "created_at": "2026-09-05T13:45:40.744Z",
+    "updated_by": "GOVERNMENT_CALLBACK",
+    "updated_at": "2026-09-05T13:45:40.744Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "c0020e88-d36b-4f48-a99e-dca0c2577b7c",
+    "request_id": "ee724a06-f516-4243-9ce0-f349084a63d3",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "86c86b9d26af56dcde21546a4274c71de3ad57ef9f148063896d53767b7aedfe",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "fileHash": "31ff4938c4fb28ca77aa4e7f8163aa9d41a9bf6fc8bfce7e51538536dbd427cf",
+      "fileName": "tender_award_2026.pdf",
+      "fileSize": 50,
+      "mimeType": "application/pdf",
+      "timestamp": "2026-09-05T13:45:40.743Z",
+      "archiveReference": null
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.750Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.750Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "04142761-273b-4f62-9b60-c212c09c9399",
+    "request_id": "6453a17f-7667-4d84-9d74-1d7e05c1ea31",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "6983915179ee47c8bf00f97fe8f28f44592ca57d47b1db875f384894abd3bf82",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "amount": 50000,
+      "projectId": "p1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.761Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.761Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "a91e6d33-cfe3-4912-83c4-0046459bb115",
+    "request_id": "134df2dd-c0a9-4641-8bb9-0aa100816b6d",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "3dacc31331e23e62af7db1799f923868061df217ce34d011e931514e454f2d92",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "winner": "شركة المقاولات",
+      "tenderId": "t1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.771Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.771Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "5c896ae1-ae8e-40d8-b01b-aa8d5b5d4d49",
+    "request_id": "387061f4-0e36-4402-a3ed-9e460de88dbf",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "407cf64e5859ceca1401ca8a4d8087a7f4ca3f25a0a4e9759bcc2a34e5d81746",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "total": 120000,
+      "contractId": "c1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.778Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.778Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "53f8f40e-bac8-40fe-9747-206b2d1386d0",
+    "request_id": "51b1dfef-9273-4b7f-8ba5-52e99e575c4e",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "cbebe773733d8068e2a3902631f0384d1001c28388df4ce980f3a7058ea3abea",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "amount": 35000,
+      "paymentId": "pay1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.786Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.786Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "f905fd5b-4e2f-48e5-b9f2-797cb84f948e",
+    "request_id": "9c959c40-6146-4d33-9630-c8477baecf04",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "3d88bb08072bde81ff8439245d3ca31ae9703c2387f6b7c2f60af8d231cb0c3e",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "pci": 78.5,
+      "roadId": "r1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.794Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.794Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "f88b3f25-0988-4fcd-bb41-bddd0acba805",
+    "request_id": "e3bd31d3-cd2c-450c-851e-761752d21a68",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "8351d4eb2725e64ec965fcbed6a7ca0607e98e99fa49dcf7cd3fb2cf5415f51e",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "result": "PASS",
+      "testId": "lab1"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.800Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.800Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "e2fbfee3-95e6-4379-bc73-963ef58bd5ae",
+    "request_id": "f7540ad2-787c-4254-8c50-567a3759b067",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "5a5ce26fd276285432ba526367d727d0d76f6a9cc21db05a782112bee9b70a02",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "poId": "po1",
+      "vendor": "مؤسسة التوريد"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.808Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.808Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "d4e56ca0-a9fa-4a2a-b34b-828a51da5bef",
+    "request_id": "f7f09c86-10a6-468a-ae2b-dd46bae98175",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "fe2a30da38864e34bed2b21c6f88ba91102b95d360b7b270f3f67d510827325e",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "caseId": "com1",
+      "status": "RESOLVED"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.814Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.814Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "09ea7526-a09b-4040-ba02-3bcf788294d9",
+    "request_id": "cbfe637f-7280-4a8c-ae16-fdd23c07c2c4",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "bc62b49c576ba3ffcb37bf25ab59b176b894d33791a4a6994f1fe86db30c1859",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "oppId": "inv1",
+      "value": 450000
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.820Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.820Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "a85c318f-a432-4d08-b4d9-728829ae7ea0",
+    "request_id": "d8f45a2e-173f-43b3-a266-78aded305111",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "d0a477c394b8c9773b3d79d9989ebc990c8fb99a08f57d5d1c84db52f3b902c8",
+    "payload_reference": null,
+    "payload_sanitized": {
+      "approvedBudget": 88000.5,
+      "externalProjectName": "مشروع الفحص الشامل",
+      "externalProjectNumber": "PRJ-2026-E2E"
+    },
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.891Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.891Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "545b6fa9-46f8-42cd-a1e5-472f5b78448e",
+    "request_id": "e24262ba-07e7-433f-8d9e-519af768f1a1",
+    "message_type": "OUTBOUND_PAYLOAD",
+    "payload_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "payload_reference": null,
+    "payload_sanitized": {},
+    "direction": "OUTBOUND",
+    "status": "PENDING",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.917Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.917Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

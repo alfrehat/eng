@@ -45,12 +45,14 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+const { productionConfig } = require('./config');
+
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3005;
-const HOST = process.env.HOST || '0.0.0.0';
-const JWT_SECRET = process.env.JWT_SECRET || 'kfranjah-secure-pki-key-2026';
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const PORT = productionConfig.config.port || process.env.PORT || 3005;
+const HOST = productionConfig.config.host || process.env.HOST || '0.0.0.0';
+const JWT_SECRET = productionConfig.config.security?.jwtSecret || process.env.JWT_SECRET || 'kfranjah-secure-pki-key-2026';
+const UPLOADS_DIR = productionConfig.config.storage?.documentStoragePath || path.join(__dirname, 'uploads');
 const notificationsFile = path.join(__dirname, 'notifications.json');
 
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -135,11 +137,18 @@ function sendNotification({ userId = 'all', title = 'إشعار جديد', messa
       roads: '🛣️', assets: '🏗️', permits: '🚧', archive: '📁',
       security: '🛡️', system: '⚡', info: '🔔'
     };
+
+    // تسطيح النص إن كان كائناً
+    let textMessage = message;
+    if (typeof message === 'object' && message !== null) {
+      textMessage = message.message || message.title || JSON.stringify(message);
+    }
+
     const notifItem = {
       id: 'NOTIF-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
       userId,
-      title,
-      message,
+      title: typeof title === 'string' ? title : 'إشعار هندسي',
+      message: textMessage,
       link: link || '',
       type,
       icon: iconMap[type] || '🔔',
@@ -196,7 +205,7 @@ async function logActivity(userId, action, entity, entityId, details) {
 }
 
 // ===== تهيئة البرمجيات الوسيطة وإعدادات الخادم =====
-app.use(cors());
+app.use(cors(productionConfig.config.security?.corsPolicy));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -262,11 +271,13 @@ app.get(['/ready', '/api/ready'], async (req, res) => {
   try {
     const engineRegistry = require('./services/engineRegistry');
     const enginesList = engineRegistry.list();
-    const isReady = enginesList.length >= 28;
+    // تم تحديث العتبة لتطابق الـ 38 محركاً المؤسسية
+    const isReady = enginesList.length >= 38;
     res.status(isReady ? 200 : 503).json({
       ready: isReady,
       status: isReady ? 'READY' : 'INITIALIZING',
       enginesCount: enginesList.length,
+      expectedEngines: 38,
       timestamp: new Date().toISOString()
     });
   } catch (e) {
@@ -295,7 +306,7 @@ app.get(['/health/engines', '/api/health/engines'], (req, res) => {
     res.json({
       status: 'healthy',
       totalEngines: enginesList.length,
-      allReady: enginesList.length >= 28,
+      allReady: enginesList.length >= 38,
       timestamp: new Date().toISOString()
     });
   } catch (e) {
@@ -627,12 +638,13 @@ app.get('/api/v4/verify-document/browse/all', async (req, res) => {
 
     async function loadTableItems(table, mapper) {
       try {
-        let rows = [];
-        if (isPostgresActive()) {
-          rows = await dbQuery(`SELECT * FROM ${table} ORDER BY "createdAt" DESC LIMIT 50`).catch(() => []);
-        }
-        if (!rows || rows.length === 0) {
-          rows = (memDb && memDb[table]) ? memDb[table] : [];
+        let rows = (memDb && memDb[table] && memDb[table].length > 0) ? memDb[table] : [];
+        if (rows.length === 0 && isPostgresActive()) {
+          try {
+            rows = await dbQuery(`SELECT * FROM ${table} LIMIT 50`);
+          } catch(e) {
+            rows = [];
+          }
         }
         (rows || []).forEach(r => {
           const item = mapper(r);
@@ -1275,7 +1287,8 @@ app.post('/api/v4/spatial/analyze-buffer', requireAuth, async (req, res) => {
         roads: roadsResult
       });
     } catch (err) {
-      console.warn('PostGIS spatial error, falling back:', err.message);
+      console.error('PostGIS spatial error:', err.message);
+      return res.status(500).json({ error: 'فشل استعلام التحليل المكاني PostGIS: ' + err.message });
     }
   }
 
@@ -1352,6 +1365,7 @@ app.use(['/api/committees', '/api/v4/committees'], require('./Committees/API/com
 app.use(['/api/reports', '/api/v4/reports', '/api/print-templates', '/api/v4/print-templates'], require('./Reports/API/printTemplatesEngine.js'));
 app.use(['/api/activity', '/api/v4/activity'], activityRouter);
 app.use(['/api/workflows', '/api/v4/workflows'], require('./Administration/API/workflowEngine.js'));
+app.use(['/api/workflow', '/api/v4/workflow'], require('./routes/workflowRouter.js'));
 app.use(['/api/g2g', '/api/v4/g2g'], require('./Administration/API/g2gGateway.js'));
 app.use(['/api/engines', '/api/v4/engines'], require('./Administration/API/enginesController.js'));
 app.use(['/api/projects', '/api/v4/projects'], require('./Projects/API/projectsEngine.js'));
@@ -1373,12 +1387,7 @@ async function startServer() {
   app.set('pgClient', pool);
   app.set('usePostgres', usePostgres);
 
-  if (usePostgres && pool) {
-    try {
-      await pool.query('ALTER TABLE claims DROP CONSTRAINT IF EXISTS "claims_tenderId_fkey"');
-      await pool.query('ALTER TABLE claims ALTER COLUMN "tenderId" DROP NOT NULL');
-    } catch (e) {}
-  }
+  // Schema constraints are canonically handled via migrations/022_canonical_claims_and_settings_schema.sql
 
   server.listen(PORT, HOST, () => {
     console.log(`\n🏛️  نظام مديرية الأشغال والخدمات الهندسية - بلدية كفرنجة الجديدة`);

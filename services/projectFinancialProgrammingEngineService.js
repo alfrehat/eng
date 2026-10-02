@@ -1,14 +1,7 @@
 /**
  * services/projectFinancialProgrammingEngineService.js
- * 💵 محرك البرمجة والتخصيص المالي السنوي ومتعدد السنوات للمشاريع (PROJECT_FINANCIAL_PROGRAMMING_ENGINE — Phase 04-C)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. إدارة المخصصات المالية التخطيطية السنوية ومتعددة السنوات دون المساس ببيانات المشاريع الأصلية أو العقود أو المطالبات.
- * 2. الحفاظ على PROJECTS_ENGINE كمصدر وحيد للموازنة المعتمدة والتكلفة الفعلية.
- * 3. حوكمة سقف الموازنة: مجموع المخصصات المبرمجة لا يجوز أن يتجاوز سقف الموازنة المعتمدة للمشروع.
- * 4. دعم البرمجة الجزئية وتوزيع الالتزامات على سنوات مالية متعاقبة.
- * 5. التدقيق الشامل لكافة عمليات البرمجة والتخصيص المالي.
+ * 💵 محرك البرمجة والتخصيص المالي السنوي ومتعدد السنوات للمشاريع (PROJECT_FINANCIAL_PROGRAMMING_ENGINE)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -27,7 +20,7 @@ class ProjectFinancialProgrammingEngineService {
   constructor() {
     this.engineId = 'PROJECT_FINANCIAL_PROGRAMMING_ENGINE';
     this.engineName = 'Enterprise Project Financial Programming Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
@@ -39,28 +32,27 @@ class ProjectFinancialProgrammingEngineService {
   }
 
   /**
+   * تقريب مالي آمن لمنع أخطاء الفاصلة العائمة
+   */
+  _roundCurrency(val) {
+    return Math.round((parseFloat(val) || 0) * 100) / 100;
+  }
+
+  /**
    * تسجيل حركة في سجل التدقيق المؤسسي
    */
   async _recordAudit(userId, entityId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء البرمجة المالية [${action}] على المعرف [${entityId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'البرمجة والتخصيص المالي للمشاريع', entityId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-FINPROG-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'البرمجة والتخصيص المالي للمشاريع',
-          entityId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'البرمجة المالية للمشاريع',
+        entityId: String(entityId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectFinancialProgrammingEngine', `Audit log failed: ${e.message}`);
     }
@@ -70,52 +62,61 @@ class ProjectFinancialProgrammingEngineService {
    * إنشاء مخصص برمجة مالية سنوية لمشروع ضمن خطة
    */
   async createFinancialProgram(data, user = null) {
-    const planId = data.planId || data.plan_id;
-    const projectId = data.projectId || data.project_id;
+    const rawPlanId = data.planId || data.plan_id;
+    const rawProjectId = data.projectId || data.project_id;
     const fiscalYear = parseInt(data.fiscalYear || data.fiscal_year || new Date().getFullYear(), 10);
-    const programmedAmount = parseFloat(data.programmedAmount || data.programmed_amount || 0);
+    const programmedAmount = this._roundCurrency(data.programmedAmount || data.programmed_amount || 0);
 
-    if (!planId) throw new Error('معرف الخطة (planId) حقل إلزامي.');
-    if (!projectId) throw new Error('معرف المشروع (projectId) حقل إلزامي.');
+    if (!rawPlanId) throw new Error('معرف الخطة (planId) حقل إلزامي.');
+    if (!rawProjectId) throw new Error('معرف المشروع (projectId) حقل إلزامي.');
     if (isNaN(fiscalYear) || fiscalYear < 2000 || fiscalYear > 2100) {
       throw new Error('السنة المالية (fiscalYear) غير صالحة.');
     }
-    if (isNaN(programmedAmount) || programmedAmount < 0) {
-      throw new Error('المبلغ المبرمج (programmedAmount) يجب أن يكون قيمة موجبة أو صفر.');
+    if (programmedAmount <= 0) {
+      throw new Error('المبلغ المبرمج (programmedAmount) يجب أن يكون أكبر من الصفر.');
     }
 
-    // 1. التحقق من وجود المشروع عبر PROJECTS_ENGINE
-    const project = await projectsEngineService.getProjectById(projectId);
+    // 1. التحقق من وجود المشروع وحل المعرف الفعلي
+    const project = await projectsEngineService.getProjectById(rawProjectId);
     if (!project) {
-      throw new Error(`المشروع الهندسي [${projectId}] غير موجود.`);
+      throw new Error(`المشروع الهندسي [${rawProjectId}] غير موجود.`);
     }
 
-    // 2. التحقق من وجود الخطة عبر PROJECT_PORTFOLIO_ENGINE
-    const plan = await projectPortfolioEngineService.getPlanById(planId);
+    // 2. التحقق من وجود الخطة وحل المعرف الفعلي
+    const plan = await projectPortfolioEngineService.getPlanById(rawPlanId);
     if (!plan) {
-      throw new Error(`الخطة الهندسية [${planId}] غير موجودة.`);
+      throw new Error(`الخطة الهندسية [${rawPlanId}] غير موجودة.`);
     }
 
     const actualProjectId = project.id;
     const actualPlanId = plan.id;
 
-    // 3. فحص منع تكرار نفس السنة للمشروع في نفس الخطة
+    // 3. فحص منع تكرار نفس السنة للمشروع في نفس الخطة (مع استبعاد الملغاة)
     let duplicate = null;
     if (isPostgresActive()) {
-      duplicate = await dbGet('SELECT id FROM public.project_financial_programs WHERE plan_id = $1 AND project_id = $2 AND fiscal_year = $3', [actualPlanId, actualProjectId, fiscalYear]);
+      duplicate = await dbGet(
+        "SELECT id FROM public.project_financial_programs WHERE plan_id = $1 AND project_id = $2 AND fiscal_year = $3 AND status != 'CANCELLED'",
+        [actualPlanId, actualProjectId, fiscalYear]
+      );
     } else {
-      duplicate = (memDb.project_financial_programs || []).find(p => (p.plan_id === actualPlanId || p.planId === actualPlanId) && (p.project_id === actualProjectId || p.projectId === actualProjectId) && parseInt(p.fiscal_year || p.fiscalYear, 10) === fiscalYear);
+      duplicate = (memDb.project_financial_programs || []).find(p => 
+        (p.plan_id === actualPlanId || p.planId === actualPlanId) && 
+        (p.project_id === actualProjectId || p.projectId === actualProjectId) && 
+        parseInt(p.fiscal_year || p.fiscalYear, 10) === fiscalYear &&
+        p.status !== 'CANCELLED'
+      );
     }
     if (duplicate) {
-      throw new Error(`توجد مخصصات مبرمجة مسبقاً لهذا المشروع للسنة المالية [${fiscalYear}] في الخطة [${plan.plan_number || actualPlanId}].`);
+      throw new Error(`توجد مخصصات مبرمجة نشطة لهذا المشروع للسنة المالية [${fiscalYear}] في الخطة [${plan.plan_number || actualPlanId}].`);
     }
 
-    // 4. فحص سقف الموازنة المعتمدة للمشروع (Approved Budget Ceiling Validation)
-    const approvedBudget = parseFloat(project.approved_budget || project.approvedBudget || project.budget_amount || project.budgetAmount || 0);
+    // 4. فحص سقف الموازنة المعتمدة بدقة محاسبية
+    const approvedBudget = this._roundCurrency(project.approved_budget || project.approvedBudget || project.budget_amount || project.budgetAmount || 0);
     const existingProgrammedTotal = await this._getProjectOtherProgrammedSum(actualProjectId, null);
+    const projectedTotal = this._roundCurrency(existingProgrammedTotal + programmedAmount);
 
-    if (approvedBudget > 0 && (existingProgrammedTotal + programmedAmount) > approvedBudget) {
-      const remainingAllowed = Math.max(0, approvedBudget - existingProgrammedTotal);
+    if (approvedBudget > 0 && projectedTotal > approvedBudget) {
+      const remainingAllowed = Math.max(0, this._roundCurrency(approvedBudget - existingProgrammedTotal));
       throw new Error(`تجاوز سقف الموازنة المعتمدة للمشروع (${approvedBudget.toLocaleString('ar-JO')} د.أ). المتاح للبرمجة حالياً: ${remainingAllowed.toLocaleString('ar-JO')} د.أ.`);
     }
 
@@ -152,19 +153,31 @@ class ProjectFinancialProgrammingEngineService {
   }
 
   /**
-   * استرجاع قائمة البرامج المالية مع الفلاتر
+   * استرجاع قائمة البرامج المالية مع حل المعرفات الذكي
    */
   async getFinancialPrograms(filters = {}) {
+    let resolvedProjectId = filters.projectId;
+    if (resolvedProjectId) {
+      const p = await projectsEngineService.getProjectById(resolvedProjectId);
+      if (p) resolvedProjectId = p.id;
+    }
+
+    let resolvedPlanId = filters.planId;
+    if (resolvedPlanId) {
+      const pl = await projectPortfolioEngineService.getPlanById(resolvedPlanId);
+      if (pl) resolvedPlanId = pl.id;
+    }
+
     let list = [];
     if (isPostgresActive()) {
       let q = 'SELECT * FROM public.project_financial_programs WHERE 1=1';
       const params = [];
-      if (filters.planId) {
-        params.push(filters.planId);
+      if (resolvedPlanId) {
+        params.push(resolvedPlanId);
         q += ` AND plan_id = $${params.length}`;
       }
-      if (filters.projectId) {
-        params.push(filters.projectId);
+      if (resolvedProjectId) {
+        params.push(resolvedProjectId);
         q += ` AND project_id = $${params.length}`;
       }
       if (filters.fiscalYear) {
@@ -179,11 +192,11 @@ class ProjectFinancialProgrammingEngineService {
       list = await dbQuery(q, params);
     } else {
       list = (memDb.project_financial_programs || []).slice();
-      if (filters.planId) {
-        list = list.filter(p => p.plan_id === filters.planId || p.planId === filters.planId);
+      if (resolvedPlanId) {
+        list = list.filter(p => p.plan_id === resolvedPlanId || p.planId === resolvedPlanId);
       }
-      if (filters.projectId) {
-        list = list.filter(p => p.project_id === filters.projectId || p.projectId === filters.projectId);
+      if (resolvedProjectId) {
+        list = list.filter(p => p.project_id === resolvedProjectId || p.projectId === resolvedProjectId);
       }
       if (filters.fiscalYear) {
         list = list.filter(p => parseInt(p.fiscal_year || p.fiscalYear, 10) === parseInt(filters.fiscalYear, 10));
@@ -193,7 +206,7 @@ class ProjectFinancialProgrammingEngineService {
       }
       list.sort((a, b) => parseInt(a.fiscal_year || a.fiscalYear, 10) - parseInt(b.fiscal_year || b.fiscalYear, 10));
     }
-    return list;
+    return list || [];
   }
 
   /**
@@ -209,7 +222,7 @@ class ProjectFinancialProgrammingEngineService {
   }
 
   /**
-   * تعديل مخصص مالي مبرمج
+   * تعديل مخصص مالي مبرمج مع استثناء الإلغاء من قيود السقف
    */
   async updateFinancialProgram(programId, updates, user = null) {
     const existing = await this.getFinancialProgramById(programId);
@@ -217,9 +230,12 @@ class ProjectFinancialProgrammingEngineService {
       throw new Error(`سجل البرمجة المالية [${programId}] غير موجود.`);
     }
 
+    const targetStatus = updates.status || existing.status;
+    const isCancelling = targetStatus === 'CANCELLED';
+
     const newAmount = updates.programmedAmount !== undefined || updates.programmed_amount !== undefined
-      ? parseFloat(updates.programmedAmount || updates.programmed_amount)
-      : parseFloat(existing.programmed_amount || existing.programmedAmount);
+      ? this._roundCurrency(updates.programmedAmount || updates.programmed_amount)
+      : this._roundCurrency(existing.programmed_amount || existing.programmedAmount);
 
     if (isNaN(newAmount) || newAmount < 0) {
       throw new Error('المبلغ المبرمج غير صالح.');
@@ -227,13 +243,17 @@ class ProjectFinancialProgrammingEngineService {
 
     const projectId = existing.project_id || existing.projectId;
     const project = await projectsEngineService.getProjectById(projectId);
-    const approvedBudget = parseFloat(project?.approved_budget || project?.approvedBudget || project?.budget_amount || 0);
+    const approvedBudget = this._roundCurrency(project?.approved_budget || project?.approvedBudget || project?.budget_amount || 0);
 
-    // فحص السقف عند تعديل المبلغ
-    const otherProgrammedSum = await this._getProjectOtherProgrammedSum(projectId, existing.id);
-    if (approvedBudget > 0 && (otherProgrammedSum + newAmount) > approvedBudget) {
-      const remainingAllowed = Math.max(0, approvedBudget - otherProgrammedSum);
-      throw new Error(`تجاوز سقف الموازنة المعتمدة للمشروع (${approvedBudget.toLocaleString('ar-JO')} د.أ). المتاح للبرمجة حالياً: ${remainingAllowed.toLocaleString('ar-JO')} د.أ.`);
+    // فحص السقف فقط إذا لم تكن العملية إلغاء، وإذا زاد المبلغ المخصص
+    if (!isCancelling && approvedBudget > 0) {
+      const otherProgrammedSum = await this._getProjectOtherProgrammedSum(projectId, existing.id);
+      const projectedSum = this._roundCurrency(otherProgrammedSum + newAmount);
+      
+      if (projectedSum > approvedBudget) {
+        const remainingAllowed = Math.max(0, this._roundCurrency(approvedBudget - otherProgrammedSum));
+        throw new Error(`تجاوز سقف الموازنة المعتمدة للمشروع (${approvedBudget.toLocaleString('ar-JO')} د.أ). المتاح للبرمجة حالياً: ${remainingAllowed.toLocaleString('ar-JO')} د.أ.`);
+      }
     }
 
     const updated = {
@@ -241,7 +261,7 @@ class ProjectFinancialProgrammingEngineService {
       programmed_amount: newAmount,
       funding_source: updates.fundingSource || updates.funding_source || existing.funding_source || existing.fundingSource,
       notes: updates.notes !== undefined ? updates.notes : existing.notes,
-      status: updates.status || existing.status,
+      status: targetStatus,
       updated_by: user?.id || 'SYSTEM',
       updated_at: new Date().toISOString()
     };
@@ -260,7 +280,10 @@ class ProjectFinancialProgrammingEngineService {
       }
     }
 
-    const action = updated.status === 'APPROVED' ? 'FINANCIAL_PROGRAM_APPROVED' : (updated.status === 'CANCELLED' ? 'FINANCIAL_PROGRAM_CANCELLED' : 'FINANCIAL_PROGRAM_UPDATED');
+    const action = updated.status === 'APPROVED' 
+      ? 'FINANCIAL_PROGRAM_APPROVED' 
+      : (updated.status === 'CANCELLED' ? 'FINANCIAL_PROGRAM_CANCELLED' : 'FINANCIAL_PROGRAM_UPDATED');
+      
     await this._recordAudit(user?.id, existing.id, action, existing, updated);
     return updated;
   }
@@ -308,7 +331,7 @@ class ProjectFinancialProgrammingEngineService {
   }
 
   /**
-   * استرجاع المخصصات المبرمجة لخطة محددة
+   * استرجاع المخصصات المبرمجة لخطة محددة مع استبعاد الملغاة بدقة
    */
   async getPlanFinancialProgram(planId) {
     const plan = await projectPortfolioEngineService.getPlanById(planId);
@@ -318,8 +341,13 @@ class ProjectFinancialProgrammingEngineService {
     const allocations = await this.getFinancialPrograms({ planId: actualPlanId });
 
     let totalPlannedAmount = 0;
+    let activeCount = 0;
+
     allocations.forEach(a => {
-      totalPlannedAmount += parseFloat(a.programmed_amount || a.programmedAmount || 0);
+      if (a.status !== 'CANCELLED') {
+        activeCount++;
+        totalPlannedAmount += parseFloat(a.programmed_amount || a.programmedAmount || 0);
+      }
     });
 
     return {
@@ -327,8 +355,9 @@ class ProjectFinancialProgrammingEngineService {
       planNumber: plan.plan_number || plan.planNumber,
       planName: plan.plan_name || plan.planName,
       year: plan.year,
-      totalPlannedAmount: Math.round(totalPlannedAmount * 100) / 100,
+      totalPlannedAmount: this._roundCurrency(totalPlannedAmount),
       allocationsCount: allocations.length,
+      activeAllocationsCount: activeCount,
       allocations
     };
   }
@@ -341,18 +370,19 @@ class ProjectFinancialProgrammingEngineService {
     if (!project) throw new Error(`المشروع [${projectId}] غير موجود.`);
 
     const actualProjectId = project.id;
-    const approvedBudget = parseFloat(project.approved_budget || project.approvedBudget || project.budget_amount || project.budgetAmount || 0);
+    const approvedBudget = this._roundCurrency(project.approved_budget || project.approvedBudget || project.budget_amount || project.budgetAmount || 0);
 
     const allocations = await this.getFinancialPrograms({ projectId: actualProjectId });
     let totalProgrammedAmount = 0;
+
     allocations.forEach(a => {
       if (a.status !== 'CANCELLED') {
         totalProgrammedAmount += parseFloat(a.programmed_amount || a.programmedAmount || 0);
       }
     });
 
-    totalProgrammedAmount = Math.round(totalProgrammedAmount * 100) / 100;
-    const remainingBudget = Math.max(0, Math.round((approvedBudget - totalProgrammedAmount) * 100) / 100);
+    totalProgrammedAmount = this._roundCurrency(totalProgrammedAmount);
+    const remainingBudget = Math.max(0, this._roundCurrency(approvedBudget - totalProgrammedAmount));
 
     return {
       projectId: actualProjectId,
@@ -382,9 +412,9 @@ class ProjectFinancialProgrammingEngineService {
     return {
       planId,
       fiscalYear: parseInt(fiscalYear, 10),
-      totalProgrammedAmount: Math.round(totalProgrammedAmount * 100) / 100,
+      totalProgrammedAmount: this._roundCurrency(totalProgrammedAmount),
       projectCount: uniqueProjects.size,
-      allocationsCount: list.length
+      allocationsCount: list.filter(item => item.status !== 'CANCELLED').length
     };
   }
 
@@ -397,12 +427,12 @@ class ProjectFinancialProgrammingEngineService {
   }
 
   /**
-   * حساب مجموع المخصصات لمشروع باستثناء سجل محدد
+   * حساب مجموع المخصصات لمشروع باستثناء سجل محدد مع عزل الملغاة
    */
   async _getProjectOtherProgrammedSum(projectId, excludeProgramId = null) {
     let sum = 0;
     if (isPostgresActive()) {
-      let q = "SELECT SUM(programmed_amount) as total FROM public.project_financial_programs WHERE project_id = $1 AND status != 'CANCELLED'";
+      let q = "SELECT COALESCE(SUM(programmed_amount), 0) as total FROM public.project_financial_programs WHERE project_id = $1 AND status != 'CANCELLED'";
       const params = [projectId];
       if (excludeProgramId) {
         params.push(excludeProgramId);
@@ -418,7 +448,7 @@ class ProjectFinancialProgrammingEngineService {
       );
       records.forEach(r => sum += parseFloat(r.programmed_amount || r.programmedAmount || 0));
     }
-    return sum;
+    return this._roundCurrency(sum);
   }
 
   /**
@@ -443,7 +473,7 @@ class ProjectFinancialProgrammingEngineService {
         status: 'READY',
         engineId: this.engineId,
         totalAllocations,
-        totalProgrammedAmount: Math.round(totalProgrammedAmount * 100) / 100,
+        totalProgrammedAmount: this._roundCurrency(totalProgrammedAmount),
         timestamp: new Date().toISOString()
       };
     } catch (e) {
@@ -457,5 +487,4 @@ class ProjectFinancialProgrammingEngineService {
   }
 }
 
-const projectFinancialProgrammingEngineService = new ProjectFinancialProgrammingEngineService();
-module.exports = projectFinancialProgrammingEngineService;
+module.exports = new ProjectFinancialProgrammingEngineService();

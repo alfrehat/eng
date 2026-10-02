@@ -1,0 +1,50 @@
+[
+  {
+    "id": "perm-dashboard-view",
+    "code": "dashboard.view",
+    "name": "عرض لوحة التحكم",
+    "module": "اللوحة الرئيسية",
+    "description": "إمكانية استعراض الإحصائيات الشاملة",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  },
+  {
+    "id": "perm-roads-manage",
+    "code": "roads.manage",
+    "name": "إدارة شبكة الطرق",
+    "module": "الطرق والـ GIS",
+    "description": "إضافة وتعديل وحذف الطرق ورفع النقاط",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  },
+  {
+    "id": "perm-tenders-manage",
+    "code": "tenders.manage",
+    "name": "إدارة العطاءات",
+    "module": "المشاريع",
+    "description": "إدارة العطاءات وأوامر الشراء والمطالبات",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  },
+  {
+    "id": "perm-contracts-manage",
+    "code": "contracts.manage",
+    "name": "إدارة العقود والضمانات",
+    "module": "العقود",
+    "description": "إنشاء العقود وتوليد الكفالات البنكية",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  },
+  {
+    "id": "perm-paving-returns",
+    "code": "paving.returns",
+    "name": "إدارة عوائد التعبيد",
+    "module": "التعبيد",
+    "description": "حساب وإدارة عوائد التعبيد على القطع",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  },
+  {
+    "id": "perm-users-manage",
+    "code": "users.manage",
+    "name": "إدارة المستخدمين والصلاحيات",
+    "module": "الإدارة",
+    "description": "إضافة وتعديل المستخدمين وتخصيص الأدوار",
+    "created_at": "2026-08-14T19:06:46.317Z"
+  }
+]

@@ -1,0 +1,33 @@
+[]  {
+    "id": "INSP-2026-002",
+    "road_id": "RD-2026-001",
+    "site_location": "شارع الملك طلال - المقطع الثاني",
+    "inspector_name": "م. أحمد العنانزة",
+    "condition": "PASSED",
+    "severity_level": "MAJOR",
+    "defects": "[{\"type\":\"Rutting\",\"depthCm\":6},{\"type\":\"Bleeding\",\"areaM2\":25}]",
+    "notes": "هبوط موضعي ونزف إسفلتي يتجاوز الحدود المسموحة",
+    "reinspection_date": "2026-09-15",
+    "is_resolved": true,
+    "resolution_notes": "قام المقاول بكشط المقطع وإعادة التعبيد بطبقة ساخنة بسمك 6 سم.",
+    "created_by": "USR-QC",
+    "created_at": "2026-09-10T19:25:17.498Z",
+    "updated_at": "2026-09-10T19:25:17.500Z"
+  },
+  {
+    "id": "INSP-2026-001",
+    "road_id": "RD-2026-001",
+    "site_location": "شارع الملك طلال - المقطع الأول",
+    "inspector_name": "م. أحمد العنانزة",
+    "condition": "PASSED",
+    "severity_level": "NORMAL",
+    "defects": "[]",
+    "notes": "الخلطة الإسفلتية متماسكة ولا توجد شروخ",
+    "reinspection_date": null,
+    "is_resolved": true,
+    "resolution_notes": "",
+    "created_by": "USR-QC",
+    "created_at": "2026-09-10T19:25:17.496Z",
+    "updated_at": "2026-09-10T19:25:17.496Z"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "criterion_id": "crit_1",
+    "criterion_code": "COMMUNITY_IMPACT",
+    "name_ar": "الأثر المجتمعي وعدد المستفيدين",
+    "weight": "25.00",
+    "max_score": "100.00",
+    "description": "مدى تحسين جودة حياة المواطنين وشمولية الفئات المستفيدة",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  },
+  {
+    "criterion_id": "crit_2",
+    "criterion_code": "STRATEGIC_IMPORTANCE",
+    "name_ar": "الأهمية الاستراتيجية لبلدية كفرنجة",
+    "weight": "20.00",
+    "max_score": "100.00",
+    "description": "التوافق مع الخطة الاستراتيجية والرؤية الهندسية للمديرية",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  },
+  {
+    "criterion_id": "crit_3",
+    "criterion_code": "URGENCY",
+    "name_ar": "درجة الإلحاح والحاجة الميدانية",
+    "weight": "15.00",
+    "max_score": "100.00",
+    "description": "معالجة مشكلة ملحة أو خطر مباشر على السلامة أو البنية التحتية",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  },
+  {
+    "criterion_id": "crit_4",
+    "criterion_code": "FEASIBILITY",
+    "name_ar": "القابلية للتنفيذ الفني والهندسي",
+    "weight": "15.00",
+    "max_score": "100.00",
+    "description": "توفر المتطلبات الفنية والموافقات والأراضي والمعدات",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  },
+  {
+    "criterion_id": "crit_5",
+    "criterion_code": "COST_EFFICIENCY",
+    "name_ar": "الكفاءة المالية وترشيد الكلفة",
+    "weight": "15.00",
+    "max_score": "100.00",
+    "description": "مقارنة الكلفة بالعائد التنموي وتوفر مصادر تمويل",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  },
+  {
+    "criterion_id": "crit_6",
+    "criterion_code": "SUSTAINABILITY",
+    "name_ar": "الاستدامة والأثر البيئي طويل الأمد",
+    "weight": "10.00",
+    "max_score": "100.00",
+    "description": "استمرار المشروع وتحمله دون أعباء تشغيلية غير مبررة",
+    "is_active": true,
+    "created_at": "2026-09-05T14:03:23.988Z"
+  }
+]

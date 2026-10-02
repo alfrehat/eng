@@ -1,0 +1,40 @@
+[
+  {
+    "id": "c44b0e7e-695f-4241-90ba-5cacfd1eb030",
+    "entity_code": "MOLG",
+    "entity_name": "وزارة الإدارة المحلية",
+    "entity_name_en": "Ministry of Local Government",
+    "entity_type": "MINISTRY",
+    "base_url": "https://api.molg.gov.jo",
+    "status": "ACTIVE",
+    "environment": "PRODUCTION",
+    "contact": {},
+    "owner_unit": null,
+    "security_classification": "SECRET",
+    "created_by": "ADMIN",
+    "created_at": "2026-09-05T13:45:40.677Z",
+    "updated_by": "ADMIN",
+    "updated_at": "2026-09-05T13:45:40.677Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "737038d6-6983-4407-a40d-4fcbd6077f48",
+    "entity_code": "GOV_TEST",
+    "entity_name": "Government Test Integration",
+    "entity_name_en": null,
+    "entity_type": "GOVERNMENT_AGENCY",
+    "base_url": null,
+    "status": "ACTIVE",
+    "environment": "PRODUCTION",
+    "contact": {},
+    "owner_unit": null,
+    "security_classification": "RESTRICTED",
+    "created_by": "ADMIN",
+    "created_at": "2026-09-05T13:45:40.756Z",
+    "updated_by": "ADMIN",
+    "updated_at": "2026-09-05T13:45:40.756Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

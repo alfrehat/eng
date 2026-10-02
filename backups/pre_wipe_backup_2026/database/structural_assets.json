@@ -1,0 +1,37 @@
+[]  {
+    "id": "AST-2026-0001",
+    "asset_number": "AST-2026-0001",
+    "name": "لودر كتربلر 950 مجنزرة",
+    "category": "آليات ثقيلة",
+    "asset_type": "آليات ثقيلة",
+    "district": "كفرنجة المركز",
+    "condition_index": 85,
+    "purchase_cost": 65000,
+    "initial_cost": 65000,
+    "purchase_year": 2022,
+    "acquisition_year": 2022,
+    "useful_life_years": 10,
+    "salvage_value": 5000,
+    "serial_number": "CAT-950-2022-KF",
+    "department_id": "DIR-ENG",
+    "custodian_name": "عطا فريحات",
+    "condition_status": "GOOD",
+    "notes": "تمت الصيانة الدورية وتبديل الزيوت",
+    "created_at": "2026-09-10T19:50:43.746Z",
+    "updated_at": "2026-09-10T19:50:43.748Z",
+    "assetNumber": "AST-2026-0001",
+    "purchaseCost": 65000,
+    "currentBookValue": 41000,
+    "depreciationInfo": {
+      "purchaseCost": 65000,
+      "usefulLifeYears": 10,
+      "ageYears": 4,
+      "assetAgeYears": 4,
+      "annualDepreciation": 6000,
+      "accumulatedDepreciation": 24000,
+      "currentBookValue": 41000,
+      "isFullyDepreciated": false
+    },
+    "conditionStatus": "EXCELLENT"
+  }
+]

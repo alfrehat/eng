@@ -1,5 +1,25 @@
 [
   {
+    "id": "TMPL-MTYPIRTH",
+    "name": "كتاب كشف فني وهندسي ميداني للاختبار (محدث)",
+    "module": "TEST_MODULE",
+    "category_ar": "التقارير الهندسية التجريبية",
+    "description": "تم تحديث الوصف وتأكيد المعايير الفنية",
+    "orientation": "portrait",
+    "is_default": false,
+    "html_template": "<div class=\"test-content\"><h1>تقرير الكشف الفني</h1><p>محتوى التقرير التجريبي</p></div>",
+    "signatures_config": [
+      {
+        "roleName": "مهندس التنظيم",
+        "signLabel": "التوقيع",
+        "position": "right"
+      }
+    ],
+    "header_config": {},
+    "footer_config": {},
+    "updated_at": "2026-09-12T18:16:54.124Z"
+  },
+  {
     "id": "TMPL-MTEUVMK7",
     "name": "كتاب إداري رسمي موجه (Official Letter) (نسخة مخصصة)",
     "module": "LETTER",

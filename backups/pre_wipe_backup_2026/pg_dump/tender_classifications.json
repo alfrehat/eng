@@ -1,0 +1,16 @@
+[
+  {
+    "id": "tc-1",
+    "code": "WORKS",
+    "label": "أعمال إنشائية وتعبيد",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "tc-2",
+    "code": "SUPPLIES",
+    "label": "توريد مواد ومعدات",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

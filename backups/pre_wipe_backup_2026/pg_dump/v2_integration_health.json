@@ -1,0 +1,53 @@
+[
+  {
+    "id": "40c89eb6-4715-4294-b054-57a02ab75f8d",
+    "endpoint_id": "1a226f69-4676-46af-94f9-63a016faa0b1",
+    "last_check": "2026-09-05T13:45:40.752Z",
+    "latency_ms": 4,
+    "success_rate": "100.00",
+    "failure_rate": "0.00",
+    "last_error": null,
+    "circuit_state": "CLOSED",
+    "status": "HEALTHY",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.730Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.752Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "f1163b8d-f504-483b-a377-e6834e26585f",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "last_check": "2026-09-05T13:45:40.898Z",
+    "latency_ms": 11,
+    "success_rate": "100.00",
+    "failure_rate": "0.00",
+    "last_error": null,
+    "circuit_state": "CLOSED",
+    "status": "HEALTHY",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.763Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.898Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "838d71ef-9aab-4b2c-b2fb-8ed8a3f65479",
+    "endpoint_id": "605876ce-be5d-4172-a38f-a7aaa73bdf88",
+    "last_check": "2026-09-05T13:45:40.919Z",
+    "latency_ms": 3,
+    "success_rate": "100.00",
+    "failure_rate": "0.00",
+    "last_error": null,
+    "circuit_state": "CLOSED",
+    "status": "HEALTHY",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.919Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.919Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

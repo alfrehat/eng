@@ -1,0 +1,16 @@
+[
+  {
+    "id": "rr-1",
+    "code": "INCOMPLETE_DOCS",
+    "label": "نقص وثائق أو مخططات مساحية",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "rr-2",
+    "code": "OUT_OF_SCOPE",
+    "label": "خارج نطاق التنظيم والبلدية",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

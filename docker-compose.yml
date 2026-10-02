@@ -1,5 +1,6 @@
 # docker-compose.yml
-# البنية التنسيقية المتكاملة لحاويات نظام بلدية كفرنجة ERP v4.0
+# 🐳 البنية التنسيقية المتكاملة والآمنة لنظام بلدية كفرنجة الجديدة
+# v2.0 - Anti-Gravity Enterprise Multi-Node Compose Edition
 
 version: '3.8'
 
@@ -38,16 +39,17 @@ services:
       POSTGRES_DB: kafr_inja_engineering
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      PGPASSWORD: postgres # تمرير كلمة المرور لأداة pg_basebackup
     ports:
-      - "5433:5432" # تشغيل النسخة المستنسخة على المنفذ 5433 للتحليلات ولوحات الـ BI
+      - "5433:5432"
     depends_on:
       kfranjah-postgres-db:
         condition: service_healthy
     command: >
       bash -c "
-      until pg_isready -h kfranjah-postgres-db -U postgres; do echo 'waiting for primary...'; sleep 1; done;
+      until pg_isready -h kfranjah-postgres-db -U postgres; do echo 'Waiting for primary...'; sleep 1; done;
       if [ ! -s /var/lib/postgresql/data/pgdata/PG_VERSION ]; then
-        pg_basebackup -h kfranjah-postgres-db -D /var/lib/postgresql/data/pgdata -U postgres -v -P -X stream -R;
+        PGPASSWORD=postgres pg_basebackup -h kfranjah-postgres-db -D /var/lib/postgresql/data/pgdata -U postgres -v -P -X stream -R;
       fi;
       exec postgres -c hot_standby=on
       "
@@ -55,7 +57,7 @@ services:
       - replica_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  # 3. خادم التطبيق والواجهة الخلفية الرئيسي (Node.js/Express App Server)
+  # 3. خادم التطبيق والواجهة الخلفية الرئيسي
   kfranjah-erp-backend:
     build:
       context: .
@@ -69,7 +71,7 @@ services:
       - PGUSER=postgres
       - PGPASSWORD=postgres
       - PGDATABASE=kafr_inja_engineering
-      - G2G_API_KEY=kfranjah-g2g-secret-key
+      - G2G_API_KEY=kfranjah-g2g-secret-key-2026
       - G2G_IP_WHITELIST=127.0.0.1,::1,kfranjah-erp-backend
     ports:
       - "3005:3005"
@@ -81,9 +83,10 @@ services:
       - logs_data:/usr/src/app/logs
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3005/').then(res => res.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
-      interval: 30s
-      timeout: 10s
+      # فحص نقطة الصحة المباشرة المتوافقة مع 200 OK
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3005/api/health').then(res => res.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 20s
+      timeout: 5s
       retries: 3
 
 volumes:

@@ -17,74 +17,101 @@ const {
   saveMemTable
 } = require('../../utils/database');
 
-let isSchemaEnsured = false;
-async function ensureActivityLogSchema() {
-  if (isSchemaEnsured) return;
-  if (isPostgresActive()) {
-    try {
-      await dbRun(`
-        CREATE TABLE IF NOT EXISTS activity_log (
-          id VARCHAR(100) PRIMARY KEY,
-          "userId" VARCHAR(100),
-          "userName" VARCHAR(255),
-          action VARCHAR(100),
-          entity VARCHAR(100),
-          "entityId" VARCHAR(100),
-          details TEXT,
-          ip_address VARCHAR(100),
-          user_agent TEXT,
-          "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS "userName" VARCHAR(255);
-        ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS ip_address VARCHAR(100);
-        ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS user_agent TEXT;
-      `);
-    } catch (e) {
-      console.warn('Activity log schema note:', e.message);
+function ensureActivityLogStorage() {
+  if (!isPostgresActive()) {
+    if (!memDb.activity_log) {
+      memDb.activity_log = [];
+      saveMemTable('activity_log');
     }
   }
-  if (!memDb.activity_log) {
-    memDb.activity_log = [];
-    saveMemTable('activity_log');
-  }
-  isSchemaEnsured = true;
 }
 
-// 1. تسجيل نشاط جديد في النظام (داخلي أو عبر API)
-async function recordActivity({ userId, userName, action, entity, entityId, details, ip, userAgent }) {
-  await ensureActivityLogSchema();
-  const id = 'ACT-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+/**
+ * تنقية عميقة للبيانات الحساسة في حقل التفاصيل (Sensitive Data Redaction)
+ */
+function sanitizeDetails(details) {
+  if (!details) return '';
+  if (typeof details === 'object') {
+    try {
+      const clone = JSON.parse(JSON.stringify(details));
+      const sensitiveKeys = ['password', 'token', 'secret', 'authorization', 'api_key', 'privatekey', 'password_hash'];
+      const sanitizeObj = (obj) => {
+        if (!obj || typeof obj !== 'object') return obj;
+        for (const key of Object.keys(obj)) {
+          const lower = key.toLowerCase();
+          if (sensitiveKeys.some(sk => lower.includes(sk))) {
+            obj[key] = '***REDACTED***';
+          } else if (typeof obj[key] === 'object') {
+            sanitizeObj(obj[key]);
+          }
+        }
+        return obj;
+      };
+      return JSON.stringify(sanitizeObj(clone));
+    } catch {
+      return String(details);
+    }
+  }
+  let str = String(details);
+  return str.replace(/"(password|token|secret|authorization|api_key|password_hash)"\s*:\s*"[^"]+"/gi, '"$1":"***REDACTED***"');
+}
+
+// 1. تسجيل نشاط جديد في النظام (داخلي أو عبر API أو خدمات النطاق)
+async function recordActivity(payloadOrUserId, action, entity, entityId, details, ip, userAgent) {
+  let opts = {};
+  if (payloadOrUserId && typeof payloadOrUserId === 'object') {
+    opts = payloadOrUserId;
+  } else {
+    opts = {
+      userId: payloadOrUserId,
+      userName: payloadOrUserId,
+      action,
+      entity,
+      entityId,
+      details,
+      ip,
+      userAgent
+    };
+  }
+
+  ensureActivityLogStorage();
+  const id = opts.id || ('ACT-' + Date.now() + '-' + Math.floor(Math.random() * 1000));
   const now = new Date().toISOString();
+  const clientIp = opts.ip || '127.0.0.1';
+  const cleanDetails = sanitizeDetails(opts.details);
 
   const record = {
     id,
-    userId: userId || 'نظام',
-    userName: userName || userId || 'مستخدم النظام',
-    action: action || 'إجراء',
-    entity: entity || 'عام',
-    entityId: entityId || '',
-    details: details || '',
-    ip_address: ip || '127.0.0.1',
-    user_agent: userAgent || '',
-    createdAt: now
+    userId: opts.userId || 'نظام',
+    userName: opts.userName || opts.userId || 'مستخدم النظام',
+    action: opts.action || 'إجراء',
+    entity: opts.entity || 'عام',
+    entityId: opts.entityId || '',
+    details: cleanDetails,
+    ip: clientIp,
+    ip_address: clientIp,
+    user_agent: opts.userAgent || '',
+    createdAt: now,
+    success: true
   };
 
   try {
     if (isPostgresActive()) {
       await dbRun(`
         INSERT INTO activity_log (
-          id, "userId", "userName", action, entity, "entityId", details, ip_address, user_agent, "createdAt"
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW());
+          id, "userId", "userName", action, entity, "entityId", details, ip_address, ip, user_agent, "createdAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW());
       `, [
         record.id, record.userId, record.userName, record.action,
-        record.entity, record.entityId, record.details, record.ip_address, record.user_agent
+        record.entity, record.entityId, record.details, record.ip_address, record.ip, record.user_agent
       ]);
+    } else {
+      // Memory fallback ONLY when PostgreSQL is NOT active
+      if (!memDb.activity_log) memDb.activity_log = [];
+      memDb.activity_log.unshift(record);
+      if (memDb.activity_log.length > 500) memDb.activity_log.pop();
+      saveMemTable('activity_log');
     }
-
-    if (!memDb.activity_log) memDb.activity_log = [];
-    memDb.activity_log.unshift(record);
-    if (memDb.activity_log.length > 500) memDb.activity_log.pop();
-    saveMemTable('activity_log');
 
     // بث حي فوري لمدراء النظام
     if (global.broadcastWs) {
@@ -96,20 +123,42 @@ async function recordActivity({ userId, userName, action, entity, entityId, deta
 
     return record;
   } catch (err) {
-    console.warn('Failed to record activity log:', err.message);
-    return record;
+    try {
+      const { logError } = require('../../services/loggerService');
+      logError('ACTIVITY_ENGINE', 'فشل كتابة سجل النشاط في قاعدة البيانات PostgreSQL', { error: err.message, recordId: record.id });
+    } catch (_) {}
+    console.error('Failed to record activity log:', err.message);
+    // Strict failure semantics: no false success, no fallback to memDb on DB failure
+    return {
+      success: false,
+      error: err.message,
+      id: record.id
+    };
   }
 }
 
 global.recordActivity = recordActivity;
 
-// 2. استعلام سجل الحركات مع الفلترة والبحث المتقدم
+// 2. استعلام سجل الحركات مع الفلترة والبحث المتقدم وحماية IDOR
 router.get('/', requireAuth, async (req, res) => {
-  await ensureActivityLogSchema();
+  ensureActivityLogStorage();
   try {
     const { action, userId, entity, search, limit = 100, offset = 0 } = req.query;
     const limitNum = Math.min(parseInt(limit, 10) || 100, 500);
     const offsetNum = parseInt(offset, 10) || 0;
+
+    // فحص الصلاحيات الإدارية لمنع ثغرة IDOR
+    const userRole = (req.user?.role || '').toLowerCase();
+    const isPrivileged = ['admin', 'super_admin', 'director', 'auditor'].includes(userRole) ||
+      (req.user?.permissions && (
+        req.user.permissions.includes('AUDIT.VIEW') ||
+        req.user.permissions.includes('SETTINGS.MANAGE') ||
+        req.user.permissions.includes('SETTINGS.VIEW') ||
+        req.user.permissions.includes('*')
+      ));
+
+    // إذا لم يكن المستخدم صاحب صلاحية مراجعة، يتم حصره بسجلاته الشخصية حصراً
+    const effectiveUserId = isPrivileged ? (userId || null) : (req.user?.id || req.user?.username);
 
     let logs = [];
     let totalCount = 0;
@@ -122,8 +171,8 @@ router.get('/', requireAuth, async (req, res) => {
         params.push(action);
         conditions.push(`action = $${params.length}`);
       }
-      if (userId) {
-        params.push(userId);
+      if (effectiveUserId) {
+        params.push(effectiveUserId);
         conditions.push(`"userId" = $${params.length}`);
       }
       if (entity) {
@@ -145,7 +194,10 @@ router.get('/', requireAuth, async (req, res) => {
       const offsetParamIdx = params.length;
 
       logs = await dbQuery(`
-        SELECT id, "userId", "userName", action, entity, "entityId", details, ip_address, user_agent, "createdAt"
+        SELECT id, "userId", "userName", action, entity, "entityId", details, 
+               COALESCE(ip, ip_address, '127.0.0.1') as ip,
+               COALESCE(ip_address, ip, '127.0.0.1') as ip_address,
+               user_agent, "createdAt"
         FROM activity_log
         ${whereClause}
         ORDER BY "createdAt" DESC
@@ -154,7 +206,7 @@ router.get('/', requireAuth, async (req, res) => {
     } else {
       let filtered = (memDb.activity_log || []);
       if (action) filtered = filtered.filter(l => l.action === action);
-      if (userId) filtered = filtered.filter(l => l.userId === userId);
+      if (effectiveUserId) filtered = filtered.filter(l => l.userId === effectiveUserId);
       if (entity) filtered = filtered.filter(l => l.entity === entity);
       if (search) {
         const s = search.toLowerCase();
@@ -202,13 +254,28 @@ router.post('/', requireAuth, async (req, res) => {
     userAgent
   });
 
+  if (!record || record.success === false) {
+    return res.status(500).json({ success: false, error: record?.error || 'فشل حفظ سجل النشاط' });
+  }
+
   res.json({ success: true, data: record });
 });
 
-// 4. إحصائيات النشاط للوحة التحكم
+// 4. إحصائيات النشاط للوحة التحكم مع حماية الصلاحيات (RBAC/Scoping)
 router.get('/stats', requireAuth, async (req, res) => {
-  await ensureActivityLogSchema();
+  ensureActivityLogStorage();
   try {
+    const userRole = (req.user?.role || '').toLowerCase();
+    const isPrivileged = ['admin', 'super_admin', 'director', 'auditor'].includes(userRole) ||
+      (req.user?.permissions && (
+        req.user.permissions.includes('AUDIT.VIEW') ||
+        req.user.permissions.includes('SETTINGS.MANAGE') ||
+        req.user.permissions.includes('SETTINGS.VIEW') ||
+        req.user.permissions.includes('*')
+      ));
+
+    const effectiveUserId = isPrivileged ? null : (req.user?.id || req.user?.username);
+
     let stats = {
       totalActions: 0,
       todayActions: 0,
@@ -217,17 +284,32 @@ router.get('/stats', requireAuth, async (req, res) => {
     };
 
     if (isPostgresActive()) {
-      const total = await dbGet('SELECT count(*) as total FROM activity_log');
-      const today = await dbGet('SELECT count(*) as today FROM activity_log WHERE "createdAt" >= CURRENT_DATE');
-      const byAction = await dbQuery('SELECT action, count(*) as count FROM activity_log GROUP BY action ORDER BY count DESC LIMIT 5');
-      const byUser = await dbQuery('SELECT "userName", count(*) as count FROM activity_log GROUP BY "userName" ORDER BY count DESC LIMIT 5');
+      if (effectiveUserId) {
+        const total = await dbGet('SELECT count(*) as total FROM activity_log WHERE "userId" = $1', [effectiveUserId]);
+        const today = await dbGet('SELECT count(*) as today FROM activity_log WHERE "userId" = $1 AND "createdAt" >= CURRENT_DATE', [effectiveUserId]);
+        const byAction = await dbQuery('SELECT action, count(*) as count FROM activity_log WHERE "userId" = $1 GROUP BY action ORDER BY count DESC LIMIT 5', [effectiveUserId]);
+        const byUser = await dbQuery('SELECT "userName", count(*) as count FROM activity_log WHERE "userId" = $1 GROUP BY "userName" ORDER BY count DESC LIMIT 5', [effectiveUserId]);
 
-      stats.totalActions = parseInt(total?.total || 0, 10);
-      stats.todayActions = parseInt(today?.today || 0, 10);
-      stats.topActions = byAction;
-      stats.topUsers = byUser;
+        stats.totalActions = parseInt(total?.total || 0, 10);
+        stats.todayActions = parseInt(today?.today || 0, 10);
+        stats.topActions = byAction;
+        stats.topUsers = byUser;
+      } else {
+        const total = await dbGet('SELECT count(*) as total FROM activity_log');
+        const today = await dbGet('SELECT count(*) as today FROM activity_log WHERE "createdAt" >= CURRENT_DATE');
+        const byAction = await dbQuery('SELECT action, count(*) as count FROM activity_log GROUP BY action ORDER BY count DESC LIMIT 5');
+        const byUser = await dbQuery('SELECT "userName", count(*) as count FROM activity_log GROUP BY "userName" ORDER BY count DESC LIMIT 5');
+
+        stats.totalActions = parseInt(total?.total || 0, 10);
+        stats.todayActions = parseInt(today?.today || 0, 10);
+        stats.topActions = byAction;
+        stats.topUsers = byUser;
+      }
     } else {
-      const all = memDb.activity_log || [];
+      let all = memDb.activity_log || [];
+      if (effectiveUserId) {
+        all = all.filter(l => l.userId === effectiveUserId);
+      }
       stats.totalActions = all.length;
       const todayStr = new Date().toISOString().slice(0, 10);
       stats.todayActions = all.filter(l => l.createdAt && l.createdAt.startsWith(todayStr)).length;

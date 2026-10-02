@@ -642,7 +642,6 @@
       const togglePasswordBtn = document.getElementById('togglePasswordBtn');
       const capsLockWarning = document.getElementById('capsLockWarning');
 
-      // 1. Password visibility toggle
       if (togglePasswordBtn && passwordInput) {
         togglePasswordBtn.addEventListener('click', () => {
           const isPass = passwordInput.type === 'password';
@@ -651,7 +650,6 @@
         });
       }
 
-      // 2. CapsLock detector
       if (passwordInput && capsLockWarning) {
         passwordInput.addEventListener('keyup', (e) => {
           if (e.getModifierState && e.getModifierState('CapsLock')) {
@@ -662,29 +660,24 @@
         });
       }
 
-      // 3. Inspect URL query params for reasons or auto-login fallback
+      // فحص أسباب التوجيه بأمان ودون استقبال أي بيانات اعتماد في الرابط
       const urlParams = new URLSearchParams(window.location.search);
       const reason = urlParams.get('reason');
-      const qUser = urlParams.get('username');
-      const qPass = urlParams.get('password');
 
       if (reason === 'inactivity_timeout') {
-        showAlert('⏱️ تم قفل وتسجيل الخروج من الجلسة تلقائياً لعدم وجود نشاط في النظام حفاظاً على أمان وسرية البيانات.', 'warning');
+        showAlert('⏱️ تم قفل وتسجيل الخروج تلقائياً لعدم وجود نشاط في النظام حفاظاً على أمان البيانات.', 'warning');
       } else if (reason === 'expired') {
         showAlert('🔒 انتهت صلاحية جلسة العمل الخاصة بك، يرجى تسجيل الدخول مجدداً.', 'warning');
       } else if (reason === 'logged_out') {
         showAlert('🚪 تم تسجيل الخروج الآمن بنجاح.', 'success');
       }
 
-      // If URL contains credentials (from a previous browser GET submit), clean URL and log in automatically!
-      if (qUser && qPass) {
-        if (document.getElementById('loginUsername')) document.getElementById('loginUsername').value = qUser;
-        if (document.getElementById('loginPassword')) document.getElementById('loginPassword').value = qPass;
+      // تنظيف الرابط من أي باراميترات بعد قراءتها
+      if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
-        handleLoginSubmit();
       }
 
-      // 4. Fetch dynamic system branding
+      // تحميل الهوية البصرية من الخادم
       fetch('/api/settings/identity')
         .then(r => r.json())
         .then(json => {
@@ -698,7 +691,7 @@
         })
         .catch(() => null);
 
-      // 5. Server Health Check
+      // التحقق من صحة الخادم
       fetch('/api/health')
         .then(r => r.json())
         .then(data => {

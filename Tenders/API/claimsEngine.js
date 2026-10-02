@@ -69,45 +69,10 @@ function memDelete(table, id) {
   return true;
 }
 
-let isMigrated = false;
+let isMigrated = true;
 async function ensureClaimsSchema() {
-  if (isMigrated || !isPostgresActive()) return;
-  try {
-    await dbRun(`
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS contractor VARCHAR(255);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "claimNumber" VARCHAR(100);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "claimType" VARCHAR(100);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS type VARCHAR(100);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS value DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "previousPayments" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "previousPaid" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "completionPercentage" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "completionPercent" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "retentionPercentage" DOUBLE PRECISION DEFAULT 10;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "retentionPercent" DOUBLE PRECISION DEFAULT 10;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS retention DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "advanceDeduction" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "taxDeduction" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "otherDeductions" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS deduction DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "netPayable" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "netAmount" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "grossCumulative" DOUBLE PRECISION DEFAULT 0;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "submissionDate" VARCHAR(50);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "submitDate" VARCHAR(50);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "attachmentPath" TEXT;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "approvalStage" VARCHAR(100);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "approvedBy" VARCHAR(50);
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "approvedAt" TIMESTAMP;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS "boqItems" JSONB DEFAULT '[]'::jsonb;
-      ALTER TABLE claims ADD COLUMN IF NOT EXISTS history JSONB DEFAULT '[]'::jsonb;
-      ALTER TABLE claims DROP CONSTRAINT IF EXISTS "claims_tenderId_fkey";
-      ALTER TABLE claims ALTER COLUMN "tenderId" DROP NOT NULL;
-    `);
-    isMigrated = true;
-  } catch (e) {
-    console.warn('Claims schema ensure note:', e.message);
-  }
+  // Schema is canonically enforced via migrations/022_canonical_claims_and_settings_schema.sql
+  return;
 }
 
 function formatClaimRow(row) {

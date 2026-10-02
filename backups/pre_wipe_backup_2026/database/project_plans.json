@@ -1,0 +1,19 @@
+[]  {
+    "id": "PLN-2026-001",
+    "plan_number": "PLN-2026-001",
+    "plan_name": "خطة 2026 المالية",
+    "plan_type": "ANNUAL",
+    "year": 2026,
+    "start_date": "2026-01-01",
+    "end_date": "2026-12-31",
+    "status": "DRAFT",
+    "directorate_id": "DIR-ENG",
+    "department_id": "DEPT-PROJECTS",
+    "section_id": null,
+    "description": "",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-10T18:57:37.184Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-10T18:57:37.184Z"
+  }
+]

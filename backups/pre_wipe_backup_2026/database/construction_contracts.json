@@ -1,0 +1,113 @@
+[
+  {
+    "id": "CNT-2026-0001",
+    "contract_number": "CNT-2026-0001",
+    "title": "عقد إعادة تأهيل وتعبيد طريق عين التيس التجريبي",
+    "tender_id": null,
+    "contractor_name": "شركة المقاولات النموذجية الهندسية",
+    "contract_value": 45000,
+    "total_value": 45000,
+    "start_date": "2026-09-15",
+    "end_date": "2026-12-30",
+    "budget_line_id": null,
+    "supervising_engineer": "م. المشرف الهندسي",
+    "department": "مديرية الأشغال الهندسية",
+    "funding_source": "موازنة البلدية",
+    "execution_period_days": 60,
+    "status": "ACTIVE",
+    "bank_guarantees": [
+      {
+        "id": "BG-1789071216029-969",
+        "guaranteeNumber": "BG-KFR-2026-098",
+        "guarantee_number": "BG-KFR-2026-098",
+        "bankName": "بنك الإسكان للتجارة والتمويل - فرع كفرنجة",
+        "bank_name": "بنك الإسكان للتجارة والتمويل - فرع كفرنجة",
+        "guaranteeType": "PERFORMANCE_BOND",
+        "guarantee_type": "PERFORMANCE_BOND",
+        "amount": 4500,
+        "expiryDate": "2027-01-31",
+        "expiry_date": "2027-01-31",
+        "purpose": "كفالة بنكية",
+        "notes": "",
+        "status": "ACTIVE",
+        "createdAt": "2026-09-10T20:13:36.029Z"
+      }
+    ],
+    "variation_orders": [],
+    "notes": "عقد اختباري للمحرك v2.0",
+    "created_by": "TEST_USER",
+    "created_at": "2026-09-10T20:13:36.027Z",
+    "updated_at": "2026-09-10T20:13:36.027Z"
+  },
+  {
+    "id": "CNT-2026-0001",
+    "contract_number": "CNT-2026-0001",
+    "title": "عقد إعادة تأهيل وتعبيد طريق عين التيس التجريبي",
+    "tender_id": null,
+    "contractor_name": "شركة المقاولات النموذجية الهندسية",
+    "contract_value": 45000,
+    "total_value": 45000,
+    "start_date": "2026-09-15",
+    "end_date": "2026-12-30",
+    "budget_line_id": null,
+    "supervising_engineer": "م. المشرف الهندسي",
+    "department": "مديرية الأشغال الهندسية",
+    "funding_source": "موازنة البلدية",
+    "execution_period_days": 60,
+    "status": "ACTIVE",
+    "bank_guarantees": [
+      {
+        "id": "BG-1789071216029-969",
+        "guaranteeNumber": "BG-KFR-2026-098",
+        "guarantee_number": "BG-KFR-2026-098",
+        "bankName": "بنك الإسكان للتجارة والتمويل - فرع كفرنجة",
+        "bank_name": "بنك الإسكان للتجارة والتمويل - فرع كفرنجة",
+        "guaranteeType": "PERFORMANCE_BOND",
+        "guarantee_type": "PERFORMANCE_BOND",
+        "amount": 4500,
+        "expiryDate": "2027-01-31",
+        "expiry_date": "2027-01-31",
+        "purpose": "كفالة بنكية",
+        "notes": "",
+        "status": "ACTIVE",
+        "createdAt": "2026-09-10T20:13:36.029Z"
+      }
+    ],
+    "variation_orders": [],
+    "notes": "عقد اختباري للمحرك v2.0",
+    "created_by": "TEST_USER",
+    "created_at": "2026-09-10T20:13:36.027Z",
+    "updated_at": "2026-09-10T20:13:36.027Z"
+  }
+]RMANCE_BOND",
+        "guarantee_type": "PERFORMANCE_BOND",
+        "amount": 4500,
+        "expiryDate": "2027-01-31",
+        "expiry_date": "2027-01-31",
+        "purpose": "كفالة بنكية",
+        "notes": "",
+        "status": "ACTIVE",
+        "createdAt": "2026-09-10T20:13:36.029Z"
+      }
+    ],
+    "variation_orders": [
+      {
+        "id": "VO-1789071216030-70",
+        "vo_number": "VO-1",
+        "title": "أمر تغييري رقم 1 - زيادة سماكة الخلطة الإسفلتية",
+        "amount": 3500,
+        "extensionDays": 0,
+        "description": "تعديل المواصفة الفنية حسب تقرير المختبر",
+        "justification": "",
+        "percentageOfContract": 7.78,
+        "isExceedingLimit": false,
+        "status": "APPROVED",
+        "createdAt": "2026-09-10T20:13:36.030Z"
+      }
+    ],
+    "notes": "عقد اختباري للمحرك v2.0",
+    "created_by": "TEST_USER",
+    "created_at": "2026-09-10T20:13:36.027Z",
+    "updated_at": "2026-09-10T20:13:36.027Z"
+  }
+]

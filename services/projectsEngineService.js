@@ -1,13 +1,7 @@
 /**
  * services/projectsEngineService.js
  * 🏗️ محرك إدارة المشاريع الهندسية والمحافظ الرأسمالية المركزي (PROJECTS_ENGINE)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. Project Aggregate هو الكيان المركزي لإدارة دورة حياة المشاريع الهندسية.
- * 2. الاعتماد الكامل على NumberingEngine في الترقيم الذري ومنع التضارب (PRJ-YYYY-XXXX).
- * 3. حوكمة دورة الحياة (State Machine) وحظر الانتقالات العشوائية.
- * 4. تكامل ديناميكي بدون تبعيات دائرية مع: العطاءات، العقود، المطالبات، المشتريات، الـ GIS، الأرشيف، وسجل الرقابة.
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -15,6 +9,7 @@ const {
   dbQuery,
   dbGet,
   dbRun,
+  withTransaction,
   memDb,
   saveMemTable
 } = require('../utils/database');
@@ -22,11 +17,11 @@ const numberingEngine = require('./numberingEngine');
 const rbacManager = require('../middlewares/rbacManager');
 const { logInfo, logError, logWarn } = require('./loggerService');
 
-// دورة حياة المشروع والحالات المسموح بالانتقال إليها
+// دورة حياة المشروع وحالات الانتقال المسموح بها
 const ALLOWED_TRANSITIONS = {
   DRAFT: ['PLANNED', 'SUBMITTED', 'CANCELLED'],
   PLANNED: ['SUBMITTED', 'DRAFT', 'CANCELLED'],
-  SUBMITTED: ['UNDER_REVIEW', 'DRAFT', 'CANCELLED'],
+  SUBMITTED: ['UNDER_REVIEW', 'APPROVED', 'DRAFT', 'CANCELLED'],
   UNDER_REVIEW: ['APPROVED', 'DRAFT', 'CANCELLED'],
   APPROVED: ['PROCUREMENT', 'CONTRACTED', 'IN_PROGRESS', 'CANCELLED'],
   PROCUREMENT: ['CONTRACTED', 'CANCELLED'],
@@ -42,7 +37,7 @@ class ProjectsEngineService {
   constructor() {
     this.engineId = 'PROJECTS_ENGINE';
     this.engineName = 'Enterprise Projects & Capital Portfolio Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
@@ -64,23 +59,15 @@ class ProjectsEngineService {
   async _recordAudit(userId, projectId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء مشروع [${action}] على المعرف [${projectId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'المشاريع الهندسية', projectId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-PRJ-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'المشاريع الهندسية',
-          entityId: projectId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'المشاريع الهندسية',
+        entityId: String(projectId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectsEngine', `Audit log failed: ${e.message}`);
     }
@@ -92,7 +79,7 @@ class ProjectsEngineService {
   async getProjects(filters = {}, userContext = null) {
     let projects = [];
     if (isPostgresActive()) {
-      let q = 'SELECT * FROM public.projects WHERE 1=1';
+      let q = 'SELECT *, ST_AsGeoJSON(geom) as geojson FROM public.projects WHERE 1=1';
       const params = [];
       if (filters.status) {
         params.push(filters.status);
@@ -134,7 +121,7 @@ class ProjectsEngineService {
       projects.sort((a, b) => new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0));
     }
 
-    return projects;
+    return projects || [];
   }
 
   /**
@@ -145,13 +132,12 @@ class ProjectsEngineService {
     let project = null;
 
     if (isPostgresActive()) {
-      project = await dbGet('SELECT * FROM public.projects WHERE id = $1 OR project_number = $1', [projectId]);
+      project = await dbGet('SELECT *, ST_AsGeoJSON(geom) as geojson FROM public.projects WHERE id = $1 OR project_number = $1', [projectId]);
     } else {
       project = (memDb.projects || []).find(p => p.id === projectId || p.projectNumber === projectId || p.project_number === projectId);
     }
 
     if (!project) return null;
-
     const actualId = project.id;
 
     // جلب المعالم والمراحل (Milestones)
@@ -178,19 +164,19 @@ class ProjectsEngineService {
       progressLogs = (memDb.project_progress_logs || []).filter(pl => pl.projectId === actualId || pl.project_id === actualId);
     }
 
-    // جلب بيانات العطاء المرتبط إن وجد (Cross-module linking)
+    // جلب بيانات العطاء المرتبط إن وجد
     let linkedTender = null;
     const tenderId = project.tender_id || project.tenderId;
     if (tenderId) {
       if (isPostgresActive()) {
-        linkedTender = await dbGet('SELECT id, title, reference_number, estimated_value, status FROM public.tenders WHERE id = $1', [tenderId]);
+        linkedTender = await dbGet('SELECT id, name, "tenderNumber", value, status FROM public.tenders WHERE id = $1', [tenderId]);
       } else {
         const t = (memDb.tenders || []).find(x => x.id === tenderId);
-        if (t) linkedTender = { id: t.id, title: t.title || t.name, referenceNumber: t.referenceNumber || t.tenderNumber, estimatedValue: t.estimatedValue, status: t.status };
+        if (t) linkedTender = { id: t.id, name: t.name, tenderNumber: t.tenderNumber || t.id, value: t.value, status: t.status };
       }
     }
 
-    // جلب بيانات العقد المرتبط إن وجد (Cross-module linking)
+    // جلب بيانات العقد المرتبط إن وجد
     let linkedContract = null;
     const contractId = project.contract_id || project.contractId;
     if (contractId) {
@@ -202,14 +188,13 @@ class ProjectsEngineService {
       }
     }
 
-    // جلب وحساب المطالبات المرتبطة بالعقد / العطاء
-    let financialSummary = this.calculateFinancialSummary(project, linkedContract);
+    const financialSummary = this.calculateFinancialSummary(project, linkedContract);
 
     return {
       ...project,
-      milestones,
-      risks,
-      progressLogs,
+      milestones: milestones || [],
+      risks: risks || [],
+      progressLogs: progressLogs || [],
       linkedTender,
       linkedContract,
       financialSummary
@@ -227,8 +212,8 @@ class ProjectsEngineService {
     const budgetVariance = approvedBudget - actualCost;
     const contractVariance = contractedAmount > 0 ? contractedAmount - actualCost : 0;
     const financialProgress = approvedBudget > 0 ? Math.min(100, Math.round((actualCost / approvedBudget) * 100)) : 0;
-    const physicalProgress = parseFloat(project.physical_progress || project.physicalProgress || project.completion_percentage || project.completionPercentage || 0);
-    const scheduleVariance = physicalProgress - financialProgress; // الانحراف بين الإنجاز الفعلي والإنفاق المالي
+    const physicalProgress = parseFloat(project.physical_progress || project.physicalProgress || project.completion_percentage || 0);
+    const scheduleVariance = physicalProgress - financialProgress;
 
     return {
       approvedBudget,
@@ -244,32 +229,35 @@ class ProjectsEngineService {
   }
 
   /**
-   * إنشاء مشروع جديد برقم متسلسل ذري
+   * إنشاء مشروع جديد برقم متسلسل ذري وإسناد سليم للأعمدة
    */
   async createProject(data, user = null) {
-    const currentYear = new Date().getFullYear();
     const projectNumber = data.projectNumber || (await numberingEngine.generateNextId('projects'));
     const projectId = data.id || projectNumber;
     const selectedBudgetLine = data.budget_line_id || data.budgetLineId || null;
     const approvedBudgetVal = parseFloat(data.approvedBudget || data.budgetAmount || 0);
 
+    // حجز المخصص المالي إن وجد
     if (selectedBudgetLine && approvedBudgetVal > 0) {
       try {
         const budgetEngineService = require('./budgetEngineService');
-        await budgetEngineService.createAllocation({
-          budget_line_id: selectedBudgetLine,
-          entity_type: 'PROJECT',
-          entity_id: projectId,
-          entity_name: data.projectName || data.name || 'مشروع هندسي',
-          amount: approvedBudgetVal,
-          status: 'COMMITTED'
-        });
+        if (budgetEngineService && typeof budgetEngineService.createAllocation === 'function') {
+          await budgetEngineService.createAllocation({
+            budget_line_id: selectedBudgetLine,
+            entity_type: 'PROJECT',
+            entity_id: projectId,
+            entity_name: data.projectName || data.name || 'مشروع هندسي',
+            amount: approvedBudgetVal,
+            status: 'COMMITTED'
+          });
+        }
       } catch (be) {
         logWarn('ProjectsEngine', `Budget allocation error: ${be.message}`);
         throw new Error(`تعذر إنشاء المشروع لعدم توفر مخصص مالي كافٍ: ${be.message}`);
       }
     }
 
+    const now = new Date().toISOString();
     const projectRecord = {
       id: projectId,
       project_number: projectNumber,
@@ -290,7 +278,7 @@ class ProjectsEngineService {
       approved_budget: approvedBudgetVal,
       contracted_amount: parseFloat(data.contractedAmount || 0),
       actual_cost: parseFloat(data.actualCost || 0),
-      planned_start_date: data.plannedStartDate || new Date().toISOString().split('T')[0],
+      planned_start_date: data.plannedStartDate || now.split('T')[0],
       planned_end_date: data.plannedEndDate || null,
       actual_start_date: data.actualStartDate || null,
       actual_end_date: data.actualEndDate || null,
@@ -307,23 +295,34 @@ class ProjectsEngineService {
       contract_id: data.contractId || null,
       parent_project_id: data.parentProjectId || null,
       created_by: user?.id || 'SYSTEM',
-      created_at: new Date().toISOString(),
+      created_at: now,
       updated_by: user?.id || 'SYSTEM',
-      updated_at: new Date().toISOString()
+      updated_at: now
     };
 
     if (isPostgresActive()) {
-      await dbRun(`
-        INSERT INTO public.projects
-        (id, project_number, project_code, project_name, project_type, description, directorate_id, department_id,
-         responsible_user_id, project_manager_id, project_manager_name, status, priority, funding_source, budget_amount,
-         approved_budget, contracted_amount, actual_cost, planned_start_date, planned_end_date, actual_start_date,
-         actual_end_date, completion_percentage, physical_progress, financial_progress, location, location_description,
-         latitude, longitude, gis_reference, geometry, tender_id, contract_id, parent_project_id, created_by, created_at,
-         updated_by, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22,
-                $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38)
-      `, Object.values(projectRecord));
+      // مصفوفة مطابقة تامة 1:1 لـ 39 عموداً دون ترحيل
+      const sqlColumns = [
+        'id', 'project_number', 'project_code', 'project_name', 'project_type', 'description',
+        'directorate_id', 'department_id', 'responsible_user_id', 'project_manager_id', 'project_manager_name',
+        'status', 'priority', 'funding_source', 'budget_line_id', 'budget_amount', 'approved_budget',
+        'contracted_amount', 'actual_cost', 'planned_start_date', 'planned_end_date', 'actual_start_date',
+        'actual_end_date', 'completion_percentage', 'physical_progress', 'financial_progress',
+        'location', 'location_description', 'latitude', 'longitude', 'gis_reference', 'geometry',
+        'tender_id', 'contract_id', 'parent_project_id', 'created_by', 'created_at', 'updated_by', 'updated_at'
+      ];
+
+      const sqlPlaceholders = sqlColumns.map((_, idx) => `$${idx + 1}`).join(', ');
+      const sqlValues = sqlColumns.map(col => projectRecord[col]);
+      const lonParamIdx = sqlColumns.length + 1;
+      const latParamIdx = sqlColumns.length + 2;
+      sqlValues.push(projectRecord.longitude, projectRecord.latitude);
+
+      await dbRun(
+        `INSERT INTO public.projects (${sqlColumns.join(', ')}, geom) 
+         VALUES (${sqlPlaceholders}, ST_SetSRID(ST_MakePoint($${lonParamIdx}, $${latParamIdx}), 4326))`,
+        sqlValues
+      );
     } else {
       if (!memDb.projects) memDb.projects = [];
       memDb.projects.unshift(projectRecord);
@@ -335,14 +334,15 @@ class ProjectsEngineService {
   }
 
   /**
-   * تعديل بيانات المشروع
+   * تعديل بيانات المشروع بالاستناد دائماً إلى المفتاح الحقيقي existing.id
    */
   async updateProject(projectId, updates, user = null) {
     const existing = await this.getProjectById(projectId);
     if (!existing) {
-      throw new Error(`Project [${projectId}] not found`);
+      throw new Error(`المشروع [${projectId}] غير موجود.`);
     }
 
+    const actualId = existing.id;
     const updated = {
       ...existing,
       ...updates,
@@ -357,6 +357,7 @@ class ProjectsEngineService {
             funding_source = $5, budget_amount = $6, approved_budget = $7, contracted_amount = $8,
             actual_cost = $9, planned_start_date = $10, planned_end_date = $11, actual_start_date = $12,
             actual_end_date = $13, location = $14, location_description = $15, latitude = $16, longitude = $17,
+            geom = ST_SetSRID(ST_MakePoint($22, $23), 4326),
             tender_id = $18, contract_id = $19, updated_by = $20, updated_at = NOW()
         WHERE id = $21
       `, [
@@ -380,22 +381,24 @@ class ProjectsEngineService {
         updated.tender_id || updated.tenderId || null,
         updated.contract_id || updated.contractId || null,
         user?.id || 'SYSTEM',
-        projectId
+        actualId,
+        parseFloat(updated.longitude || 35.7920),
+        parseFloat(updated.latitude || 32.2980)
       ]);
     } else {
-      const idx = (memDb.projects || []).findIndex(p => p.id === projectId || p.projectNumber === projectId);
+      const idx = (memDb.projects || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.projects[idx] = updated;
         saveMemTable('projects');
       }
     }
 
-    await this._recordAudit(user?.id, projectId, 'PROJECT_EDITED', existing, updated);
+    await this._recordAudit(user?.id, actualId, 'PROJECT_EDITED', existing, updated);
     return updated;
   }
 
   /**
-   * تنفيذ انتقال في دورة حياة المشروع (State Transition)
+   * تنفيذ انتقال في دورة حياة المشروع مع التحقق الصارم من SoD
    */
   async transitionStatus(projectId, targetStatus, user = null, remarks = '') {
     const existing = await this.getProjectById(projectId);
@@ -403,6 +406,7 @@ class ProjectsEngineService {
       throw new Error(`المشروع [${projectId}] غير موجود.`);
     }
 
+    const actualId = existing.id;
     const currentStatus = existing.status || 'DRAFT';
     const allowed = ALLOWED_TRANSITIONS[currentStatus] || [];
 
@@ -410,15 +414,23 @@ class ProjectsEngineService {
       throw new Error(`انتقال غير مسموح به في دورة الحياة: لا يمكن الانتقال من [${currentStatus}] إلى [${targetStatus}].`);
     }
 
-    // فحص فصل المهام (SoD): منشئ المشروع لا يجوز له اعتماده بمفرده
-    if (targetStatus === 'APPROVED') {
+    // فحص حوكمة فصل المهام (SoD) لكافة الحالات الحساسة
+    if (['APPROVED', 'CLOSED', 'CANCELLED'].includes(targetStatus)) {
+      if (!user || !user.id) {
+        throw new Error('عملية غير مصرح بها: تتطلب الموافقة أو الإغلاق أو الإلغاء جلسة مستخدم معتمدة.');
+      }
       const creatorId = existing.created_by || existing.createdBy;
-      if (creatorId && user && String(creatorId) === String(user.id) && user.role !== 'admin') {
-        throw new Error('فصل المهام والمسؤوليات: لا يجوز لمنشئ مسودة المشروع اعتماده بشكل نهائي.');
+      if (creatorId && String(creatorId) === String(user.id) && user.role !== 'admin') {
+        throw new Error(`فصل المهام والمسؤوليات: لا يجوز لمنشئ مسودة المشروع اتخاذ قرار [${targetStatus}] عليه.`);
       }
     }
 
-    const updates = { status: targetStatus, updated_by: user?.id || 'SYSTEM', updated_at: new Date().toISOString() };
+    const updates = { 
+      status: targetStatus, 
+      updated_by: user?.id || 'SYSTEM', 
+      updated_at: new Date().toISOString() 
+    };
+
     if (targetStatus === 'IN_PROGRESS' && !existing.actual_start_date) {
       updates.actual_start_date = new Date().toISOString().split('T')[0];
     }
@@ -429,27 +441,33 @@ class ProjectsEngineService {
     }
 
     if (isPostgresActive()) {
-      await dbRun('UPDATE public.projects SET status = $1, updated_at = NOW(), updated_by = $2 WHERE id = $3', [targetStatus, user?.id || 'SYSTEM', projectId]);
+      await dbRun(
+        'UPDATE public.projects SET status = $1, actual_start_date = COALESCE(actual_start_date, $2), actual_end_date = COALESCE(actual_end_date, $3), updated_at = NOW(), updated_by = $4 WHERE id = $5',
+        [targetStatus, updates.actual_start_date || null, updates.actual_end_date || null, user?.id || 'SYSTEM', actualId]
+      );
     } else {
-      const idx = (memDb.projects || []).findIndex(p => p.id === projectId || p.projectNumber === projectId);
+      const idx = (memDb.projects || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.projects[idx] = { ...memDb.projects[idx], ...updates };
         saveMemTable('projects');
       }
     }
 
-    await this._recordAudit(user?.id, projectId, `PROJECT_STATUS_${targetStatus}`, { status: currentStatus }, { status: targetStatus, remarks });
-    return { success: true, projectId, previousStatus: currentStatus, currentStatus: targetStatus, remarks };
+    await this._recordAudit(user?.id, actualId, `PROJECT_STATUS_${targetStatus}`, { status: currentStatus }, { status: targetStatus, remarks });
+    return { success: true, projectId: actualId, previousStatus: currentStatus, currentStatus: targetStatus, remarks };
   }
 
   /**
-   * إدارة مراحل ومعالم المشروع (Milestones)
+   * إضافة مرحلة/معلم للمشروع وإعادة احتساب الإنجاز
    */
   async addMilestone(projectId, milestoneData, user = null) {
-    const milestoneId = `MLS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const project = await this.getProjectById(projectId);
+    if (!project) throw new Error(`المشروع [${projectId}] غير موجود.`);
+    const actualId = project.id;
+    const milestoneId = milestoneData.id || (await numberingEngine.generateNextId('milestones'));
     const record = {
       id: milestoneId,
-      project_id: projectId,
+      project_id: actualId,
       name: milestoneData.name || 'معلم مرحلي',
       description: milestoneData.description || '',
       planned_date: milestoneData.plannedDate || milestoneData.planned_date || new Date().toISOString().split('T')[0],
@@ -472,30 +490,34 @@ class ProjectsEngineService {
       saveMemTable('project_milestones');
     }
 
-    await this.recalculateProjectProgress(projectId);
-    await this._recordAudit(user?.id, projectId, 'MILESTONE_ADDED', null, record);
+    await this.recalculateProjectProgress(actualId);
+    await this._recordAudit(user?.id, actualId, 'MILESTONE_ADDED', null, record);
     return record;
   }
 
   /**
-   * إعادة حساب نسبة الإنجاز الفعلي بناءً على أوزان المعالم
+   * إعادة حساب نسبة الإنجاز الفعلي بناءً على أوزان المعالم بدقة
    */
   async recalculateProjectProgress(projectId) {
+    const project = await this.getProjectById(projectId);
+    if (!project) return 0;
+    const actualId = project.id;
+
     let milestones = [];
     if (isPostgresActive()) {
-      milestones = await dbQuery('SELECT weight, completion_percentage FROM public.project_milestones WHERE project_id = $1', [projectId]);
+      milestones = await dbQuery('SELECT weight, completion_percentage FROM public.project_milestones WHERE project_id = $1', [actualId]);
     } else {
-      milestones = (memDb.project_milestones || []).filter(m => m.projectId === projectId || m.project_id === projectId);
+      milestones = (memDb.project_milestones || []).filter(m => m.projectId === actualId || m.project_id === actualId);
     }
 
-    if (milestones.length === 0) return 0;
+    if (!milestones || milestones.length === 0) return 0;
 
     let totalWeight = 0;
     let weightedProgress = 0;
 
     milestones.forEach(m => {
       const w = parseFloat(m.weight || 1);
-      const c = parseFloat(m.completion_percentage || m.completionPercentage || 0);
+      const c = parseFloat(m.completion_percentage || 0);
       totalWeight += w;
       weightedProgress += (w * c);
     });
@@ -503,9 +525,9 @@ class ProjectsEngineService {
     const finalPct = totalWeight > 0 ? Math.round((weightedProgress / totalWeight) * 100) / 100 : 0;
 
     if (isPostgresActive()) {
-      await dbRun('UPDATE public.projects SET completion_percentage = $1, physical_progress = $1, updated_at = NOW() WHERE id = $2', [finalPct, projectId]);
+      await dbRun('UPDATE public.projects SET completion_percentage = $1, physical_progress = $1, updated_at = NOW() WHERE id = $2', [finalPct, actualId]);
     } else {
-      const idx = (memDb.projects || []).findIndex(p => p.id === projectId || p.projectNumber === projectId);
+      const idx = (memDb.projects || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.projects[idx].completion_percentage = finalPct;
         memDb.projects[idx].physical_progress = finalPct;
@@ -517,13 +539,16 @@ class ProjectsEngineService {
   }
 
   /**
-   * إدارة مخاطر المشروع (Risks)
+   * تسجيل مخاطر المشروع
    */
   async addRisk(projectId, riskData, user = null) {
-    const riskId = `RSK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const project = await this.getProjectById(projectId);
+    if (!project) throw new Error(`المشروع [${projectId}] غير موجود.`);
+    const actualId = project.id;
+    const riskId = riskData.id || (await numberingEngine.generateNextId('risks'));
     const record = {
       id: riskId,
-      project_id: projectId,
+      project_id: actualId,
       risk_type: riskData.riskType || 'TECHNICAL',
       description: riskData.description || 'مخاطر فنية / موقعية',
       probability: riskData.probability || 'MEDIUM',
@@ -548,22 +573,26 @@ class ProjectsEngineService {
       saveMemTable('project_risks');
     }
 
-    await this._recordAudit(user?.id, projectId, 'RISK_REGISTERED', null, record);
+    await this._recordAudit(user?.id, actualId, 'RISK_REGISTERED', null, record);
     return record;
   }
 
   /**
-   * تسجيل تقرير تقدم دوري (Progress Log)
+   * تسجيل تقرير تقدم وتحديث نسب الإنجاز
    */
   async addProgressLog(projectId, progressData, user = null) {
-    const logId = `PRG-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const physical = parseFloat(progressData.physicalProgress || progressData.physical_progress || 0);
-    const financial = parseFloat(progressData.financialProgress || progressData.financial_progress || 0);
+    const project = await this.getProjectById(projectId);
+    if (!project) throw new Error(`المشروع [${projectId}] غير موجود.`);
+    const actualId = project.id;
+
+    const logId = progressData.id || (await numberingEngine.generateNextId('progress_logs'));
+    const physical = parseFloat(progressData.physicalProgress !== undefined ? progressData.physicalProgress : project.physical_progress || 0);
+    const financial = parseFloat(progressData.financialProgress !== undefined ? progressData.financialProgress : project.financial_progress || 0);
     const variance = physical - financial;
 
     const record = {
       id: logId,
-      project_id: projectId,
+      project_id: actualId,
       reporting_period: progressData.reportingPeriod || 'تقرير دوري',
       progress_date: progressData.progressDate || new Date().toISOString().split('T')[0],
       physical_progress: physical,
@@ -579,17 +608,14 @@ class ProjectsEngineService {
         INSERT INTO public.project_progress_logs (id, project_id, reporting_period, progress_date, physical_progress, financial_progress, variance, notes, reported_by, created_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
       `, [record.id, record.project_id, record.reporting_period, record.progress_date, record.physical_progress, record.financial_progress, record.variance, record.notes, record.reported_by]);
+
+      await dbRun('UPDATE public.projects SET physical_progress = $1, financial_progress = $2, completion_percentage = $1, updated_at = NOW() WHERE id = $3', [physical, financial, actualId]);
     } else {
       if (!memDb.project_progress_logs) memDb.project_progress_logs = [];
       memDb.project_progress_logs.unshift(record);
       saveMemTable('project_progress_logs');
-    }
 
-    // تحديث نسب المشروع الرئيسية
-    if (isPostgresActive()) {
-      await dbRun('UPDATE public.projects SET physical_progress = $1, financial_progress = $2, completion_percentage = $1, updated_at = NOW() WHERE id = $3', [physical, financial, projectId]);
-    } else {
-      const idx = (memDb.projects || []).findIndex(p => p.id === projectId || p.projectNumber === projectId);
+      const idx = (memDb.projects || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.projects[idx].physical_progress = physical;
         memDb.projects[idx].financial_progress = financial;
@@ -598,38 +624,101 @@ class ProjectsEngineService {
       }
     }
 
-    await this._recordAudit(user?.id, projectId, 'PROGRESS_LOGGED', null, record);
+    await this._recordAudit(user?.id, actualId, 'PROGRESS_LOGGED', null, record);
     return record;
   }
 
   /**
-   * حذف مشروع
+   * حذف مشروع وتنظيف شامل لكافة السجلات التابعة (Full Cascade Cleanup)
    */
   async deleteProject(projectId, user = null) {
     const existing = await this.getProjectById(projectId);
     if (!existing) {
-      throw new Error(`Project [${projectId}] not found`);
+      throw new Error(`المشروع [${projectId}] غير موجود.`);
+    }
+    const actualId = existing.id;
+
+    // حظر محاسبي وقانوني صارم لمنع حذف المشاريع ذات الصرف الفعلي أو العقود السارية
+    if (parseFloat(existing.actual_cost || 0) > 0) {
+      throw new Error(`حظر محاسبي وقانوني: لا يمكن حذف المشروع [${projectId}] لوجود تكاليف ومطالبات مالية مصروفة فعلياً (${existing.actual_cost} د.أ). يرجى أرشفة أو إغلاق المشروع بدلاً من الحذف.`);
+    }
+    if (existing.contract_id && existing.status !== 'DRAFT' && existing.status !== 'CANCELLED') {
+      throw new Error(`حظر عقدي: لا يمكن حذف المشروع [${projectId}] لارتباطه بعقد تنفيذي ساري [${existing.contract_id}].`);
     }
 
     if (isPostgresActive()) {
-      await dbRun('DELETE FROM public.project_progress_logs WHERE project_id = $1', [projectId]);
-      await dbRun('DELETE FROM public.project_risks WHERE project_id = $1', [projectId]);
-      await dbRun('DELETE FROM public.project_milestones WHERE project_id = $1', [projectId]);
-      await dbRun('DELETE FROM public.projects WHERE id = $1', [projectId]);
+      await withTransaction(async (client) => {
+        // تنظيف كافة التبعيات لمنع Foreign Key Violations ذرّياً
+        await client.query('DELETE FROM public.project_dependencies WHERE predecessor_project_id = $1 OR successor_project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_financial_programs WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_schedules WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_priority_scores WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_priority_results WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_portfolio_projects WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_plan_projects WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_progress_logs WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_risks WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.project_milestones WHERE project_id = $1', [actualId]);
+        await client.query('DELETE FROM public.projects WHERE id = $1', [actualId]);
+      });
     } else {
-      if (memDb.project_progress_logs) memDb.project_progress_logs = memDb.project_progress_logs.filter(x => x.project_id !== projectId && x.projectId !== projectId);
-      if (memDb.project_risks) memDb.project_risks = memDb.project_risks.filter(x => x.project_id !== projectId && x.projectId !== projectId);
-      if (memDb.project_milestones) memDb.project_milestones = memDb.project_milestones.filter(x => x.project_id !== projectId && x.projectId !== projectId);
-      if (memDb.projects) memDb.projects = memDb.projects.filter(p => p.id !== projectId && p.projectNumber !== projectId);
-      saveMemTable('projects');
+      const filterId = (item, field = 'project_id') => (item[field] !== actualId && item[field] !== existing.project_number);
+
+      if (memDb.project_dependencies) {
+        memDb.project_dependencies = memDb.project_dependencies.filter(d => 
+          (d.predecessor_project_id !== actualId && d.predecessorProjectId !== actualId &&
+           d.successor_project_id !== actualId && d.successorProjectId !== actualId)
+        );
+        saveMemTable('project_dependencies');
+      }
+      if (memDb.project_financial_programs) {
+        memDb.project_financial_programs = memDb.project_financial_programs.filter(p => filterId(p));
+        saveMemTable('project_financial_programs');
+      }
+      if (memDb.project_schedules) {
+        memDb.project_schedules = memDb.project_schedules.filter(s => filterId(s));
+        saveMemTable('project_schedules');
+      }
+      if (memDb.project_priority_scores) {
+        memDb.project_priority_scores = memDb.project_priority_scores.filter(s => filterId(s));
+        saveMemTable('project_priority_scores');
+      }
+      if (memDb.project_priority_results) {
+        memDb.project_priority_results = memDb.project_priority_results.filter(r => filterId(r));
+        saveMemTable('project_priority_results');
+      }
+      if (memDb.project_portfolio_projects) {
+        memDb.project_portfolio_projects = memDb.project_portfolio_projects.filter(r => filterId(r));
+        saveMemTable('project_portfolio_projects');
+      }
+      if (memDb.project_plan_projects) {
+        memDb.project_plan_projects = memDb.project_plan_projects.filter(r => filterId(r));
+        saveMemTable('project_plan_projects');
+      }
+      if (memDb.project_progress_logs) {
+        memDb.project_progress_logs = memDb.project_progress_logs.filter(x => filterId(x));
+        saveMemTable('project_progress_logs');
+      }
+      if (memDb.project_risks) {
+        memDb.project_risks = memDb.project_risks.filter(x => filterId(x));
+        saveMemTable('project_risks');
+      }
+      if (memDb.project_milestones) {
+        memDb.project_milestones = memDb.project_milestones.filter(x => filterId(x));
+        saveMemTable('project_milestones');
+      }
+      if (memDb.projects) {
+        memDb.projects = memDb.projects.filter(p => p.id !== actualId && p.project_number !== actualId);
+        saveMemTable('projects');
+      }
     }
 
-    await this._recordAudit(user?.id, projectId, 'PROJECT_DELETED', existing, null);
-    return { success: true, message: 'تم حذف المشروع بنجاح وكافة بياناته المرتبطة.' };
+    await this._recordAudit(user?.id, actualId, 'PROJECT_DELETED', existing, null);
+    return { success: true, message: 'تم حذف المشروع وكافة ارتباطاته التشغيلية بنجاح.' };
   }
 
   /**
-   * فحص الصحة والمؤشرات التشغيلية
+   * فحص الجاهزية والمؤشرات التشغيلية
    */
   async healthCheck() {
     let totalProjects = 0;
@@ -658,5 +747,4 @@ class ProjectsEngineService {
   }
 }
 
-const projectsEngineService = new ProjectsEngineService();
-module.exports = projectsEngineService;
+module.exports = new ProjectsEngineService();

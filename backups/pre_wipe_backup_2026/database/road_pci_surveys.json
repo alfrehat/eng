@@ -1,0 +1,14 @@
+[
+  {
+    "id": "SURV-1789067517800-855",
+    "road_id": "RD-2026-001",
+    "survey_date": "2026-09-10",
+    "surveyor_name": "م. أحمد الفريحات",
+    "pci_score": 66,
+    "condition_rating": "FAIR",
+    "recommended_action": "طبقة صقل إسفلتية (Slurry Seal) وترقيع موضعي بالخلطة الساخنة",
+    "distresses": "[{\"type\":\"Alligator Cracking\",\"severity\":\"HIGH\",\"density\":15},{\"type\":\"Rutting\",\"severity\":\"MEDIUM\",\"density\":8}]",
+    "notes": "",
+    "created_at": "2026-09-10T19:11:57.800Z"
+  }
+]

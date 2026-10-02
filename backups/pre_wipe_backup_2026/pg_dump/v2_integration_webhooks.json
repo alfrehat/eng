@@ -1,0 +1,16 @@
+[
+  {
+    "id": "6a54cee8-bc9e-480f-89aa-6ac1f867e722",
+    "endpoint_id": "1a226f69-4676-46af-94f9-63a016faa0b1",
+    "event_type": "GOV_STATUS_CALLBACK",
+    "secret_reference": "MySecretWebhookKey2026",
+    "signature_header": "X-Hub-Signature-256",
+    "is_active": true,
+    "created_by": "ADMIN",
+    "created_at": "2026-09-05T13:45:40.740Z",
+    "updated_by": "ADMIN",
+    "updated_at": "2026-09-05T13:45:40.740Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

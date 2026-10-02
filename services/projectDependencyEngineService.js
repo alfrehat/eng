@@ -1,15 +1,7 @@
 /**
  * services/projectDependencyEngineService.js
- * 🔗 محرك شبكة واعتماديات تتابع المشاريع الهندسية (PROJECT_DEPENDENCY_ENGINE — Phase 04-D)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. إدارة شبكة التتابع والأسبقية (Precedence Network) بين المشاريع الهندسية.
- * 2. دعم العلاقات الأربعة: FS (Finish-to-Start), SS (Start-to-Start), FF (Finish-to-Finish), SF (Start-to-Finish).
- * 3. خوارزمية فحص وكشف الحلقات الدائرية (Cycle Detection - Directed Acyclic Graph / DAG).
- * 4. منع الاعتمادية الذاتية (Self-Dependency) ومنع تكرار العلاقات.
- * 5. فحص الجاهزية للقراءة فقط (Read-Only Readiness Validation) دون تعديل بيانات المشروع.
- * 6. التدقيق الشامل لكافة العمليات الحساسة.
+ * 🔗 محرك شبكة واعتماديات تتابع المشاريع الهندسية (PROJECT_DEPENDENCY_ENGINE)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -27,14 +19,15 @@ class ProjectDependencyEngineService {
   constructor() {
     this.engineId = 'PROJECT_DEPENDENCY_ENGINE';
     this.engineName = 'Enterprise Project Dependency & Precedence Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
       'dependency_network',
       'cycle_detection',
       'readiness_validation',
-      'dependency_graph'
+      'dependency_graph',
+      'cascade_validation'
     ];
   }
 
@@ -44,23 +37,15 @@ class ProjectDependencyEngineService {
   async _recordAudit(userId, entityId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء اعتماديات المشاريع [${action}] على المعرف [${entityId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'اعتماديات وتتابع المشاريع', entityId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-DEP-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'اعتماديات وتتابع المشاريع',
-          entityId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'اعتماديات المشاريع',
+        entityId: String(entityId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectDependencyEngine', `Audit log failed: ${e.message}`);
     }
@@ -71,28 +56,31 @@ class ProjectDependencyEngineService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * فحص وجود حلقة مغلقة في شبكة التتابع
-   * @param {string} fromProjectId - المشروع السابق (Predecessor)
-   * @param {string} toProjectId - المشروع اللاحق (Successor)
-   * @param {string} excludeDependencyId - معرف علاقة مستثناة (عند التعديل)
+   * فحص وجود حلقة مغلقة في شبكة التتابع مع حل المعرفات المسبق
    */
   async detectCycle(fromProjectId, toProjectId, excludeDependencyId = null) {
-    if (fromProjectId === toProjectId) {
+    const p1 = await projectsEngineService.getProjectById(fromProjectId);
+    const p2 = await projectsEngineService.getProjectById(toProjectId);
+
+    const actualFrom = p1 ? p1.id : fromProjectId;
+    const actualTo = p2 ? p2.id : toProjectId;
+
+    if (actualFrom === actualTo) {
       return {
         hasCycle: true,
-        cyclePath: [fromProjectId, toProjectId]
+        cyclePath: [p1?.project_number || actualFrom, p2?.project_number || actualTo]
       };
     }
 
-    // جلب كافة العلاقات النشطة الحالية
+    // جلب كافة العلاقات النشطة
     let allDeps = [];
     if (isPostgresActive()) {
-      allDeps = await dbQuery("SELECT id, predecessor_project_id, successor_project_id FROM public.project_dependencies WHERE status = 'ACTIVE'");
+      allDeps = await dbQuery("SELECT id, predecessor_project_id, successor_project_id FROM public.project_dependencies WHERE status = 'ACTIVE'") || [];
     } else {
-      allDeps = (memDb.project_dependencies || []).filter(d => d.status !== 'CANCELLED');
+      allDeps = (memDb.project_dependencies || []).filter(d => d.status === 'ACTIVE');
     }
 
-    // بناء قائمة المجاورة (Adjacency List): predecessor -> [successors]
+    // بناء قائمة المجاورة (Adjacency List)
     const adj = new Map();
     for (const d of allDeps) {
       if (excludeDependencyId && d.id === excludeDependencyId) continue;
@@ -102,11 +90,7 @@ class ProjectDependencyEngineService {
       adj.get(u).push(v);
     }
 
-    // إضافة الحافة المقترحة مؤقتاً في الذاكرة
-    if (!adj.has(fromProjectId)) adj.set(fromProjectId, []);
-    adj.get(fromProjectId).push(toProjectId);
-
-    // البحث في العمق (DFS) للكشف عما إذا كان هناك مسار من toProjectId يعود إلى fromProjectId
+    // البحث في العمق (DFS) للتأكد من عدم وجود مسار يعود من actualTo إلى actualFrom
     const visited = new Set();
     const path = [];
 
@@ -122,9 +106,6 @@ class ProjectDependencyEngineService {
       for (const next of neighbors) {
         if (!visited.has(next)) {
           if (dfs(next, target)) return true;
-        } else if (next === target) {
-          path.push(next);
-          return true;
         }
       }
 
@@ -132,11 +113,19 @@ class ProjectDependencyEngineService {
       return false;
     };
 
-    const hasPathBack = dfs(toProjectId, fromProjectId);
+    const hasPathBack = dfs(actualTo, actualFrom);
     if (hasPathBack) {
+      const fullPathIds = [actualFrom, ...path];
+      // استبدال المعرفات بأرقام المشاريع لتحسين المقروئية
+      const fullPathNames = [];
+      for (const id of fullPathIds) {
+        const prj = await projectsEngineService.getProjectById(id);
+        fullPathNames.push(prj?.project_number || id);
+      }
+
       return {
         hasCycle: true,
-        cyclePath: [fromProjectId, ...path]
+        cyclePath: fullPathNames
       };
     }
 
@@ -154,40 +143,25 @@ class ProjectDependencyEngineService {
    * إنشاء علاقة اعتمادية وأسبقية جديدة بين مشروعين
    */
   async createDependency(data, user = null) {
-    const predecessorId = data.predecessorProjectId || data.predecessor_project_id;
-    const successorId = data.successorProjectId || data.successor_project_id;
+    const rawPredId = data.predecessorProjectId || data.predecessor_project_id;
+    const rawSuccId = data.successorProjectId || data.successor_project_id;
     const dependencyType = (data.dependencyType || data.dependency_type || 'FS').toUpperCase();
-    const lagDays = data.lagDays !== undefined ? parseInt(data.lagDays, 10) : (data.lag_days !== undefined ? parseInt(data.lag_days, 10) : 0);
+    const lagDays = Math.max(0, parseInt(data.lagDays !== undefined ? data.lagDays : (data.lag_days || 0), 10));
 
-    if (!predecessorId) throw new Error('معرف المشروع السابق (predecessorProjectId) حقل إلزامي.');
-    if (!successorId) throw new Error('معرف المشروع اللاحق (successorProjectId) حقل إلزامي.');
+    if (!rawPredId) throw new Error('معرف المشروع السابق (predecessorProjectId) حقل إلزامي.');
+    if (!rawSuccId) throw new Error('معرف المشروع اللاحق (successorProjectId) حقل إلزامي.');
 
-    // 1. فحص ومنع الاعتمادية الذاتية (Self-Dependency Prevention)
-    if (predecessorId === successorId) {
-      throw new Error('لا يمكن للمشروع أن يعتمد على نفسه (Self-Dependency is strictly forbidden).');
-    }
-
-    // 2. فحص نوع العلاقة
     const validTypes = ['FS', 'SS', 'FF', 'SF'];
     if (!validTypes.includes(dependencyType)) {
       throw new Error(`نوع العلاقة [${dependencyType}] غير صالح. الأنواع المعتمدة هي: ${validTypes.join(', ')}.`);
     }
 
-    // 3. فحص فترة التأخير (Lag Days)
-    if (isNaN(lagDays) || lagDays < 0) {
-      throw new Error('فترة التأخير (lag_days) يجب أن تكون رقماً صحيحاً موجباً أو صفراً.');
-    }
+    // التحقق من وجود كلا المشروعين وحل المعرفات الحقيقية
+    const predProject = await projectsEngineService.getProjectById(rawPredId);
+    if (!predProject) throw new Error(`المشروع السابق (Predecessor) [${rawPredId}] غير موجود.`);
 
-    // 4. التحقق من وجود كلا المشروعين عبر PROJECTS_ENGINE
-    const predProject = await projectsEngineService.getProjectById(predecessorId);
-    if (!predProject) {
-      throw new Error(`المشروع السابق (Predecessor) [${predecessorId}] غير موجود.`);
-    }
-
-    const succProject = await projectsEngineService.getProjectById(successorId);
-    if (!succProject) {
-      throw new Error(`المشروع اللاحق (Successor) [${successorId}] غير موجود.`);
-    }
+    const succProject = await projectsEngineService.getProjectById(rawSuccId);
+    if (!succProject) throw new Error(`المشروع اللاحق (Successor) [${rawSuccId}] غير موجود.`);
 
     const actualPredId = predProject.id;
     const actualSuccId = succProject.id;
@@ -196,21 +170,25 @@ class ProjectDependencyEngineService {
       throw new Error('لا يمكن للمشروع أن يعتمد على نفسه (Self-Dependency is strictly forbidden).');
     }
 
-    // 5. فحص منع تكرار العلاقة بين نفس المشروعين (Duplicate Dependency Prevention)
+    // فحص منع تكرار العلاقة النشطة فقط
     let duplicate = null;
     if (isPostgresActive()) {
-      duplicate = await dbGet('SELECT id FROM public.project_dependencies WHERE predecessor_project_id = $1 AND successor_project_id = $2', [actualPredId, actualSuccId]);
+      duplicate = await dbGet(
+        "SELECT id FROM public.project_dependencies WHERE predecessor_project_id = $1 AND successor_project_id = $2 AND status = 'ACTIVE'",
+        [actualPredId, actualSuccId]
+      );
     } else {
       duplicate = (memDb.project_dependencies || []).find(d => 
         (d.predecessor_project_id === actualPredId || d.predecessorProjectId === actualPredId) &&
-        (d.successor_project_id === actualSuccId || d.successorProjectId === actualSuccId)
+        (d.successor_project_id === actualSuccId || d.successorProjectId === actualSuccId) &&
+        d.status === 'ACTIVE'
       );
     }
     if (duplicate) {
-      throw new Error(`توجد علاقة اعتمادية مسجلة مسبقاً بين المشروع السابق [${predProject.project_number || actualPredId}] واللاحق [${succProject.project_number || actualSuccId}].`);
+      throw new Error(`توجد علاقة اعتمادية نشطة مسبقاً بين المشروع السابق [${predProject.project_number || actualPredId}] واللاحق [${succProject.project_number || actualSuccId}].`);
     }
 
-    // 6. فحص ومنع التبعيات الدائرية (Cycle Detection)
+    // فحص ومنع التبعيات الدائرية
     const cycleCheck = await this.detectCycle(actualPredId, actualSuccId);
     if (cycleCheck.hasCycle) {
       const pathDisplay = cycleCheck.cyclePath.join(' ➔ ');
@@ -218,6 +196,7 @@ class ProjectDependencyEngineService {
     }
 
     const dependencyId = data.id || `DEP-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`;
+    const now = new Date().toISOString();
     const record = {
       id: dependencyId,
       predecessor_project_id: actualPredId,
@@ -228,9 +207,9 @@ class ProjectDependencyEngineService {
       notes: data.notes || '',
       status: data.status || 'ACTIVE',
       created_by: user?.id || 'SYSTEM',
-      created_at: new Date().toISOString(),
+      created_at: now,
       updated_by: user?.id || 'SYSTEM',
-      updated_at: new Date().toISOString()
+      updated_at: now
     };
 
     if (isPostgresActive()) {
@@ -250,23 +229,37 @@ class ProjectDependencyEngineService {
   }
 
   /**
-   * استرجاع قائمة الاعتماديات مع الفلاتر
+   * استرجاع قائمة الاعتماديات مع حل المعرفات الذكي
    */
   async getDependencies(filters = {}) {
+    let resolvedPredId = filters.predecessorProjectId || filters.predecessor_project_id;
+    if (resolvedPredId) {
+      const p = await projectsEngineService.getProjectById(resolvedPredId);
+      if (p) resolvedPredId = p.id;
+    }
+
+    let resolvedSuccId = filters.successorProjectId || filters.successor_project_id;
+    if (resolvedSuccId) {
+      const p = await projectsEngineService.getProjectById(resolvedSuccId);
+      if (p) resolvedSuccId = p.id;
+    }
+
+    const depType = (filters.dependencyType || filters.dependency_type || '').toUpperCase();
+
     let list = [];
     if (isPostgresActive()) {
       let q = 'SELECT * FROM public.project_dependencies WHERE 1=1';
       const params = [];
-      if (filters.predecessorProjectId) {
-        params.push(filters.predecessorProjectId);
+      if (resolvedPredId) {
+        params.push(resolvedPredId);
         q += ` AND predecessor_project_id = $${params.length}`;
       }
-      if (filters.successorProjectId) {
-        params.push(filters.successorProjectId);
+      if (resolvedSuccId) {
+        params.push(resolvedSuccId);
         q += ` AND successor_project_id = $${params.length}`;
       }
-      if (filters.dependencyType) {
-        params.push(filters.dependencyType.toUpperCase());
+      if (depType) {
+        params.push(depType);
         q += ` AND dependency_type = $${params.length}`;
       }
       if (filters.status) {
@@ -277,25 +270,25 @@ class ProjectDependencyEngineService {
       list = await dbQuery(q, params);
     } else {
       list = (memDb.project_dependencies || []).slice();
-      if (filters.predecessorProjectId) {
-        list = list.filter(d => (d.predecessor_project_id || d.predecessorProjectId) === filters.predecessorProjectId);
+      if (resolvedPredId) {
+        list = list.filter(d => (d.predecessor_project_id || d.predecessorProjectId) === resolvedPredId);
       }
-      if (filters.successorProjectId) {
-        list = list.filter(d => (d.successor_project_id || d.successorProjectId) === filters.successorProjectId);
+      if (resolvedSuccId) {
+        list = list.filter(d => (d.successor_project_id || d.successorProjectId) === resolvedSuccId);
       }
-      if (filters.dependencyType) {
-        list = list.filter(d => (d.dependency_type || d.dependencyType) === filters.dependencyType.toUpperCase());
+      if (depType) {
+        list = list.filter(d => (d.dependency_type || d.dependencyType) === depType);
       }
       if (filters.status) {
         list = list.filter(d => d.status === filters.status);
       }
       list.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
     }
-    return list;
+    return list || [];
   }
 
   /**
-   * استرجاع سجل علاقة اعتمادية مفرد بالمعرف
+   * استرجاع سجل علاقة اعتمادية مفرد
    */
   async getDependencyById(dependencyId) {
     if (!dependencyId) return null;
@@ -307,7 +300,7 @@ class ProjectDependencyEngineService {
   }
 
   /**
-   * تعديل علاقة اعتمادية
+   * تعديل علاقة اعتمادية مع فحص الحلقات عند إعادة التفعيل
    */
   async updateDependency(dependencyId, updates, user = null) {
     const existing = await this.getDependencyById(dependencyId);
@@ -315,18 +308,23 @@ class ProjectDependencyEngineService {
       throw new Error(`سجل الاعتمادية [${dependencyId}] غير موجود.`);
     }
 
-    const dependencyType = updates.dependencyType || updates.dependency_type
-      ? (updates.dependencyType || updates.dependency_type).toUpperCase()
-      : (existing.dependency_type || existing.dependencyType);
-
+    const dependencyType = (updates.dependencyType || updates.dependency_type || existing.dependency_type || existing.dependencyType).toUpperCase();
     const validTypes = ['FS', 'SS', 'FF', 'SF'];
     if (!validTypes.includes(dependencyType)) {
       throw new Error(`نوع العلاقة [${dependencyType}] غير صالح.`);
     }
 
-    const lagDays = updates.lagDays !== undefined ? parseInt(updates.lagDays, 10) : (updates.lag_days !== undefined ? parseInt(updates.lag_days, 10) : parseInt(existing.lag_days || existing.lagDays || 0, 10));
-    if (isNaN(lagDays) || lagDays < 0) {
-      throw new Error('فترة التأخير (lag_days) غير صالحة.');
+    const lagDays = Math.max(0, parseInt(updates.lagDays !== undefined ? updates.lagDays : (updates.lag_days !== undefined ? updates.lag_days : (existing.lag_days || 0)), 10));
+    const targetStatus = updates.status || existing.status;
+
+    // إذا أعيد تفعيل العلاقة، يجب فحص الحلقات الدائرية إجبارياً
+    if (targetStatus === 'ACTIVE' && existing.status !== 'ACTIVE') {
+      const predId = existing.predecessor_project_id || existing.predecessorProjectId;
+      const succId = existing.successor_project_id || existing.successorProjectId;
+      const cycleCheck = await this.detectCycle(predId, succId, existing.id);
+      if (cycleCheck.hasCycle) {
+        throw new Error(`⛔ لا يمكن تفعيل العلاقة لاكتشاف اعتمادية دائرية مغلقة: [${cycleCheck.cyclePath.join(' ➔ ')}]`);
+      }
     }
 
     const updated = {
@@ -335,7 +333,7 @@ class ProjectDependencyEngineService {
       lag_days: lagDays,
       description: updates.description !== undefined ? updates.description : existing.description,
       notes: updates.notes !== undefined ? updates.notes : existing.notes,
-      status: updates.status || existing.status,
+      status: targetStatus,
       updated_by: user?.id || 'SYSTEM',
       updated_at: new Date().toISOString()
     };
@@ -359,7 +357,7 @@ class ProjectDependencyEngineService {
   }
 
   /**
-   * حذف علاقة اعتمادية (دون المساس بالمشاريع)
+   * حذف علاقة اعتمادية بأمان
    */
   async deleteDependency(dependencyId, user = null) {
     const existing = await this.getDependencyById(dependencyId);
@@ -381,7 +379,7 @@ class ProjectDependencyEngineService {
   }
 
   /**
-   * استرجاع شبكة العلاقات لمشروع محدد (السابقة واللاحقة)
+   * استرجاع شبكة العلاقات لمشروع محدد بنمط الاستعلام الدفعي
    */
   async getProjectDependencies(projectId) {
     const project = await projectsEngineService.getProjectById(projectId);
@@ -391,39 +389,53 @@ class ProjectDependencyEngineService {
     const allPredDeps = await this.getDependencies({ successorProjectId: actualProjectId, status: 'ACTIVE' });
     const allSuccDeps = await this.getDependencies({ predecessorProjectId: actualProjectId, status: 'ACTIVE' });
 
-    // استرجاع تفاصيل المشاريع السابقة
-    const predecessors = [];
-    for (const dep of allPredDeps) {
+    // جمع كافة المعرفات للاستعلام الدفعي
+    const relatedIds = new Set();
+    allPredDeps.forEach(d => relatedIds.add(d.predecessor_project_id || d.predecessorProjectId));
+    allSuccDeps.forEach(d => relatedIds.add(d.successor_project_id || d.successorProjectId));
+
+    const projectMap = new Map();
+    if (relatedIds.size > 0) {
+      const idsArray = Array.from(relatedIds);
+      if (isPostgresActive()) {
+        const rows = await dbQuery('SELECT id, project_number, project_name, status FROM public.projects WHERE id = ANY($1)', [idsArray]);
+        (rows || []).forEach(r => projectMap.set(r.id, r));
+      } else {
+        (memDb.projects || []).forEach(r => {
+          if (relatedIds.has(r.id)) projectMap.set(r.id, r);
+        });
+      }
+    }
+
+    const predecessors = allPredDeps.map(dep => {
       const pId = dep.predecessor_project_id || dep.predecessorProjectId;
-      const p = await projectsEngineService.getProjectById(pId);
-      predecessors.push({
+      const p = projectMap.get(pId);
+      return {
         dependencyId: dep.id,
         projectId: pId,
-        projectNumber: p?.project_number || p?.projectNumber || pId,
-        projectName: p?.project_name || p?.projectName || 'مشروع هندسي',
+        projectNumber: p?.project_number || pId,
+        projectName: p?.project_name || 'مشروع هندسي',
         status: p?.status || 'DRAFT',
         dependencyType: dep.dependency_type || dep.dependencyType,
         lagDays: dep.lag_days || dep.lagDays || 0,
         notes: dep.notes
-      });
-    }
+      };
+    });
 
-    // استرجاع تفاصيل المشاريع اللاحقة
-    const successors = [];
-    for (const dep of allSuccDeps) {
+    const successors = allSuccDeps.map(dep => {
       const sId = dep.successor_project_id || dep.successorProjectId;
-      const s = await projectsEngineService.getProjectById(sId);
-      successors.push({
+      const s = projectMap.get(sId);
+      return {
         dependencyId: dep.id,
         projectId: sId,
-        projectNumber: s?.project_number || s?.projectNumber || sId,
-        projectName: s?.project_name || s?.projectName || 'مشروع هندسي',
+        projectNumber: s?.project_number || sId,
+        projectName: s?.project_name || 'مشروع هندسي',
         status: s?.status || 'DRAFT',
         dependencyType: dep.dependency_type || dep.dependencyType,
         lagDays: dep.lag_days || dep.lagDays || 0,
         notes: dep.notes
-      });
-    }
+      };
+    });
 
     return {
       projectId: actualProjectId,
@@ -438,12 +450,11 @@ class ProjectDependencyEngineService {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 3️⃣ فحص الجاهزية والانسداد (Read-Only Readiness Validation)
+  // 3️⃣ فحص الجاهزية والانسداد الهندسي الدقيق (Readiness & Lag Validation)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * فحص جاهزية المشروع للتنفيذ وفق شبكة الاعتماديات
-   * ملاحظة معمارية: هذا الفحص للقراءة فقط (Read-Only) ولا يقوم بتعديل حالة المشروع.
+   * فحص جاهزية المشروع لبدء التنفيذ وفق العلاقات وفترات التصلب (Lag Days)
    */
   async validateProjectReadiness(projectId) {
     const project = await projectsEngineService.getProjectById(projectId);
@@ -453,39 +464,59 @@ class ProjectDependencyEngineService {
     const predDeps = await this.getDependencies({ successorProjectId: actualProjectId, status: 'ACTIVE' });
 
     const blockers = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     for (const dep of predDeps) {
       const pId = dep.predecessor_project_id || dep.predecessorProjectId;
       const p = await projectsEngineService.getProjectById(pId);
       const pStatus = p?.status || 'DRAFT';
       const type = dep.dependency_type || dep.dependencyType || 'FS';
+      const lagDays = parseInt(dep.lag_days || dep.lagDays || 0, 10);
 
       let isBlocking = false;
       let reason = '';
 
+      // فحص الجاهزية لبدء التنفيذ
       switch (type) {
-        case 'FS': // Finish-to-Start: السابق يجب أن يكون مكتملاً (COMPLETED أو CLOSED)
-          if (pStatus !== 'COMPLETED' && pStatus !== 'CLOSED') {
+        case 'FS': // Finish-to-Start: السابق يجب أن يكون مكتملاً + انقضاء فترة التأخير
+          if (!['COMPLETED', 'CLOSED'].includes(pStatus)) {
             isBlocking = true;
             reason = `المشروع السابق لم يكتمل بعد (الحالة الحالية: ${pStatus})`;
+          } else if (lagDays > 0 && p?.actual_end_date) {
+            const endDate = new Date(p.actual_end_date);
+            endDate.setHours(0, 0, 0, 0);
+            endDate.setDate(endDate.getDate() + lagDays);
+            if (today < endDate) {
+              isBlocking = true;
+              const remainingDays = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+              reason = `المشروع السابق مكتمل ولكن فترة المعالجة والتأخير (${lagDays} يوم) لم تنتهِ بعد (متبقي ${remainingDays} يوم)`;
+            }
           }
           break;
-        case 'SS': // Start-to-Start: السابق يجب أن يكون قد بدأ على الأقل (IN_PROGRESS أو COMPLETED أو CLOSED)
+
+        case 'SS': // Start-to-Start: السابق يجب أن يكون قد بدأ التنفيذ بالفعل
           if (!['IN_PROGRESS', 'COMPLETED', 'CLOSED'].includes(pStatus)) {
             isBlocking = true;
             reason = `المشروع السابق لم يبدأ التنفيذ بعد (الحالة الحالية: ${pStatus})`;
+          } else if (lagDays > 0 && p?.actual_start_date) {
+            const startDate = new Date(p.actual_start_date);
+            startDate.setHours(0, 0, 0, 0);
+            startDate.setDate(startDate.getDate() + lagDays);
+            if (today < startDate) {
+              isBlocking = true;
+              const remainingDays = Math.ceil((startDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+              reason = `المشروع السابق قيد التنفيذ ولكن فترة التأخير بعد البدء (${lagDays} يوم) لم تنقضِ (متبقي ${remainingDays} يوم)`;
+            }
           }
           break;
-        case 'FF': // Finish-to-Finish: السابق يجب أن يكون مكتملاً قبل إتمام اللاحق
-          if (pStatus !== 'COMPLETED' && pStatus !== 'CLOSED') {
-            isBlocking = true;
-            reason = `إنهاء المشروع يتطلب أولاً إتمام المشروع السابق (الحالة الحالية: ${pStatus})`;
-          }
+
+        case 'FF':
+          // علاقة Finish-to-Finish لا تمنع بدء المشروع بل ترتبط بإنهائه؛ لذا لا تمنع البدء
           break;
-        case 'SF': // Start-to-Finish: السابق يجب أن يكون قد بدأ قبل إتمام اللاحق
-          if (!['IN_PROGRESS', 'COMPLETED', 'CLOSED'].includes(pStatus)) {
-            isBlocking = true;
-            reason = `إنهاء المشروع يتطلب أولاً بدء المشروع السابق (الحالة الحالية: ${pStatus})`;
-          }
+
+        case 'SF':
+          // علاقة Start-to-Finish لا تمنع بدء المشروع؛ لذا لا تمنع البدء
           break;
       }
 
@@ -493,11 +524,11 @@ class ProjectDependencyEngineService {
         blockers.push({
           dependencyId: dep.id,
           predecessorProjectId: pId,
-          predecessorProjectNumber: p?.project_number || p?.projectNumber || pId,
-          predecessorProjectName: p?.project_name || p?.projectName || 'مشروع هندسي',
+          predecessorProjectNumber: p?.project_number || pId,
+          predecessorProjectName: p?.project_name || 'مشروع هندسي',
           predecessorStatus: pStatus,
           dependencyType: type,
-          lagDays: dep.lag_days || dep.lagDays || 0,
+          lagDays,
           reason
         });
       }
@@ -517,11 +548,11 @@ class ProjectDependencyEngineService {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 4️⃣ مخطط شبكة الاعتماديات الشامل (Dependency Graph)
+  // 4️⃣ مخطط شبكة الاعتماديات الشامل (Batch Dependency Graph)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * استرجاع مخطط شبكة الاعتماديات للمشاريع
+   * استرجاع مخطط شبكة الاعتماديات بنمط الاستعلام الدفعي السريع
    */
   async getDependencyGraph() {
     const deps = await this.getDependencies({ status: 'ACTIVE' });
@@ -533,14 +564,23 @@ class ProjectDependencyEngineService {
     });
 
     const nodes = [];
-    for (const pId of nodeIds) {
-      const p = await projectsEngineService.getProjectById(pId);
-      nodes.push({
-        id: pId,
-        projectNumber: p?.project_number || p?.projectNumber || pId,
-        projectName: p?.project_name || p?.projectName || 'مشروع هندسي',
-        status: p?.status || 'DRAFT',
-        budgetAmount: parseFloat(p?.budget_amount || p?.budgetAmount || 0)
+    if (nodeIds.size > 0) {
+      const idsArray = Array.from(nodeIds);
+      let projects = [];
+      if (isPostgresActive()) {
+        projects = await dbQuery('SELECT id, project_number, project_name, status, budget_amount FROM public.projects WHERE id = ANY($1)', [idsArray]) || [];
+      } else {
+        projects = (memDb.projects || []).filter(p => nodeIds.has(p.id));
+      }
+
+      projects.forEach(p => {
+        nodes.push({
+          id: p.id,
+          projectNumber: p.project_number || p.id,
+          projectName: p.project_name || 'مشروع هندسي',
+          status: p.status || 'DRAFT',
+          budgetAmount: parseFloat(p.budget_amount || 0)
+        });
       });
     }
 
@@ -596,5 +636,4 @@ class ProjectDependencyEngineService {
   }
 }
 
-const projectDependencyEngineService = new ProjectDependencyEngineService();
-module.exports = projectDependencyEngineService;
+module.exports = new ProjectDependencyEngineService();

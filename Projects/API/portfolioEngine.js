@@ -16,6 +16,12 @@ const plansRouter = express.Router();
 // 1️⃣ مسارات المحافظ الاستثمارية الرأسمالية (Portfolios API)
 // ═══════════════════════════════════════════════════════════════════════════
 
+// نقطة فحص الجاهزية التشغيلية (Health Probe)
+portfoliosRouter.get('/health', async (req, res) => {
+  const health = await projectPortfolioEngineService.healthCheck();
+  res.status(health.healthy ? 200 : 503).json(health);
+});
+
 // استرجاع قائمة المحافظ
 portfoliosRouter.get('/', requireAuth, rbacManager.requirePermission('PORTFOLIO.VIEW'), async (req, res) => {
   try {
@@ -134,6 +140,11 @@ portfoliosRouter.delete('/:id/projects/:projectId', requireAuth, rbacManager.req
 // ═══════════════════════════════════════════════════════════════════════════
 // 2️⃣ مسارات الخطط الهندسية والسنوية (Plans API)
 // ═══════════════════════════════════════════════════════════════════════════
+
+// نقطة فحص الجاهزية التشغيلية (Health Probe)
+plansRouter.get('/health', (req, res) => {
+  res.json({ healthy: true, status: 'READY', engineId: 'PROJECT_PLANS' });
+});
 
 // استرجاع قائمة الخطط
 plansRouter.get('/', requireAuth, rbacManager.requirePermission('PLAN.VIEW'), async (req, res) => {

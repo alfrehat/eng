@@ -1,0 +1,28 @@
+[
+  {
+    "attachment_id": "dd069813-b7d6-411f-b13a-30785bde237f",
+    "case_id": "f255997d-938a-45f4-b116-ae25279eaef8",
+    "initiative_id": null,
+    "document_id": "d4b35853-0847-40ec-84e6-a0f12bdc2647",
+    "document_type": "CASE_ATTACHMENT",
+    "file_name": "pothole_field_photo.jpg",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "classification": "CONFIDENTIAL",
+    "uploaded_by": "inspector1",
+    "uploaded_at": "2026-09-05T13:45:39.093Z",
+    "is_deleted": false
+  },
+  {
+    "attachment_id": "600d5588-f1e9-4722-ba35-98df335c0b89",
+    "case_id": "f255997d-938a-45f4-b116-ae25279eaef8",
+    "initiative_id": null,
+    "document_id": "647f848b-7a89-4381-a925-485d565735c8",
+    "document_type": "CONFIDENTIAL_NOTE",
+    "file_name": "internal_investigation_note.pdf",
+    "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    "classification": "CONFIDENTIAL",
+    "uploaded_by": "director_eng",
+    "uploaded_at": "2026-09-05T13:45:39.108Z",
+    "is_deleted": false
+  }
+]

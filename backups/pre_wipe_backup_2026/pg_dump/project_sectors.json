@@ -1,0 +1,16 @@
+[
+  {
+    "id": "sec-1",
+    "code": "INFRASTRUCTURE",
+    "label": "البنية التحتية والطرق",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "sec-2",
+    "code": "BUILDINGS",
+    "label": "المباني والأصول الهيكلية",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

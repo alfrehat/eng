@@ -1,0 +1,48 @@
+[]  {
+    "id": "TEN-2026-001",
+    "name": "عطاء صيانة خلطة إسفلتية ساخنة",
+    "contractor": "شركة المقاولات النموذجية",
+    "openDate": "",
+    "closeDate": "",
+    "value": 72000,
+    "status": "محال",
+    "notes": "",
+    "lat": 32.3301,
+    "lng": 35.7501,
+    "attachmentPath": "",
+    "tenderType": "أشغال",
+    "purchaseMethod": "مناقصة عامة",
+    "purchaseCommittee": "لجنة الشراء المحلية",
+    "estimatedValue": 75000,
+    "awardedValue": 72000,
+    "commencementDate": "",
+    "durationDays": 60,
+    "supervisorEngineer": "",
+    "completionPercentage": 0,
+    "variationOrdersValue": 0,
+    "district": "كفرنجة",
+    "tenderNumber": "TEN-2026-001",
+    "boqItemsJson": "[{\"itemNo\":1,\"description\":\"كشط إسفلت\",\"unit\":\"م2\",\"quantity\":5000,\"unitPrice\":2.5}]",
+    "contractSignDate": "2026-10-01",
+    "preliminaryHandoverDate": "",
+    "finalHandoverDate": "",
+    "performanceBondNumber": "",
+    "performanceBondValue": 0,
+    "performanceBondExpiry": "",
+    "project_id": null,
+    "budget_line_id": null,
+    "createdAt": "2026-09-10T19:02:59.506Z",
+    "updatedAt": "2026-09-10T19:02:59.508Z",
+    "projectId": null,
+    "budgetLineId": null,
+    "boqItems": [
+      {
+        "itemNo": 1,
+        "description": "كشط إسفلت",
+        "unit": "م2",
+        "quantity": 5000,
+        "unitPrice": 2.5
+      }
+    ]
+  }
+]

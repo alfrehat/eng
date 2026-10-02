@@ -15,10 +15,9 @@ const ChainageSegmentEngine = require('../Segments');
 const MaintenanceHistoryEngine = require('../Maintenance');
 const RamsAnalyticsEngine = require('../Reports/ramsAnalyticsEngine');
 const RamsReportGenerator = require('../Reports');
+const numberingEngine = require('../../services/numberingEngine');
 
-function getActivePool(req) {
-  return (req && req.app ? req.app.get('pgClient') : null) || getPool();
-}
+// getActivePool مُستبدَلة بـ dbQuery/dbGet/dbRun من utils/database (طبقة DB الموحدة)
 
 /* ═══════════════════════════════════════════════════════════════════════════
    1. قائمة الطرق و إحصائيات الشبكة
@@ -26,10 +25,9 @@ function getActivePool(req) {
 router.get('/', rbacManager.verifyToken, async (req, res) => {
   try {
     let rows = [];
-    const pool = getActivePool(req);
-    if (isPostgresActive() && pool) {
+    if (isPostgresActive()) {
       try {
-        const r = await pool.query(`
+        rows = await dbQuery(`
           SELECT id, code, name, 
                  COALESCE(category, classification, 'فرعي') AS category,
                  COALESCE(classification, category, 'فرعي') AS classification,
@@ -46,11 +44,11 @@ router.get('/', rbacManager.verifyToken, async (req, res) => {
                  created_at, updated_at
           FROM public.roads
           ORDER BY created_at DESC NULLS LAST
-          LIMIT 500;
+          LIMIT 500
         `);
-        rows = r.rows;
       } catch(dbErr) {
         console.warn('⚠️ PostgreSQL roads query failed, using fallback:', dbErr.message);
+        rows = [];
       }
     }
     
@@ -65,10 +63,9 @@ router.get('/', rbacManager.verifyToken, async (req, res) => {
 
 router.get(['/stats', '/stats/pms'], rbacManager.verifyToken, async (req, res) => {
   try {
-    const pool = getActivePool(req);
     let totalLengthKm = 0, avgPci = 80, criticalCount = 0, goodCount = 0, totalCount = 0, estimatedCost = 0;
-    if (isPostgresActive() && pool) {
-      const r = await pool.query(`
+    if (isPostgresActive()) {
+      const rows = await dbQuery(`
         SELECT 
           COUNT(*) as total_count,
           COALESCE(SUM(COALESCE(length_km, length, "lengthKm", 0)), 0) as total_length,
@@ -79,10 +76,10 @@ router.get(['/stats', '/stats/pms'], rbacManager.verifyToken, async (req, res) =
             WHEN COALESCE(pci_score, "pciRating", 80) < 60 THEN COALESCE(length_km, 1) * 1000 * 25
             WHEN COALESCE(pci_score, "pciRating", 80) < 85 THEN COALESCE(length_km, 1) * 1000 * 8
             ELSE 0 END), 0) as estimated_cost
-        FROM public.roads;
+        FROM public.roads
       `);
-      if (r.rows && r.rows[0]) {
-        const row = r.rows[0];
+      if (rows && rows[0]) {
+        const row = rows[0];
         totalCount = parseInt(row.total_count) || 0;
         totalLengthKm = parseFloat(row.total_length) || 0;
         avgPci = Math.round(parseFloat(row.avg_pci) || 80);
@@ -124,17 +121,15 @@ function getPciMetadata(score) {
 
 router.get('/gis-layer', rbacManager.verifyToken, async (req, res) => {
   try {
-    const pool = getActivePool(req);
     let rows = [];
-    if (isPostgresActive() && pool) {
+    if (isPostgresActive()) {
       try {
-        const r = await pool.query(`
+        rows = await dbQuery(`
           SELECT id, code, name, category, length_km, width_m, pci_score, surface_condition,
                  CASE WHEN geom IS NOT NULL THEN ST_AsGeoJSON(geom) ELSE NULL END AS geometry
-          FROM public.roads;
+          FROM public.roads
         `);
-        rows = r.rows;
-      } catch (e) {}
+      } catch (e) { rows = []; }
     }
 
     if (!rows.length) {
@@ -238,20 +233,19 @@ router.post('/calculate-pci', rbacManager.verifyToken, (req, res) => {
 // 1.5 محرك الخرائط الحرارية الديناميكية لكثافة عيوب الطرق (Dynamic Distress Heatmap Engine)
 router.get('/heatmap', rbacManager.verifyToken, async (req, res) => {
   try {
-    const pool = getActivePool(req);
     let points = [];
 
-    if (isPostgresActive() && pool) {
+    if (isPostgresActive()) {
       try {
-        const roadRes = await pool.query(`
+        const roadRows = await dbQuery(`
           SELECT id, name, pci_score, 
                  ST_Y(ST_Centroid(geom)) as lat, 
                  ST_X(ST_Centroid(geom)) as lng
           FROM public.roads
           WHERE geom IS NOT NULL
         `);
-        if (roadRes.rows && roadRes.rows.length) {
-          roadRes.rows.forEach(r => {
+        if (roadRows && roadRows.length) {
+          roadRows.forEach(r => {
             const pci = parseFloat(r.pci_score || 70);
             const intensity = Math.max(0.2, Math.min(1.0, (100 - pci) / 80));
             if (r.lat && r.lng) {
@@ -265,7 +259,7 @@ router.get('/heatmap', rbacManager.verifyToken, async (req, res) => {
             }
           });
         }
-      } catch (e) {}
+      } catch (e) { points = []; }
     }
 
     if (!points.length) {
@@ -287,7 +281,6 @@ router.get('/heatmap', rbacManager.verifyToken, async (req, res) => {
 // 1.6 التحليلات المكانية المتقدمة ومؤشرات أولوية الصيانة البلدية (Spatial Analytics & Maintenance Priority)
 router.get('/spatial-analytics', rbacManager.verifyToken, async (req, res) => {
   try {
-    const pool = getActivePool(req);
     let totalRoads = 0, criticalCount = 0, fairCount = 0, goodCount = 0;
     let districts = {
       'وسط البلد': { roads: 0, avgPci: 0, sumPci: 0, critical: 0 },
@@ -298,11 +291,10 @@ router.get('/spatial-analytics', rbacManager.verifyToken, async (req, res) => {
     };
 
     let roadsList = [];
-    if (isPostgresActive() && pool) {
+    if (isPostgresActive()) {
       try {
-        const rRes = await pool.query('SELECT id, name, classification, length_km, pci_score, aadt_volume FROM public.roads');
-        if (rRes.rows) roadsList = rRes.rows;
-      } catch (e) {}
+        roadsList = await dbQuery('SELECT id, name, classification, length_km, pci_score, aadt_volume FROM public.roads');
+      } catch (e) { roadsList = []; }
     }
 
     if (!roadsList.length) {
@@ -374,31 +366,28 @@ router.get('/spatial-analytics', rbacManager.verifyToken, async (req, res) => {
 // 1.7 الطبقات المكانية المركبة (Composite GIS Layers)
 router.get('/gis-layers/composite', rbacManager.verifyToken, async (req, res) => {
   try {
-    const pool = getActivePool(req);
     let roadFeatures = [];
 
-    if (isPostgresActive() && pool) {
+    if (isPostgresActive()) {
       try {
-        const rRes = await pool.query(`
+        const rows = await dbQuery(`
           SELECT id, name, classification, pci_score, length_km, width_m,
                  ST_AsGeoJSON(geom) as geojson
           FROM public.roads
           WHERE geom IS NOT NULL
         `);
-        if (rRes.rows) {
-          roadFeatures = rRes.rows.map(r => ({
-            type: 'Feature',
-            geometry: typeof r.geojson === 'string' ? JSON.parse(r.geojson) : r.geojson,
-            properties: {
-              id: r.id,
-              name: r.name,
-              pci: r.pci_score,
-              condition: r.pci_score >= 85 ? 'GOOD' : (r.pci_score >= 55 ? 'FAIR' : 'POOR'),
-              length_km: r.length_km
-            }
-          }));
-        }
-      } catch (e) {}
+        roadFeatures = (rows || []).map(r => ({
+          type: 'Feature',
+          geometry: typeof r.geojson === 'string' ? JSON.parse(r.geojson) : r.geojson,
+          properties: {
+            id: r.id,
+            name: r.name,
+            pci: r.pci_score,
+            condition: r.pci_score >= 85 ? 'GOOD' : (r.pci_score >= 55 ? 'FAIR' : 'POOR'),
+            length_km: r.length_km
+          }
+        }));
+      } catch (e) { roadFeatures = []; }
     }
 
     res.json({
@@ -441,16 +430,13 @@ router.post('/save-complete', rbacManager.verifyToken,
       return res.status(400).json({ success: false, error: 'كود الطريق واسمه إلزاميان.' });
     }
 
-    const pool = getActivePool(req);
     try {
       let existingRoad = null;
-      if (id && isPostgresActive() && pool) {
-        const r = await pool.query('SELECT id FROM public.roads WHERE id = $1', [id]);
-        if (r.rows.length) existingRoad = r.rows[0];
+      if (id && isPostgresActive()) {
+        existingRoad = await dbGet('SELECT id FROM public.roads WHERE id = $1', [id]);
       }
-      if (!existingRoad && code && isPostgresActive() && pool) {
-        const r = await pool.query('SELECT id FROM public.roads WHERE code = $1', [code]);
-        if (r.rows.length) existingRoad = r.rows[0];
+      if (!existingRoad && code && isPostgresActive()) {
+        existingRoad = await dbGet('SELECT id FROM public.roads WHERE code = $1', [code]);
       }
       
       const roadId = existingRoad ? existingRoad.id : (id || `RD-${Date.now()}`);
@@ -460,7 +446,7 @@ router.post('/save-complete', rbacManager.verifyToken,
         INSERT INTO public.roads
           (id, code, name, category, classification, length_km, width_m, lanes_count,
            pci_score, aadt_volume, surface_condition, geom, updated_at, created_at)
-        VALUES ($1,$2,$3,$4,$4,$5,$6,$7,$8,$9,$10, ${geomValue ? 'ST_SetSRID(ST_GeomFromGeoJSON($11), 4326)' : 'NULL'}, NOW(), NOW())
+        VALUES ($1,$2,$3,$4,$4,$5,$6,$7,$8,$9,$10, CASE WHEN $11::text IS NOT NULL AND $11::text != '' THEN ST_SetSRID(ST_GeomFromGeoJSON($11), 4326) ELSE NULL END, NOW(), NOW())
         ON CONFLICT (id) DO UPDATE SET
           code             = EXCLUDED.code,
           name             = EXCLUDED.name,
@@ -474,7 +460,7 @@ router.post('/save-complete', rbacManager.verifyToken,
           surface_condition= EXCLUDED.surface_condition,
           geom             = COALESCE(EXCLUDED.geom, public.roads.geom),
           updated_at       = NOW()
-        RETURNING *;
+        RETURNING *
       `;
       const params = [
         roadId, code, name, category || 'فرعي',
@@ -483,14 +469,15 @@ router.post('/save-complete', rbacManager.verifyToken,
         parseInt(lanesCount)  || 2,
         parseFloat(pciScore)  || 80,
         parseInt(aadtVolume)  || 0,
-        surfaceCondition || 'خلطة إسفلتية'
+        surfaceCondition || 'خلطة إسفلتية',
+        geomValue || null
       ];
-      if (geomValue) params.push(geomValue);
       
       let savedData = null;
-      if (isPostgresActive() && pool) {
-        const result = await pool.query(q, params);
-        savedData = result.rows[0];
+      if (isPostgresActive()) {
+        // RETURNING * يعيد الصف — نستخدم dbQuery ونأخذ أول صف
+        const rows = await dbQuery(q, params);
+        savedData = rows[0] || null;
       } else {
         await dbRun('UPDATE roads SET code=?, name=?, category=?, lengthKm=?, widthMeters=?, lanes=?, conditionIndex=?, surfaceType=? WHERE id=?',
           [code, name, category, lengthKm, widthMeters, lanesCount, pciScore, surfaceCondition, roadId]);
@@ -511,9 +498,8 @@ router.delete('/:id', rbacManager.verifyToken,
   rbacManager.requirePermission('ROADS.DELETE'),
   async (req, res, next) => {
     try {
-      const pool = getActivePool(req);
-      if (isPostgresActive() && pool) {
-        await pool.query('DELETE FROM public.roads WHERE id = $1;', [req.params.id]);
+      if (isPostgresActive()) {
+        await dbRun('DELETE FROM public.roads WHERE id = $1', [req.params.id]);
       } else {
         await dbRun('DELETE FROM roads WHERE id = ?', [req.params.id]);
       }
@@ -527,17 +513,16 @@ router.delete('/:id', rbacManager.verifyToken,
 /* ═══════════════════════════════════════════════════════════════════════════
    4. فحوصات الرصفة (PMS Inspections)
 ═══════════════════════════════════════════════════════════════════════════ */
-router.get('/inspections/list', rbacManager.verifyToken, async (req, res, next) => {
+router.get(['/inspections', '/inspections/list'], rbacManager.verifyToken, async (req, res, next) => {
   try {
-    const pool = getActivePool(req);
-    if (isPostgresActive() && pool) {
-      const r = await pool.query(`
+    if (isPostgresActive()) {
+      const rows = await dbQuery(`
         SELECT COALESCE(pi.inspection_id, pi.id) as id, pi.*, r.name AS road_name, r.code AS road_code
         FROM public.pavement_inspections pi
         LEFT JOIN public.roads r ON pi.road_id = r.id
-        ORDER BY pi.inspection_date DESC NULLS LAST;
+        ORDER BY pi.inspection_date DESC NULLS LAST
       `);
-      return res.json({ success: true, data: r.rows });
+      return res.json({ success: true, data: rows });
     }
     return res.json({ success: true, data: [] });
   } catch (err) {
@@ -546,30 +531,29 @@ router.get('/inspections/list', rbacManager.verifyToken, async (req, res, next) 
 });
 
 router.post('/inspections/save', rbacManager.verifyToken,
-  rbacManager.requirePermission(['ROADS.EDIT', 'ROADS.CREATE', 'TASKS.CREATE']),
+  rbacManager.requirePermission(['ROADS.PCI', 'TASKS.INSPECT', 'OBSERVATIONS.CREATE', 'ROADS.EDIT', 'ROADS.CREATE', 'TASKS.CREATE']),
   async (req, res, next) => {
     const { id, roadId, inspectionDate, pciScore, distressType, defectType, recommendation, recommendedAction, notes } = req.body;
-    const inspId = id || `INSP-${Date.now()}`;
-    const pool = getActivePool(req);
+    const inspId = id || await numberingEngine.generateNextId('pavement_inspections', { prefix: 'INSP' });
     const finalDistress = distressType || defectType || 'فحص دوري عام';
     const finalRec = recommendation || recommendedAction || 'صيانة عادية';
     const finalPci = parseFloat(pciScore) || 80;
     const finalDate = inspectionDate || new Date().toISOString().split('T')[0];
 
     try {
-      if (isPostgresActive() && pool) {
-        await pool.query(`
+      if (isPostgresActive()) {
+        await dbRun(`
           INSERT INTO public.pavement_inspections
             (inspection_id, road_id, inspection_date, pci_score, distress_type, defect_type, recommendation, recommended_action, inspector_id, inspector_name, notes, created_at, updated_at)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW());
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
         `, [inspId, roadId, finalDate, finalPci, finalDistress, finalDistress, finalRec, finalRec, req.user?.id || 'U-001', req.user?.fullName || 'المهندس المشرف', notes || '']);
             
-        // Also update the road's pci_score and last_maintenance_date in roads table!
+        // تحديث مؤشر رصف الطريق بعد الفحص
         if (roadId && pciScore) {
-          await pool.query(`
+          await dbRun(`
             UPDATE public.roads 
             SET pci_score = $1, last_maintenance_date = $2, updated_at = NOW() 
-            WHERE id = $3;
+            WHERE id = $3
           `, [finalPci, finalDate, roadId]);
         }
       }
@@ -585,8 +569,12 @@ router.delete('/inspections/:id', rbacManager.verifyToken,
   rbacManager.requirePermission(['ROADS.DELETE', 'TASKS.DELETE']),
   async (req, res, next) => {
     try {
-      await pool.query('DELETE FROM public.pavement_inspections WHERE id=$1;', [req.params.id]);
-      return res.json({ success: true });
+      if (isPostgresActive()) {
+        await dbRun('DELETE FROM public.pavement_inspections WHERE id = $1 OR inspection_id = $1', [req.params.id]);
+      } else {
+        await dbRun('DELETE FROM pavement_inspections WHERE id = ? OR inspection_id = ?', [req.params.id, req.params.id]);
+      }
+      return res.json({ success: true, message: 'تم حذف تقرير الفحص بنجاح' });
     } catch (err) {
       next(err);
     }

@@ -1,0 +1,40 @@
+[
+  {
+    "decision_id": "f05ec8cb-1f45-427d-9b74-4b16b3cd25bb",
+    "purchase_request_id": "bd5b517d-5d27-457c-a53d-f6f1af68cc7d",
+    "recommended_supplier_id": "53cd0e11-b3d6-467d-a755-5265cfce0b07",
+    "recommended_quotation_id": "f03ddf74-d4cd-40c9-993a-2068d8d832f5",
+    "recommended_value": "5452.000",
+    "decision_date": "2026-09-05T13:45:38.220Z",
+    "decision_authority": "لجنة المشتريات واللوازم المحلية",
+    "reason": "أفضل عرض مالي وفني، وأقصر مدة توريد، مع ضمان معتمد لمدة 12 شهرًا",
+    "status": "APPROVED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "procurement_head",
+    "created_at": "2026-09-05T13:45:38.220Z",
+    "updated_by": "mayor_office",
+    "updated_at": "2026-09-05T13:45:38.222Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "decision_id": "c9a11c1c-f8ad-4fbd-93d5-78c9362427cf",
+    "purchase_request_id": "68d89e8e-6d16-4e2c-8d93-3fd9e009a718",
+    "recommended_supplier_id": "53cd0e11-b3d6-467d-a755-5265cfce0b07",
+    "recommended_quotation_id": "d64ef61b-4523-45f0-8525-6f4035ca3443",
+    "recommended_value": "4408.000",
+    "decision_date": "2026-09-05T13:45:38.434Z",
+    "decision_authority": "لجنة المشتريات",
+    "reason": "مطابق للمواصفات وأقل الأسعار",
+    "status": "APPROVED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "director",
+    "created_at": "2026-09-05T13:45:38.434Z",
+    "updated_by": "director",
+    "updated_at": "2026-09-05T13:45:38.438Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

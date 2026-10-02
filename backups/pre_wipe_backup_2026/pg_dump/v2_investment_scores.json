@@ -1,0 +1,222 @@
+[
+  {
+    "score_id": "sc_1788615939917_jskm",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_1",
+    "raw_score": "90.00",
+    "weighted_score": "13.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 90/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939929_zczg",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_2",
+    "raw_score": "92.00",
+    "weighted_score": "13.80",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 92/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939930_k4cw",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_3",
+    "raw_score": "85.00",
+    "weighted_score": "8.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 85/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939931_jmu0",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_4",
+    "raw_score": "90.00",
+    "weighted_score": "13.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 90/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939932_dru4",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_5",
+    "raw_score": "90.00",
+    "weighted_score": "9.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 90/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939932_wz2z",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_6",
+    "raw_score": "88.00",
+    "weighted_score": "8.80",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 88/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939933_72tq",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_7",
+    "raw_score": "85.00",
+    "weighted_score": "8.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 85/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939934_38zd",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_8",
+    "raw_score": "80.00",
+    "weighted_score": "4.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 80/100 (Weight: 5)"
+  },
+  {
+    "score_id": "sc_1788615939935_liwh",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "criterion_id": "crit_inv_9",
+    "raw_score": "90.00",
+    "weighted_score": "9.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 90/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939938_iwjs",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_1",
+    "raw_score": "70.00",
+    "weighted_score": "10.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 70/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939939_inw4",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_2",
+    "raw_score": "75.00",
+    "weighted_score": "11.25",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 75/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939940_lxu6",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_3",
+    "raw_score": "80.00",
+    "weighted_score": "8.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 80/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939940_8ejy",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_4",
+    "raw_score": "70.00",
+    "weighted_score": "10.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 70/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615939941_332o",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_5",
+    "raw_score": "75.00",
+    "weighted_score": "7.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 75/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939941_x6ws",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_6",
+    "raw_score": "80.00",
+    "weighted_score": "8.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 80/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939942_hgf8",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_7",
+    "raw_score": "70.00",
+    "weighted_score": "7.00",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 70/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615939942_pm3s",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_8",
+    "raw_score": "70.00",
+    "weighted_score": "3.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 70/100 (Weight: 5)"
+  },
+  {
+    "score_id": "sc_1788615939943_rp2k",
+    "evaluation_id": "a0534146-aa70-4e70-b065-9673956f3ef4",
+    "bid_id": "f68bf21b-36d3-4065-a649-af1d181387cd",
+    "criterion_id": "crit_inv_9",
+    "raw_score": "85.00",
+    "weighted_score": "8.50",
+    "evaluator_name": "evaluator_1",
+    "comments": "Score calculated: 85/100 (Weight: 10)"
+  },
+  {
+    "score_id": "sc_1788615940060_3gmk",
+    "evaluation_id": "df48fe32-16f2-49e9-876e-383f690d89d4",
+    "bid_id": "d1d5f6db-6d8d-412b-93cb-f57bb9913d13",
+    "criterion_id": "crit_inv_1",
+    "raw_score": "95.00",
+    "weighted_score": "14.25",
+    "evaluator_name": "EVALUATOR",
+    "comments": "Score calculated: 95/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615940061_kk3k",
+    "evaluation_id": "df48fe32-16f2-49e9-876e-383f690d89d4",
+    "bid_id": "d1d5f6db-6d8d-412b-93cb-f57bb9913d13",
+    "criterion_id": "crit_inv_2",
+    "raw_score": "90.00",
+    "weighted_score": "13.50",
+    "evaluator_name": "EVALUATOR",
+    "comments": "Score calculated: 90/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615940062_7i2s",
+    "evaluation_id": "df48fe32-16f2-49e9-876e-383f690d89d4",
+    "bid_id": "d1d5f6db-6d8d-412b-93cb-f57bb9913d13",
+    "criterion_id": "crit_inv_4",
+    "raw_score": "92.00",
+    "weighted_score": "13.80",
+    "evaluator_name": "EVALUATOR",
+    "comments": "Score calculated: 92/100 (Weight: 15)"
+  },
+  {
+    "score_id": "sc_1788615940063_0qjb",
+    "evaluation_id": "df48fe32-16f2-49e9-876e-383f690d89d4",
+    "bid_id": "d1d5f6db-6d8d-412b-93cb-f57bb9913d13",
+    "criterion_id": "crit_inv_5",
+    "raw_score": "88.00",
+    "weighted_score": "8.80",
+    "evaluator_name": "EVALUATOR",
+    "comments": "Score calculated: 88/100 (Weight: 10)"
+  }
+]

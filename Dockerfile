@@ -1,42 +1,41 @@
 # Dockerfile
-# ملف البناء متعدد المراحل المعزول والآمن لنظام بلدية كفرنجة ERP v4.0
+# 🐳 ملف البناء المؤسسي متعدد المراحل لنظام بلدية كفرنجة الجديدة
+# v2.0 - Anti-Gravity Enterprise Multi-Stage Container Edition
 
-# --- المرحلة الأولى: البناء وتثبيت الاعتماديات الشاملة ---
+# --- المرحلة الأولى: بيئة البناء وتجميع الحزم ---
 FROM node:18-alpine AS builder
 WORKDIR /usr/src/app
 
-# تثبيت متطلبات البناء لبعض حزم node المعتمدة على المترجمات (إن وجدت)
-RUN apk add --no-cache python3 make g++ 
+RUN apk add --no-cache python3 make g++
 
-# نسخ ملفات الاعتماديات
 COPY package*.json ./
 RUN npm ci
 
-# --- المرحلة الثانية: بيئة التشغيل الإنتاجية المخففة ---
+COPY . .
+
+# --- المرحلة الثانية: بيئة التشغيل الإنتاجية المعزولة ---
 FROM node:18-alpine AS runner
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
 ENV PORT=3005
 
-# نسخ ملفات الاعتماديات وتثبيت الحزم الإنتاجية فقط لمنع الثغرات
+# نسخ ملفات الحزم وتثبيت الاعتماديات الإنتاجية فقط
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
-# نسخ ملفات خادم التطبيق وقواعد البيانات من بيئة البناء
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY . .
+# نسخ ملفات الكود المصدري وقواعد البيانات
+COPY --chown=node:node . .
 
-# إنشاء مجلدات للمرفوعات وسجلات التشغيل والتراجع بأمان
-RUN mkdir -p uploads logs database
+# إنشاء المجلدات التشغيلية وضبط ملكيتها بالكامل لحساب node
+RUN mkdir -p uploads logs database && chown -R node:node /usr/src/app
 
-# حظر مستخدم root وتشغيل الحاوية بصلاحيات مستخدم node المعزول لأسباب أمنية
 USER node
 
 EXPOSE 3005
 
-# فحص صحة الحاوية لضمان العلاج الذاتي (Self-Healing)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "fetch('http://localhost:3005/').then(res => res.status === 200 ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+# فحص الجاهزية التشغيلية (Healthcheck)
+HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://localhost:' + (process.env.PORT || 3005) + '/api/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
 CMD ["node", "server.js"]

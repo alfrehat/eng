@@ -1,0 +1,16 @@
+[
+  {
+    "id": "trs-1",
+    "code": "PASS",
+    "label": "مطابق للمواصفات الرسمية",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "trs-2",
+    "code": "FAIL",
+    "label": "غير مطابق للمواصفات",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

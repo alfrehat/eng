@@ -90,6 +90,12 @@
     "status": "ACTIVE"
   },
   {
+    "file": "config\\index.js",
+    "currentModule": "Root / Shared",
+    "purpose": "Logic / Module",
+    "status": "ACTIVE"
+  },
+  {
     "file": "config\\notificationChannels.js",
     "currentModule": "Root / Shared",
     "purpose": "Logic / Module",

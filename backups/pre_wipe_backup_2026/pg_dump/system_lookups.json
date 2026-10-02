@@ -1,0 +1,152 @@
+[
+  {
+    "id": "LK-001",
+    "group": "TENDER_TYPES",
+    "code": "WORKS",
+    "valueAr": "أشغال هندسية وبنية تحتية",
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.907Z",
+    "updatedAt": "2026-08-23T11:11:55.907Z"
+  },
+  {
+    "id": "LK-002",
+    "group": "TENDER_TYPES",
+    "code": "SUPPLIES",
+    "valueAr": "لوازم ومشتريات ومعدات",
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.913Z",
+    "updatedAt": "2026-08-23T11:11:55.913Z"
+  },
+  {
+    "id": "LK-003",
+    "group": "TENDER_TYPES",
+    "code": "SERVICES",
+    "valueAr": "خدمات فنية واستشارية",
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.915Z",
+    "updatedAt": "2026-08-23T11:11:55.915Z"
+  },
+  {
+    "id": "LK-004",
+    "group": "TENDER_STATUS",
+    "code": "OPEN",
+    "valueAr": "مفتوح / جاري التنفيذ",
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.917Z",
+    "updatedAt": "2026-08-23T11:11:55.917Z"
+  },
+  {
+    "id": "LK-005",
+    "group": "TENDER_STATUS",
+    "code": "COMPLETED",
+    "valueAr": "مُنجز ومستلم نهائياً",
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.920Z",
+    "updatedAt": "2026-08-23T11:11:55.920Z"
+  },
+  {
+    "id": "LK-006",
+    "group": "TENDER_STATUS",
+    "code": "SUSPENDED",
+    "valueAr": "موقوف مؤقتاً",
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.920Z",
+    "updatedAt": "2026-08-23T11:11:55.920Z"
+  },
+  {
+    "id": "LK-007",
+    "group": "TASK_PRIORITIES",
+    "code": "HIGH",
+    "valueAr": "عالية الأولوية / طارئة",
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.921Z",
+    "updatedAt": "2026-08-23T11:11:55.921Z"
+  },
+  {
+    "id": "LK-008",
+    "group": "TASK_PRIORITIES",
+    "code": "MEDIUM",
+    "valueAr": "متوسطة",
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.922Z",
+    "updatedAt": "2026-08-23T11:11:55.922Z"
+  },
+  {
+    "id": "LK-009",
+    "group": "TASK_PRIORITIES",
+    "code": "NORMAL",
+    "valueAr": "عادية",
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.923Z",
+    "updatedAt": "2026-08-23T11:11:55.923Z"
+  },
+  {
+    "id": "LK-010",
+    "group": "DOC_TYPES",
+    "code": "TENDER",
+    "valueAr": "وثيقة عطاء",
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.923Z",
+    "updatedAt": "2026-08-23T11:11:55.923Z"
+  },
+  {
+    "id": "LK-011",
+    "group": "DOC_TYPES",
+    "code": "CLAIM",
+    "valueAr": "مطالبة / مستخلص مالي",
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.924Z",
+    "updatedAt": "2026-08-23T11:11:55.924Z"
+  },
+  {
+    "id": "LK-012",
+    "group": "DOC_TYPES",
+    "code": "CORRESPONDENCE",
+    "valueAr": "مراسلة / كتاب رسمي",
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.924Z",
+    "updatedAt": "2026-08-23T11:11:55.924Z"
+  },
+  {
+    "id": "LK-013",
+    "group": "PROJECT_SECTORS",
+    "code": "ROADS",
+    "valueAr": "قطاع الطرق والتعبيد",
+    "sortOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.925Z",
+    "updatedAt": "2026-08-23T11:11:55.925Z"
+  },
+  {
+    "id": "LK-014",
+    "group": "PROJECT_SECTORS",
+    "code": "BUILDINGS",
+    "valueAr": "قطاع الأبنية والمرافق",
+    "sortOrder": 2,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.925Z",
+    "updatedAt": "2026-08-23T11:11:55.925Z"
+  },
+  {
+    "id": "LK-015",
+    "group": "PROJECT_SECTORS",
+    "code": "INFRASTRUCTURE",
+    "valueAr": "قطاع البنية التحتية والمياه",
+    "sortOrder": 3,
+    "isActive": true,
+    "createdAt": "2026-08-23T11:11:55.926Z",
+    "updatedAt": "2026-08-23T11:11:55.926Z"
+  }
+]

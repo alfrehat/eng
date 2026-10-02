@@ -1,0 +1,42 @@
+[
+  {
+    "monitoring_id": "c7c8cac3-5b73-41cc-ada2-0b4d10eb80d1",
+    "agreement_id": "6f96a289-7a19-4be0-bbac-946c04d87c74",
+    "monitoring_date": "2026-09-05T13:45:39.989Z",
+    "physical_progress": "35.00",
+    "financial_progress": "40.00",
+    "revenue_progress": "0.00",
+    "compliance_score": "92.00",
+    "issues": "لا توجد معوقات، الأعمال تسير طبقاً للجدول الزمني المعتمد",
+    "corrective_action": "الاستمرار بالصب الخرساني وفق المعايير",
+    "next_review_date": null,
+    "status": "COMPLETED",
+    "inspector_name": "eng_inspector",
+    "created_by": "eng_inspector",
+    "created_at": "2026-09-05T13:45:39.990Z",
+    "updated_by": "eng_inspector",
+    "updated_at": "2026-09-05T13:45:39.990Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "monitoring_id": "036555c8-f959-4fad-a13d-6dd0f33d018a",
+    "agreement_id": "4651ad8e-71d4-4129-b15d-1bb75d97d2cf",
+    "monitoring_date": "2026-09-05T13:45:40.084Z",
+    "physical_progress": "100.00",
+    "financial_progress": "0.00",
+    "revenue_progress": "0.00",
+    "compliance_score": "100.00",
+    "issues": null,
+    "corrective_action": null,
+    "next_review_date": null,
+    "status": "COMPLETED",
+    "inspector_name": "SYSTEM",
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.084Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.085Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

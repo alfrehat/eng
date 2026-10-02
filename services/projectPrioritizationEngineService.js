@@ -1,14 +1,7 @@
 /**
  * services/projectPrioritizationEngineService.js
- * ⚖️ محرك ترجيح وأولويات المشاريع الهندسية (PROJECT_PRIORITIZATION_ENGINE — Phase 04-B)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. نموذج ترجيح حسابي شفاف ومحدد (Deterministic Weighted Scoring Model).
- * 2. الحفاظ الكامل على بيانات المشاريع في PROJECTS_ENGINE دون تعديل البيانات الأساسية.
- * 3. المعادلة المعتمدة: weighted_score = (score / max_score) * weight.
- * 4. الترتيب العام: total_score DESC ثم project_id ASC لضمان الحتمية في الترتيب.
- * 5. التدقيق الشامل لكافة عمليات التقييم وترجيح المعايير.
+ * ⚖️ محرك ترجيح وأولويات المشاريع الهندسية (PROJECT_PRIORITIZATION_ENGINE)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -26,14 +19,15 @@ class ProjectPrioritizationEngineService {
   constructor() {
     this.engineId = 'PROJECT_PRIORITIZATION_ENGINE';
     this.engineName = 'Enterprise Project Prioritization & Scoring Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
       'criteria_weighting',
       'project_scoring',
       'priority_ranking',
-      'score_recalculation'
+      'score_recalculation',
+      'cascade_reweighting'
     ];
   }
 
@@ -43,23 +37,15 @@ class ProjectPrioritizationEngineService {
   async _recordAudit(userId, entityId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء أولويات المشاريع [${action}] على المعرف [${entityId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'ترجيح وأولويات المشاريع', entityId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-PRIO-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'ترجيح وأولويات المشاريع',
-          entityId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'أولويات المشاريع',
+        entityId: String(entityId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectPrioritizationEngine', `Audit log failed: ${e.message}`);
     }
@@ -87,7 +73,6 @@ class ProjectPrioritizationEngineService {
       throw new Error('الحد الأقصى للنقاط (max_score) يجب أن يكون أكبر من الصفر.');
     }
 
-    // فحص فرادة الرمز
     let duplicate = null;
     if (isPostgresActive()) {
       duplicate = await dbGet('SELECT id FROM public.project_priority_criteria WHERE code = $1', [code]);
@@ -150,7 +135,7 @@ class ProjectPrioritizationEngineService {
       }
       list.sort((a, b) => new Date(a.createdAt || a.created_at || 0) - new Date(b.createdAt || b.created_at || 0));
     }
-    return list;
+    return list || [];
   }
 
   /**
@@ -166,7 +151,7 @@ class ProjectPrioritizationEngineService {
   }
 
   /**
-   * تعديل معيار تقييم
+   * تعديل معيار تقييم مع إعادة احتساب الدرجات التابعة له آلياً
    */
   async updatePriorityCriterion(criterionId, updates, user = null) {
     const existing = await this.getPriorityCriterionById(criterionId);
@@ -201,20 +186,40 @@ class ProjectPrioritizationEngineService {
         SET name = $1, description = $2, weight = $3, max_score = $4, updated_by = $5, updated_at = NOW()
         WHERE id = $6
       `, [updated.name, updated.description, updated.weight, updated.max_score, user?.id || 'SYSTEM', existing.id]);
+
+      // تحديث تسلسلي للدرجات الموزونة التابعة لهذا المعيار
+      await dbRun(`
+        UPDATE public.project_priority_scores
+        SET weighted_score = ROUND(((score / $1) * $2)::numeric, 2), updated_at = NOW()
+        WHERE criterion_id = $3
+      `, [updated.max_score, updated.weight, existing.id]);
     } else {
       const idx = (memDb.project_priority_criteria || []).findIndex(c => c.id === existing.id);
       if (idx !== -1) {
         memDb.project_priority_criteria[idx] = { ...memDb.project_priority_criteria[idx], ...updated };
         saveMemTable('project_priority_criteria');
       }
+
+      // تحديث محلي في الذاكرة
+      if (memDb.project_priority_scores) {
+        memDb.project_priority_scores.forEach(s => {
+          if (s.criterion_id === existing.id || s.criterionId === existing.id) {
+            const rawScore = parseFloat(s.score || 0);
+            s.weighted_score = Math.round(((rawScore / updated.max_score) * updated.weight) * 100) / 100;
+          }
+        });
+        saveMemTable('project_priority_scores');
+      }
     }
 
+    // إعادة احتساب المجاميع والترتيب لكافة المشاريع المتأثرة
+    await this.recalculateAllProjectPriorities(user);
     await this._recordAudit(user?.id, existing.id, 'PRIORITY_CRITERION_UPDATED', existing, updated);
     return updated;
   }
 
   /**
-   * تفعيل معيار
+   * تفعيل معيار وإعادة احتساب المجاميع المتأثرة
    */
   async activatePriorityCriterion(criterionId, user = null) {
     const existing = await this.getPriorityCriterionById(criterionId);
@@ -230,12 +235,13 @@ class ProjectPrioritizationEngineService {
       }
     }
 
+    await this.recalculateAllProjectPriorities(user);
     await this._recordAudit(user?.id, existing.id, 'PRIORITY_CRITERION_ACTIVATED', { active: false }, { active: true });
-    return { success: true, message: 'تم تفعيل معيار التقييم بنجاح.' };
+    return { success: true, message: 'تم تفعيل معيار التقييم وتحديث ترتيب المشاريع بنجاح.' };
   }
 
   /**
-   * تعطيل معيار
+   * تعطيل معيار وإعادة احتساب المجاميع آلياً
    */
   async deactivatePriorityCriterion(criterionId, user = null) {
     const existing = await this.getPriorityCriterionById(criterionId);
@@ -251,8 +257,9 @@ class ProjectPrioritizationEngineService {
       }
     }
 
+    await this.recalculateAllProjectPriorities(user);
     await this._recordAudit(user?.id, existing.id, 'PRIORITY_CRITERION_DEACTIVATED', { active: true }, { active: false });
-    return { success: true, message: 'تم تعطيل معيار التقييم بنجاح.' };
+    return { success: true, message: 'تم تعطيل معيار التقييم وتحديث ترتيب المشاريع بنجاح.' };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -263,13 +270,11 @@ class ProjectPrioritizationEngineService {
    * تسجيل أو تحديث درجة مشروع لمعيار معين
    */
   async setProjectCriterionScore(projectId, criterionId, scoreValue, notes = '', user = null) {
-    // 1. التحقق من وجود المشروع عبر PROJECTS_ENGINE
     const project = await projectsEngineService.getProjectById(projectId);
     if (!project) {
       throw new Error(`المشروع الهندسي [${projectId}] غير موجود.`);
     }
 
-    // 2. التحقق من وجود المعيار وكونه نشطاً
     const criterion = await this.getPriorityCriterionById(criterionId);
     if (!criterion) {
       throw new Error(`معيار التقييم [${criterionId}] غير موجود.`);
@@ -278,17 +283,14 @@ class ProjectPrioritizationEngineService {
       throw new Error(`معيار التقييم [${criterion.name || criterion.code}] معطل ولا يمكن تسجيل نقاط عليه.`);
     }
 
-    // 3. التحقق من النطاق الصحيح للنقاط
     const score = parseFloat(scoreValue);
     const maxScore = parseFloat(criterion.max_score || criterion.maxScore || 10.0);
     if (isNaN(score) || score < 0 || score > maxScore) {
       throw new Error(`الدرجة [${scoreValue}] غير صالحة. يجب أن تكون بين 0 و ${maxScore}.`);
     }
 
-    // 4. احتساب الدرجة الموزونة: (score / max_score) * weight
     const weight = parseFloat(criterion.weight || 0);
     const weightedScore = maxScore > 0 ? Math.round(((score / maxScore) * weight) * 100) / 100 : 0;
-
     const actualProjectId = project.id;
     const actualCriterionId = criterion.id;
 
@@ -296,7 +298,10 @@ class ProjectPrioritizationEngineService {
     if (isPostgresActive()) {
       existingScore = await dbGet('SELECT * FROM public.project_priority_scores WHERE project_id = $1 AND criterion_id = $2', [actualProjectId, actualCriterionId]);
     } else {
-      existingScore = (memDb.project_priority_scores || []).find(s => (s.project_id === actualProjectId || s.projectId === actualProjectId) && (s.criterion_id === actualCriterionId || s.criterionId === actualCriterionId));
+      existingScore = (memDb.project_priority_scores || []).find(s => 
+        (s.project_id === actualProjectId || s.projectId === actualProjectId) && 
+        (s.criterion_id === actualCriterionId || s.criterionId === actualCriterionId)
+      );
     }
 
     const scoreRecord = {
@@ -323,7 +328,10 @@ class ProjectPrioritizationEngineService {
       `, Object.values(scoreRecord));
     } else {
       if (!memDb.project_priority_scores) memDb.project_priority_scores = [];
-      const idx = memDb.project_priority_scores.findIndex(s => (s.project_id === actualProjectId || s.projectId === actualProjectId) && (s.criterion_id === actualCriterionId || s.criterionId === actualCriterionId));
+      const idx = memDb.project_priority_scores.findIndex(s => 
+        (s.project_id === actualProjectId || s.projectId === actualProjectId) && 
+        (s.criterion_id === actualCriterionId || s.criterionId === actualCriterionId)
+      );
       if (idx !== -1) {
         memDb.project_priority_scores[idx] = scoreRecord;
       } else {
@@ -334,7 +342,6 @@ class ProjectPrioritizationEngineService {
 
     await this._recordAudit(user?.id, actualProjectId, 'PROJECT_PRIORITY_SCORE_SET', existingScore, scoreRecord);
 
-    // إعادة احتساب الأولوية الإجمالية للمشروع تلقائياً
     const totalResult = await this.calculateProjectPriority(actualProjectId, user);
     return {
       success: true,
@@ -371,12 +378,12 @@ class ProjectPrioritizationEngineService {
           criterion_name: c.name,
           weight: c.weight,
           max_score: c.max_score || c.maxScore,
-          active: c.active
+          active: c.active !== false
         };
       });
     }
 
-    return scores;
+    return scores || [];
   }
 
   /**
@@ -389,7 +396,6 @@ class ProjectPrioritizationEngineService {
     const actualProjectId = project.id;
     const scores = await this.getProjectScores(actualProjectId);
 
-    // احتساب المجموع للأوزان والدرجات للمعايير النشطة فقط
     let totalScore = 0;
     scores.forEach(s => {
       if (s.active !== false) {
@@ -411,7 +417,7 @@ class ProjectPrioritizationEngineService {
       project_id: actualProjectId,
       total_score: totalScore,
       rank: existingResult?.rank || 0,
-      calculation_version: 'v1.0',
+      calculation_version: 'v2.0',
       calculated_at: new Date().toISOString(),
       calculated_by: user?.id || 'SYSTEM'
     };
@@ -436,8 +442,35 @@ class ProjectPrioritizationEngineService {
       saveMemTable('project_priority_results');
     }
 
-    await this._recordAudit(user?.id, actualProjectId, 'PROJECT_PRIORITY_RECALCULATED', existingResult, resultRecord);
-    return resultRecord;
+    return {
+      ...resultRecord,
+      totalScore
+    };
+  }
+
+  /**
+   * إعادة احتساب الأولويات لكافة المشاريع التي تملك تقييمات
+   */
+  async recalculateAllProjectPriorities(user = null) {
+    let projectIds = [];
+    if (isPostgresActive()) {
+      const rows = await dbQuery('SELECT DISTINCT project_id FROM public.project_priority_scores');
+      projectIds = (rows || []).map(r => r.project_id);
+    } else {
+      const set = new Set((memDb.project_priority_scores || []).map(s => s.project_id || s.projectId));
+      projectIds = Array.from(set);
+    }
+
+    for (const pId of projectIds) {
+      try {
+        await this.calculateProjectPriority(pId, user);
+      } catch (e) {
+        logWarn('ProjectPrioritizationEngine', `Failed to recalculate project [${pId}]: ${e.message}`);
+      }
+    }
+
+    // إعادة الفرز والترتيب العام تلقائياً
+    return await this.rankProjects();
   }
 
   /**
@@ -468,68 +501,80 @@ class ProjectPrioritizationEngineService {
     };
   }
 
-  /**
-   * إعادة احتساب الأولوية لمشروع معين
-   */
-  async recalculateProjectPriority(projectId, user = null) {
-    return await this.calculateProjectPriority(projectId, user);
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
-  // 3️⃣ ترتيب المشاريع وتوليد قائمة الأولويات (Ranking)
+  // 3️⃣ ترتيب المشاريع وتوليد قائمة الأولويات الحتمية (Deterministic Batch Ranking)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * توليد ترتيب المشاريع وفق مجموع النقاط التنازلي والمعرف التصاعدي (Deterministic Ranking)
+   * ترتيب المشاريع النشطة فقط واستبعاد المشاريع الملغاة والمغلقة دفعة واحدة
    */
   async rankProjects() {
     let results = [];
     if (isPostgresActive()) {
-      results = await dbQuery('SELECT * FROM public.project_priority_results ORDER BY total_score DESC, project_id ASC');
+      // ربط مباشر لاستبعاد المشاريع الملغاة والمغلقة وجلب بيانات المشروع دفعة واحدة
+      const sql = `
+        SELECT r.id as result_id, r.project_id, r.total_score,
+               p.project_number, p.project_name, p.status, p.budget_amount
+        FROM public.project_priority_results r
+        JOIN public.projects p ON r.project_id = p.id
+        WHERE p.status NOT IN ('CANCELLED', 'CLOSED')
+        ORDER BY r.total_score DESC, r.project_id ASC
+      `;
+      results = await dbQuery(sql) || [];
+
+      // تحديث الرتب عبر معاملة دفعية واحدة
+      if (results.length > 0) {
+        const updateCases = results.map((r, i) => `WHEN '${r.result_id}' THEN ${i + 1}`).join(' ');
+        const idsList = results.map(r => `'${r.result_id}'`).join(', ');
+        await dbRun(`
+          UPDATE public.project_priority_results
+          SET rank = CASE id ${updateCases} END
+          WHERE id IN (${idsList})
+        `);
+      }
     } else {
-      results = (memDb.project_priority_results || []).slice();
-      results.sort((a, b) => {
+      const allProjects = memDb.projects || [];
+      const validResults = (memDb.project_priority_results || []).filter(r => {
+        const p = allProjects.find(pr => pr.id === (r.project_id || r.projectId));
+        return p && !['CANCELLED', 'CLOSED'].includes(p.status);
+      });
+
+      validResults.sort((a, b) => {
         const scoreA = parseFloat(a.total_score || a.totalScore || 0);
         const scoreB = parseFloat(b.total_score || b.totalScore || 0);
         if (scoreB !== scoreA) return scoreB - scoreA;
         return String(a.project_id || a.projectId).localeCompare(String(b.project_id || b.projectId));
       });
-    }
 
-    // تعيين الرتبة المحددة لكل مشروع
-    const rankedList = [];
-    for (let i = 0; i < results.length; i++) {
-      const r = results[i];
-      const rank = i + 1;
-      r.rank = rank;
-
-      if (isPostgresActive()) {
-        await dbRun('UPDATE public.project_priority_results SET rank = $1 WHERE id = $2', [rank, r.id]);
-      } else {
-        const idx = (memDb.project_priority_results || []).findIndex(item => item.id === r.id);
-        if (idx !== -1) {
-          memDb.project_priority_results[idx].rank = rank;
-        }
-      }
-
-      const proj = await projectsEngineService.getProjectById(r.project_id || r.projectId);
-      rankedList.push({
-        rank,
-        projectId: r.project_id || r.projectId,
-        projectNumber: proj?.project_number || proj?.projectNumber || r.project_id,
-        projectName: proj?.project_name || proj?.projectName || 'مشروع هندسي',
-        totalScore: parseFloat(r.total_score || r.totalScore || 0),
-        status: proj?.status || 'DRAFT',
-        budgetAmount: parseFloat(proj?.budget_amount || proj?.budgetAmount || 0),
-        calculatedAt: r.calculated_at || r.calculatedAt
+      results = validResults.map(r => {
+        const p = allProjects.find(pr => pr.id === (r.project_id || r.projectId));
+        return {
+          result_id: r.id,
+          project_id: r.project_id || r.projectId,
+          total_score: r.total_score,
+          project_number: p?.project_number,
+          project_name: p?.project_name,
+          status: p?.status,
+          budget_amount: p?.budget_amount
+        };
       });
-    }
 
-    if (!isPostgresActive()) {
+      results.forEach((r, idx) => {
+        const item = memDb.project_priority_results.find(res => res.id === r.result_id);
+        if (item) item.rank = idx + 1;
+      });
       saveMemTable('project_priority_results');
     }
 
-    return rankedList;
+    return results.map((r, idx) => ({
+      rank: idx + 1,
+      projectId: r.project_id,
+      projectNumber: r.project_number || r.project_id,
+      projectName: r.project_name || 'مشروع هندسي',
+      totalScore: parseFloat(r.total_score || 0),
+      status: r.status || 'ACTIVE',
+      budgetAmount: parseFloat(r.budget_amount || 0)
+    }));
   }
 
   /**
@@ -568,5 +613,4 @@ class ProjectPrioritizationEngineService {
   }
 }
 
-const projectPrioritizationEngineService = new ProjectPrioritizationEngineService();
-module.exports = projectPrioritizationEngineService;
+module.exports = new ProjectPrioritizationEngineService();

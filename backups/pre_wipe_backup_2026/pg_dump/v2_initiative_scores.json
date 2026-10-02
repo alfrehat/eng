@@ -1,0 +1,110 @@
+[
+  {
+    "score_id": "85b6754d-d4fd-4833-95b6-1a3d6bb6c0e8",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "COMMUNITY_IMPACT",
+    "score": "90.00",
+    "weighted_score": "13.50",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.076Z"
+  },
+  {
+    "score_id": "d438e4df-bb15-482b-92a2-acbdc8184257",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "STRATEGIC_IMPORTANCE",
+    "score": "85.00",
+    "weighted_score": "12.75",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.076Z"
+  },
+  {
+    "score_id": "178e7550-be86-4c4d-b8dd-e3efc98c99ba",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "URGENCY",
+    "score": "75.00",
+    "weighted_score": "11.25",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.077Z"
+  },
+  {
+    "score_id": "bc3c0f62-e2c2-47f1-a69b-07d7315240d2",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "FEASIBILITY",
+    "score": "80.00",
+    "weighted_score": "12.00",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.078Z"
+  },
+  {
+    "score_id": "b8ceec4c-7f3a-43ac-b011-ebecae67d53d",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "COST_EFFICIENCY",
+    "score": "85.00",
+    "weighted_score": "12.75",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.078Z"
+  },
+  {
+    "score_id": "b97c84a1-d34c-4567-9ec7-378dfa9c46a5",
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "criterion_code": "SUSTAINABILITY",
+    "score": "90.00",
+    "weighted_score": "13.50",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.079Z"
+  },
+  {
+    "score_id": "78ca7847-79e4-4354-bb9d-0b4cd0578aa9",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "COMMUNITY_IMPACT",
+    "score": "85.00",
+    "weighted_score": "12.75",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.221Z"
+  },
+  {
+    "score_id": "c85c9752-6d04-4be1-a1ed-38f596a64a62",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "STRATEGIC_IMPORTANCE",
+    "score": "80.00",
+    "weighted_score": "12.00",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.223Z"
+  },
+  {
+    "score_id": "b4bc22e4-f6d4-44df-9f3d-9b778e1e6793",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "URGENCY",
+    "score": "75.00",
+    "weighted_score": "11.25",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.224Z"
+  },
+  {
+    "score_id": "a3dfba0f-e918-4377-add7-d9afd023251f",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "FEASIBILITY",
+    "score": "90.00",
+    "weighted_score": "13.50",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.224Z"
+  },
+  {
+    "score_id": "87865e1a-8367-468b-8632-7e04d24b5f62",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "COST_EFFICIENCY",
+    "score": "85.00",
+    "weighted_score": "12.75",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.225Z"
+  },
+  {
+    "score_id": "54b357bc-add2-461e-aa84-470fb67aa2d5",
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "criterion_code": "SUSTAINABILITY",
+    "score": "80.00",
+    "weighted_score": "12.00",
+    "remarks": "الوزن المعتمد: 15%",
+    "created_at": "2026-09-05T13:45:39.226Z"
+  }
+]

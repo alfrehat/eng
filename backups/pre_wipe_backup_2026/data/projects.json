@@ -1,0 +1,20 @@
+[
+  {
+    "id": "PRJ-WF-100",
+    "project_name": "مشروع تعبيد شارع مدرسة كفرنجة",
+    "status": "PENDING_REVIEW",
+    "updated_at": "2026-09-10T21:16:09.971Z"
+  },
+  {
+    "id": "PRJ-WF-200",
+    "project_name": "مشروع عبارة تصريف مياه أمطار",
+    "status": "APPROVED",
+    "updated_at": "2026-09-10T21:16:10.017Z"
+  },
+  {
+    "id": "PRJ-STATE-1",
+    "project_name": "مشروع صيانة شبكة تصريف الأمطار",
+    "status": "COMPLETED",
+    "updated_at": "2026-09-10T21:32:30.361Z"
+  }
+]

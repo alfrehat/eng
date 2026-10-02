@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ALLOC-1788210996655",
+    "budget_line_id": "BL-2026-6632",
+    "entity_type": "TENDER",
+    "entity_id": "T-2026-901",
+    "entity_name": "مشروع خلطات إسفلتية - منطقة كفرنجة البلد",
+    "amount": 150000,
+    "status": "COMMITTED",
+    "created_at": "2026-08-31T21:16:36.655Z"
+  },
+  {
+    "id": "ALC-mtvxozsi",
+    "budget_line_id": "BL-2026-2767",
+    "entity_type": "TENDER",
+    "entity_id": "TEN-2026-001",
+    "entity_name": "عطاء تعبيد شوارع حي نمر",
+    "amount": 60000,
+    "status": "DISBURSED",
+    "created_at": "2026-09-10T19:42:22.770Z"
+  },
+  {
+    "id": "ALC-mtvylqhy",
+    "budget_line_id": "BL-2026-0369",
+    "entity_type": "CLAIM",
+    "entity_id": "CLM-2026-0001",
+    "entity_name": "مطالبة مالية: شركة المقاولات الإنشائية الحديثة",
+    "amount": 25000,
+    "status": "DISBURSED",
+    "created_at": "2026-09-10T20:07:50.374Z"
+  }
+]

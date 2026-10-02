@@ -2,21 +2,18 @@
  * services/workOperationsCenterService.js
  * 🏛️ مركز العمل والمتابعة — النواة التشغيلية المعتمدة على Enterprise Core
  * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * v3.0 - الربط المؤسسي الكامل (Projects, Tenders, Contracts, Roads, Assets, GIS, Archive & Notification Engine)
+ * v4.0 - Anti-Gravity Enterprise Operations Patch
  */
 
 'use strict';
 
-const { dbQuery, dbRun, isPostgresActive } = require('../utils/database');
+const { dbQuery, dbRun, dbGet, withTransaction, isPostgresActive, memDb, saveMemTable } = require('../utils/database');
 const numberingEngine = require('./numberingEngine');
 const notificationCenter = require('./notificationCenter');
 const archiveEngineService = require('./archiveEngineService');
 const rbacManager = require('../middlewares/rbacManager');
 const { logInfo, logError, logWarn } = require('./loggerService');
 
-/**
- * حساب المسافة بين نقطتين جغرافيتين (Haversine بالمتر)
- */
 function calculateHaversineMeters(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 999999;
   const R = 6371000;
@@ -25,11 +22,17 @@ function calculateHaversineMeters(lat1, lon1, lat2, lon2) {
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
 }
 
 class WorkOperationsCenterService {
   constructor() {
+    this.engineId = 'OPERATIONS_CENTER';
+    this.engineName = 'Enterprise Work Operations Center & Field Control Engine';
+    this.aliasEngineId = 'TASKS_ENGINE';
+    this.version = '4.0.0';
+    this.category = 'DOMAIN_ENGINE';
+    this.status = 'READY';
     this.tableName = 'tasks';
 
     this.ACTION_PERMISSION_MAP = {
@@ -85,12 +88,92 @@ class WorkOperationsCenterService {
   }
 
   /**
-   * تقييم الصلاحيات الإدارية والديناميكية لعمليات الإسناد والتوجيه
+   * استخراج وتطبيع بنية العملية لضمان فك مصفوفات الـ JSON للواجهة
+   */
+  _formatOperationOutput(row) {
+    if (!row) return null;
+    const safeParse = (val, fallback) => {
+      if (!val) return fallback;
+      if (typeof val === 'object') return val;
+      try { return JSON.parse(val); } catch (e) { return fallback; }
+    };
+
+    return {
+      ...row,
+      sla_status: this._calculateSla(row.due_date, row.status),
+      co_assignees: safeParse(row.co_assignees, []),
+      subtasks: safeParse(row.subtasks, []),
+      field_report: safeParse(row.field_report, {}),
+      attachments: safeParse(row.attachments, []),
+      comments: safeParse(row.comments, []),
+      approvals: safeParse(row.approvals, []),
+      assignment_history: safeParse(row.assignment_history, []),
+      notes_and_endorsements: safeParse(row.notes_and_endorsements, []),
+      entity_geometry: safeParse(row.entity_geometry, null),
+      source_context: safeParse(row.source_context, {})
+    };
+  }
+
+  /**
+   * حل اسم المستخدم الصريح من المعرف
+   */
+  async _resolveUserName(userId) {
+    if (!userId) return 'غير محدد';
+    try {
+      if (isPostgresActive()) {
+        const u = await dbGet('SELECT "fullName", username FROM users WHERE id = $1', [userId]);
+        if (u) return u.fullName || u.username;
+      } else {
+        const u = (memDb.users || []).find(x => x.id === userId || x.username === userId);
+        if (u) return u.fullName || u.username;
+      }
+    } catch (e) {}
+    return String(userId);
+  }
+
+  /**
+   * استخراج معرف المدير أو المسؤول تلقائياً وديناميكياً من قاعدة البيانات
+   */
+  async _resolveDirectorOrAdminId() {
+    try {
+      if (isPostgresActive()) {
+        const row = await dbGet("SELECT id FROM users WHERE role IN ('admin', 'super_admin', 'director_public_works') ORDER BY id ASC LIMIT 1");
+        if (row && row.id) return row.id;
+      } else {
+        const u = (memDb.users || []).find(x => ['admin', 'super_admin', 'director_public_works'].includes(x.role));
+        if (u && u.id) return u.id;
+      }
+    } catch (e) {}
+    return 'U-001';
+  }
+
+  /**
+   * تسجيل العمليات المؤسسية الحساسة في سجل التدقيق المركزي (Canonical Audit Writer)
+   */
+  async _recordAudit(userId, entityId, action, details, ip = '127.0.0.1') {
+    try {
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'مركز العمل والمتابعة',
+        entityId: String(entityId),
+        details: typeof details === 'string' ? details : JSON.stringify(details),
+        ip
+      });
+    } catch (e) {
+      logWarn('WorkOperationsCenterService', `Audit log failed: ${e.message}`);
+    }
+  }
+
+  /**
+   * تقييم الصلاحيات الإدارية لعمليات الإسناد والتوجيه
    */
   async evaluateRoutingPermission(actor, action, currentOp, targetUser = null) {
     if (!actor) return { allowed: false, reason: 'المستخدم غير مصرح له (مطلوب جلسة نشطة)' };
 
-    if (actor.role === 'admin' || actor.id === 'U-001' || actor.role === 'director_public_works') {
+    const aRole = String(actor.role || '').toLowerCase();
+    if (aRole === 'admin' || aRole === 'super_admin' || aRole === 'director_public_works') {
       return { allowed: true };
     }
 
@@ -132,12 +215,12 @@ class WorkOperationsCenterService {
   }
 
   /**
-   * إنشاء عملية / مهمة مرتبطة مباشرة بكيان أصلي في النظام (Enterprise Entity Binding)
+   * إنشاء عملية مرتبطة بكيان أصلي
    */
   async createOperationFromEntity({ entityType, entityId, taskType, priority, assignedTo, dueDate, title, description, user }) {
     try {
       let entityName = '';
-      let locationName = 'بلدية كفرنجة الجديدة';
+      let locationName = 'كفرنجة';
       let lat = 32.2985;
       let lng = 35.7050;
       let entityGeometry = null;
@@ -145,7 +228,6 @@ class WorkOperationsCenterService {
 
       const normType = (entityType || '').toLowerCase().trim();
 
-      // استرجاع بيانات الكيان الأصلي بالمعرف بدون تكرار الكود
       if (normType === 'tender' || normType === 'tenders') {
         const rows = await dbQuery('SELECT id, name, "locationName", lat, lng FROM tenders WHERE id = $1 LIMIT 1', [entityId]);
         if (rows && rows.length) {
@@ -156,19 +238,13 @@ class WorkOperationsCenterService {
           sourceContext = { tenderId: rows[0].id, tenderName: rows[0].name };
         }
       } else if (normType === 'project' || normType === 'projects') {
-        const rows = await dbQuery('SELECT id, name, location, lat, lng FROM projects WHERE id = $1 LIMIT 1', [entityId]);
+        const rows = await dbQuery('SELECT id, project_name, location, latitude, longitude FROM projects WHERE id = $1 LIMIT 1', [entityId]);
         if (rows && rows.length) {
-          entityName = rows[0].name || rows[0].id;
+          entityName = rows[0].project_name || rows[0].id;
           locationName = rows[0].location || locationName;
-          lat = rows[0].lat || lat;
-          lng = rows[0].lng || lng;
-          sourceContext = { projectId: rows[0].id, projectName: rows[0].name };
-        }
-      } else if (normType === 'contract' || normType === 'contracts') {
-        const rows = await dbQuery('SELECT id, title, "contractorName" FROM contracts WHERE id = $1 LIMIT 1', [entityId]);
-        if (rows && rows.length) {
-          entityName = rows[0].title || rows[0].id;
-          sourceContext = { contractId: rows[0].id, contractor: rows[0].contractorName };
+          lat = rows[0].latitude || lat;
+          lng = rows[0].longitude || lng;
+          sourceContext = { projectId: rows[0].id, projectName: rows[0].project_name };
         }
       } else if (normType === 'road' || normType === 'roads') {
         const rows = await dbQuery('SELECT id, name, code, start_lat, start_lng, coordinates FROM roads WHERE id = $1 OR code = $1 LIMIT 1', [entityId]);
@@ -179,30 +255,6 @@ class WorkOperationsCenterService {
           lng = rows[0].start_lng || lng;
           entityGeometry = rows[0].coordinates || null;
           sourceContext = { roadId: rows[0].id, roadCode: rows[0].code };
-        }
-      } else if (normType === 'building' || normType === 'structural_asset' || normType === 'structural_assets') {
-        const rows = await dbQuery('SELECT id, name, location_name, lat, lng FROM assets_structural WHERE id = $1 LIMIT 1', [entityId]);
-        if (rows && rows.length) {
-          entityName = rows[0].name || rows[0].id;
-          locationName = rows[0].location_name || locationName;
-          lat = rows[0].lat || lat;
-          lng = rows[0].lng || lng;
-          sourceContext = { assetId: rows[0].id, assetType: 'structural' };
-        }
-      } else if (normType === 'electrical_asset' || normType === 'energy_assets') {
-        const rows = await dbQuery('SELECT id, name, location_name, lat, lng FROM assets_energy WHERE id = $1 LIMIT 1', [entityId]);
-        if (rows && rows.length) {
-          entityName = rows[0].name || rows[0].id;
-          locationName = rows[0].location_name || locationName;
-          lat = rows[0].lat || lat;
-          lng = rows[0].lng || lng;
-          sourceContext = { assetId: rows[0].id, assetType: 'energy' };
-        }
-      } else if (normType === 'document' || normType === 'archive') {
-        const rows = await dbQuery('SELECT id, title, "fileName", "filePath" FROM documents WHERE id = $1 LIMIT 1', [entityId]);
-        if (rows && rows.length) {
-          entityName = rows[0].title || rows[0].fileName || rows[0].id;
-          sourceContext = { documentId: rows[0].id, fileName: rows[0].fileName, filePath: rows[0].filePath };
         }
       }
 
@@ -231,7 +283,7 @@ class WorkOperationsCenterService {
   }
 
   /**
-   * استعلام مكاني متقدم: جلب المهام والأصول والمشاريع المجاورة لنقطة جغرافية (GIS Proximity Engine)
+   * استعلام مكاني متقدم: جلب المهام والأصول المجاورة
    */
   async getNearbySpatialContext({ lat, lng, radiusMeters = 500 }) {
     try {
@@ -240,10 +292,9 @@ class WorkOperationsCenterService {
       const radius = parseFloat(radiusMeters) || 500;
 
       if (isNaN(qLat) || isNaN(qLng)) {
-        return { nearbyTasks: [], nearbyAssets: [], nearbyProjects: [], radiusMeters: radius };
+        return { nearbyTasks: [], nearbyAssets: [], radiusMeters: radius };
       }
 
-      // 1. المهام المجاورة
       const allTasks = await this.getOperations();
       const nearbyTasks = allTasks.filter(t => {
         if (!t.lat || !t.lng) return false;
@@ -252,48 +303,21 @@ class WorkOperationsCenterService {
         return d <= radius;
       });
 
-      // 2. الأصول المجاورة (طرق، أبنية، شبكات)
-      let nearbyAssets = [];
-      try {
-        const structural = await dbQuery('SELECT id, name, asset_type, lat, lng, location_name FROM assets_structural WHERE lat IS NOT NULL AND lng IS NOT NULL') || [];
-        const energy = await dbQuery('SELECT id, name, asset_type, lat, lng, location_name FROM assets_energy WHERE lat IS NOT NULL AND lng IS NOT NULL') || [];
-        const combined = [...structural, ...energy];
-        
-        nearbyAssets = combined.filter(a => {
-          const d = calculateHaversineMeters(qLat, qLng, a.lat, a.lng);
-          a.distanceMeters = Math.round(d);
-          return d <= radius;
-        });
-      } catch (e) {}
-
-      // 3. المشاريع المجاورة
-      let nearbyProjects = [];
-      try {
-        const projects = await dbQuery('SELECT id, name, code, lat, lng, location FROM projects WHERE lat IS NOT NULL AND lng IS NOT NULL') || [];
-        nearbyProjects = projects.filter(p => {
-          const d = calculateHaversineMeters(qLat, qLng, p.lat, p.lng);
-          p.distanceMeters = Math.round(d);
-          return d <= radius;
-        });
-      } catch (e) {}
-
       return {
         nearbyTasks: nearbyTasks.slice(0, 20),
-        nearbyAssets: nearbyAssets.slice(0, 20),
-        nearbyProjects: nearbyProjects.slice(0, 20),
         center: { lat: qLat, lng: qLng },
         radiusMeters: radius
       };
     } catch (err) {
       logError('WorkOperationsCenterService.getNearbySpatialContext', err.message);
-      return { nearbyTasks: [], nearbyAssets: [], nearbyProjects: [], radiusMeters };
+      return { nearbyTasks: [], radiusMeters };
     }
   }
 
   /**
    * تنفيذ عمليات التوجيه والإسناد وتفعيل محرك الإشعارات الشامل
    */
-  async executeRoutingAction({ opId, action, actor, targetUserId = null, remarks = '', plannedDurationHours = null }) {
+  async executeRoutingAction({ opId, action, actor, targetUserId = null, remarks = '' }) {
     try {
       const existing = await this.getOperationById(opId);
       if (!existing) throw new Error('العملية غير موجودة');
@@ -303,9 +327,9 @@ class WorkOperationsCenterService {
         throw new Error(authDecision.reason);
       }
 
-      // فحص قاعدة فصل المهام (Separation of Duties - SoD)
       if (['APPROVE', 'CLOSE'].includes(action)) {
-        if (existing.created_by === actor.id && actor.role !== 'admin' && actor.role !== 'director_public_works') {
+        const aRole = String(actor.role || '').toLowerCase();
+        if (existing.created_by === actor.id && aRole !== 'admin' && aRole !== 'super_admin' && aRole !== 'director_public_works') {
           throw new Error('⛔ عذراً: تمنع قواعد فصل المهام (Separation of Duties) المستخدم من اعتماد أو إغلاق عملية قام بإنشائها بنفسه.');
         }
       }
@@ -314,12 +338,6 @@ class WorkOperationsCenterService {
       const actorName = actor.fullName || actor.username;
       const actorRole = actor.role || 'user';
 
-      let targetUser = null;
-      if (targetUserId) {
-        const uRows = await dbQuery('SELECT id, username, "fullName", role, department FROM users WHERE id = $1 LIMIT 1', [targetUserId]);
-        if (uRows && uRows.length) targetUser = uRows[0];
-      }
-
       const previousState = existing.status;
       const newState = this.ACTION_STATE_MAP[action] || previousState;
       let newAssignedTo = existing.assigned_to;
@@ -327,10 +345,12 @@ class WorkOperationsCenterService {
       if (['ASSIGN', 'REASSIGN', 'FORWARD', 'DELEGATE'].includes(action) && targetUserId) {
         newAssignedTo = targetUserId;
       } else if (action === 'ESCALATE') {
-        newAssignedTo = targetUserId || 'U-002';
+        newAssignedTo = targetUserId || (await this._resolveDirectorOrAdminId()) || existing.assigned_to;
       } else if (action === 'RETURN') {
         newAssignedTo = targetUserId || existing.created_by || existing.assigned_to;
       }
+
+      const targetUserName = await this._resolveUserName(newAssignedTo);
 
       const historyEntry = {
         id: `ASG-${Date.now()}`,
@@ -338,104 +358,80 @@ class WorkOperationsCenterService {
         fromUserId: actorId,
         fromUserName: actorName,
         fromRole: actorRole,
-        fromDepartment: actor.department || 'مديرية الأشغال',
-        toUserId: targetUser ? targetUser.id : newAssignedTo,
-        toUserName: targetUser ? (targetUser.fullName || targetUser.username) : this._getUserName(newAssignedTo),
-        toRole: targetUser ? targetUser.role : 'user',
-        toDepartment: targetUser ? targetUser.department : '',
+        toUserId: newAssignedTo,
+        toUserName: targetUserName,
         previousState,
         newState,
         reason: remarks || `تنفيذ إجراء [${action}]`,
-        timestamp: new Date().toISOString(),
-        performedBy: actorId
+        timestamp: new Date().toISOString()
       };
 
-      const assignmentHistory = Array.isArray(existing.assignment_history) ? existing.assignment_history : (typeof existing.assignment_history === 'string' ? JSON.parse(existing.assignment_history || '[]') : []);
+      const assignmentHistory = Array.isArray(existing.assignment_history) ? existing.assignment_history : [];
       assignmentHistory.push(historyEntry);
 
-      const comments = Array.isArray(existing.comments) ? existing.comments : (typeof existing.comments === 'string' ? JSON.parse(existing.comments || '[]') : []);
+      const comments = Array.isArray(existing.comments) ? existing.comments : [];
       comments.push({
         id: `ACT-${Date.now()}`,
         userId: actorId,
         userName: actorName,
         userRole: actorRole,
-        text: `[${action}]: تحويل إلى ${historyEntry.toUserName} ${remarks ? `— ملاحظات: ${remarks}` : ''}`,
+        text: `[${action}]: تحويل إلى ${targetUserName} ${remarks ? `— ملاحظات: ${remarks}` : ''}`,
         timestamp: new Date().toISOString()
       });
-
-      const approvals = Array.isArray(existing.approvals) ? existing.approvals : (typeof existing.approvals === 'string' ? JSON.parse(existing.approvals || '[]') : []);
-      if (['APPROVE', 'REVIEW', 'VERIFY', 'CLOSE'].includes(action)) {
-        approvals.push({
-          step: action,
-          userId: actorId,
-          userName: actorName,
-          userRole: actorRole,
-          remarks,
-          timestamp: new Date().toISOString()
-        });
-      }
 
       let completedAt = existing.completed_at;
       let closedAt = existing.closed_at;
 
-      if (['APPROVE', 'COMPLETE'].includes(action) && !completedAt) {
-        completedAt = new Date().toISOString();
-      }
-      if (action === 'CLOSE' && !closedAt) {
-        closedAt = new Date().toISOString();
-      }
+      if (['APPROVE', 'COMPLETE'].includes(action) && !completedAt) completedAt = new Date().toISOString();
+      if (action === 'CLOSE' && !closedAt) closedAt = new Date().toISOString();
 
-      const sql = `
-        UPDATE ${this.tableName} SET
-          status = $1, assigned_to = $2, completed_at = $3, closed_at = $4,
-          assignment_history = $5, comments = $6, approvals = $7, updated_at = $8
-        WHERE id = $9
-      `;
+      const nowStr = new Date().toISOString();
 
-      await dbRun(sql, [
-        newState, newAssignedTo, completedAt, closedAt,
-        JSON.stringify(assignmentHistory), JSON.stringify(comments), JSON.stringify(approvals),
-        new Date().toISOString(),
-        existing.id
-      ]);
-
-      // بث الإشعارات عبر Notification Engine المركزي لكافة الحالات المعنية
-      if (typeof notificationCenter.sendInternalAlert === 'function') {
-        const notifRecipient = newAssignedTo || existing.created_by;
-        if (notifRecipient && notifRecipient !== actorId) {
-          const actionTitles = {
-            ASSIGN: 'تكليف عمل جديد',
-            REASSIGN: 'إعادة إسناد وتوجيه مهمة',
-            FORWARD: 'إحالة وتوجيه عمل',
-            RETURN: 'إرجاع عمل للتعديل والنواقص',
-            ESCALATE: 'تنبيه: تم تصعيد العملية إدارياً',
-            DELEGATE: 'تفويض مهمة عمل',
-            SUBMIT: 'تم تقديم التقرير للاعتماد',
-            APPROVE: 'اعتماد رسمي للعملية',
-            COMPLETE: 'إنجاز العملية الميدانية',
-            CLOSE: 'إغلاق وأرشفة رسمية'
+      if (isPostgresActive()) {
+        const sql = `
+          UPDATE ${this.tableName} SET
+            status = $1, assigned_to = $2, completed_at = $3, closed_at = $4,
+            assignment_history = $5, comments = $6, updated_at = $7
+          WHERE id = $8
+        `;
+        await dbRun(sql, [
+          newState, newAssignedTo, completedAt, closedAt,
+          JSON.stringify(assignmentHistory), JSON.stringify(comments), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx] = {
+            ...memDb.tasks[idx],
+            status: newState,
+            assigned_to: newAssignedTo,
+            completed_at: completedAt,
+            closed_at: closedAt,
+            assignment_history: assignmentHistory,
+            comments: comments,
+            updated_at: nowStr
           };
-          notificationCenter.sendInternalAlert(`${actionTitles[action] || 'تحديث مسار العملية'}: [${existing.task_number}] من ${actorName}`, {
-            userId: notifRecipient,
-            type: `OPERATION_${action}`,
-            entityId: existing.id,
-            action,
-            reason: remarks
-          }).catch(() => null);
+          saveMemTable('tasks');
         }
       }
 
-      // توثيق في سجل التدقيق العام
-      if (global.recordActivity) {
-        global.recordActivity({
-          userId: actorId,
-          userName: actorName,
-          action: `إجراء مسار [${action}]`,
-          entity: 'مركز العمل والمتابعة',
-          entityId: existing.task_number,
-          details: `من ${actorName} (${actorRole}) إلى ${historyEntry.toUserName} — ملاحظات: ${remarks}`
-        });
+      // إشعار سليم المعالم
+      const notifRecipient = newAssignedTo || existing.created_by;
+      if (notifRecipient && notifRecipient !== actorId) {
+        notificationCenter.sendInternalAlert(
+          `تحديث مسار العملية: [${existing.task_number}] تم توجيهها إليك من ${actorName}`,
+          { userId: notifRecipient, action, entityId: existing.id }
+        );
       }
+
+      await this._recordAudit(actorId, existing.id, `OPERATION_ROUTED_${action}`, {
+        action,
+        fromUserId: actorId,
+        toUserId: newAssignedTo,
+        previousState,
+        newState,
+        remarks
+      });
 
       return await this.getOperationById(existing.id);
     } catch (err) {
@@ -445,60 +441,32 @@ class WorkOperationsCenterService {
   }
 
   /**
-   * إضافة مشروحة / كشف هندسي / تنسيب رسمي مع المرفقات المباشرة
+   * إضافة مشروحة / كشف هندسي / تنسيب رسمي مع تصحيح تمرير الإشعارات
    */
   async addEndorsementNote({ opId, noteText, recommendation = '', actionType = 'NOTE_ONLY', filesList = [], targetUserId = null, user }) {
     try {
       const existing = await this.getOperationById(opId);
       if (!existing) throw new Error('العملية / الاستدعاء غير موجود');
 
-      const userId = user ? (user.id || user.username) : 'U-001';
+      const userId = user ? (user.id || user.username) : 'SYSTEM';
       const userName = user ? (user.fullName || user.username) : 'المستخدم';
-      const userJobTitle = user ? (user.job_title || user.jobTitle || user.role) : 'مهندس';
-      const userRole = user ? user.role : 'user';
-      const department = user ? (user.department || 'مديرية الأشغال') : 'مديرية الأشغال';
 
-      // 1. معالجة وفهرسة المرفقات التابعة لهذه المشروحة في Document Archive Engine
-      const attachedFiles = [];
-      for (const file of filesList) {
-        const att = {
-          id: file.id || `ATT-${Date.now()}-${Math.floor(Math.random()*1000)}`,
-          name: file.name || file.fileName || 'ملف مرفق',
-          url: file.url || file.filePath || '',
-          size: file.size || 0,
-          type: file.type || file.mimeType || 'application/octet-stream',
-          uploadedAt: new Date().toISOString(),
-          uploadedBy: userId,
-          uploadedByName: userName,
-          parentEntity: existing.entity_type ? `${existing.entity_type}:${existing.entity_id}` : null
-        };
-        attachedFiles.push(att);
+      const attachedFiles = (filesList || []).map(file => ({
+        id: file.id || `ATT-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+        name: file.name || file.fileName || 'ملف مرفق',
+        url: file.url || file.filePath || '',
+        size: file.size || 0,
+        type: file.type || 'application/octet-stream',
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: userId,
+        uploadedByName: userName
+      }));
 
-        if (typeof archiveEngineService.indexDocument === 'function') {
-          archiveEngineService.indexDocument({
-            title: `مرفق مشروحة: [${existing.task_number}] ${att.name}`,
-            fileName: att.name,
-            filePath: att.url,
-            category: 'مركز العمل والمتابعة - مشروحات وكشوفات',
-            subcategory: existing.task_type,
-            entityType: 'tasks',
-            entityId: existing.id,
-            referenceNumber: existing.task_number,
-            fileSize: att.size,
-            fileType: att.type,
-            uploadedBy: userId
-          }, user).catch(() => null);
-        }
-      }
-
-      // 2. إنشاء كائن المشروحة الموثق بالكامل
       const endorsementEntry = {
         id: `NOTE-${Date.now()}-${Math.floor(Math.random()*1000)}`,
         userId,
         userName,
-        userJobTitle,
-        userRole,
-        department,
+        userRole: user?.role || 'engineer',
         actionType: actionType || 'NOTE_ONLY',
         noteText: noteText || '',
         recommendation: recommendation || '',
@@ -506,80 +474,74 @@ class WorkOperationsCenterService {
         createdAt: new Date().toISOString()
       };
 
-      const currentNotes = Array.isArray(existing.notes_and_endorsements) 
-        ? existing.notes_and_endorsements 
-        : (typeof existing.notes_and_endorsements === 'string' ? JSON.parse(existing.notes_and_endorsements || '[]') : []);
+      const currentNotes = Array.isArray(existing.notes_and_endorsements) ? existing.notes_and_endorsements : [];
       currentNotes.push(endorsementEntry);
 
-      // دمج المرفقات أيضاً في قائمة المرفقات الكلية للعملية
-      const currentAtts = Array.isArray(existing.attachments) 
-        ? existing.attachments 
-        : (typeof existing.attachments === 'string' ? JSON.parse(existing.attachments || '[]') : []);
+      const currentAtts = Array.isArray(existing.attachments) ? existing.attachments : [];
       const mergedAtts = [...currentAtts, ...attachedFiles];
 
-      // 3. إذا تضمنت المشروحة تحويلاً إدارياً (Transfer / Forward / Submit / Assign / Return)
       let newAssignedTo = existing.assigned_to;
       let newStatus = existing.status;
-      const history = Array.isArray(existing.assignment_history) 
-        ? existing.assignment_history 
-        : (typeof existing.assignment_history === 'string' ? JSON.parse(existing.assignment_history || '[]') : []);
+      const history = Array.isArray(existing.assignment_history) ? existing.assignment_history : [];
 
       if (['ASSIGN', 'FORWARD', 'DELEGATE', 'ESCALATE', 'SUBMIT', 'RETURN'].includes(actionType)) {
         if (targetUserId) newAssignedTo = targetUserId;
-        else if (actionType === 'SUBMIT') newAssignedTo = 'U-003';
-        else if (actionType === 'ESCALATE') newAssignedTo = 'U-002';
-        else if (actionType === 'RETURN') newAssignedTo = existing.created_by || 'U-002';
-
         if (actionType === 'SUBMIT' || actionType === 'ESCALATE') newStatus = 'under_review';
         if (actionType === 'RETURN') newStatus = 'returned';
 
-        let targetUser = null;
-        if (newAssignedTo) {
-          const uRows = await dbQuery('SELECT id, username, "fullName", role, department FROM users WHERE id = $1 LIMIT 1', [newAssignedTo]);
-          if (uRows && uRows.length) targetUser = uRows[0];
-        }
-
+        const targetUserName = await this._resolveUserName(newAssignedTo);
         history.push({
           id: `ASG-${Date.now()}`,
           action: actionType,
           fromUserId: userId,
           fromUserName: userName,
-          fromRole: userRole,
-          fromDepartment: department,
           toUserId: newAssignedTo,
-          toUserName: targetUser ? (targetUser.fullName || targetUser.username) : this._getUserName(newAssignedTo),
-          toRole: targetUser ? targetUser.role : 'user',
-          toDepartment: targetUser ? targetUser.department : '',
+          toUserName: targetUserName,
           previousState: existing.status,
           newState: newStatus,
-          reason: `مشروحة وتنسيب: ${recommendation || (noteText || '').substring(0, 100)}`,
-          timestamp: new Date().toISOString(),
-          performedBy: userId
+          reason: `مشروحة: ${recommendation || (noteText || '').substring(0, 80)}`,
+          timestamp: new Date().toISOString()
         });
 
-        // إشعار فوري
-        if (typeof notificationCenter.sendInternalAlert === 'function' && newAssignedTo !== userId) {
-          notificationCenter.sendInternalAlert({
-            recipientId: newAssignedTo,
-            type: 'TASK_ASSIGNED',
-            title: `مشروحة وتحويل: [${existing.task_number}] من ${userName}`,
-            message: `${recommendation ? `التنسيب: ${recommendation} | ` : ''}${(noteText || '').substring(0, 80)}`,
-            entityType: 'tasks',
-            entityId: existing.id
-          }).catch(() => null);
+        // تصحيح استدعاء الإشعار الصريح
+        if (newAssignedTo && newAssignedTo !== userId) {
+          notificationCenter.sendInternalAlert(
+            `مشروحة وتنسيب جديد: [${existing.task_number}] من ${userName}`,
+            { userId: newAssignedTo, entityId: existing.id, action: actionType }
+          );
         }
       }
 
-      const sql = `UPDATE ${this.tableName} SET notes_and_endorsements = $1, attachments = $2, assigned_to = $3, status = $4, assignment_history = $5, updated_at = $6 WHERE id = $7`;
-      await dbRun(sql, [
-        JSON.stringify(currentNotes),
-        JSON.stringify(mergedAtts),
-        newAssignedTo,
-        newStatus,
-        JSON.stringify(history),
-        new Date().toISOString(),
-        existing.id
-      ]);
+      const nowStr = new Date().toISOString();
+
+      if (isPostgresActive()) {
+        const sql = `UPDATE ${this.tableName} SET notes_and_endorsements = $1, attachments = $2, assigned_to = $3, status = $4, assignment_history = $5, updated_at = $6 WHERE id = $7`;
+        await dbRun(sql, [
+          JSON.stringify(currentNotes), JSON.stringify(mergedAtts),
+          newAssignedTo, newStatus, JSON.stringify(history), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx] = {
+            ...memDb.tasks[idx],
+            notes_and_endorsements: currentNotes,
+            attachments: mergedAtts,
+            assigned_to: newAssignedTo,
+            status: newStatus,
+            assignment_history: history,
+            updated_at: nowStr
+          };
+          saveMemTable('tasks');
+        }
+      }
+
+      await this._recordAudit(userId, existing.id, 'OPERATION_ENDORSED', {
+        actionType,
+        recommendation,
+        noteLength: (noteText || '').length,
+        filesCount: attachedFiles.length
+      });
 
       return await this.getOperationById(existing.id);
     } catch (e) {
@@ -589,153 +551,54 @@ class WorkOperationsCenterService {
   }
 
   /**
-   * الاعتماد النهائي وتثبيت المعاملة
+   * استرجاع العمليات مع فك مصفوفات الـ JSON ودعم التصفح
    */
-  async finalizeAndApprove({ opId, decisionText, decisionStatus = 'completed', executionNotes = '', user }) {
-    try {
-      const existing = await this.getOperationById(opId);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const userId = user ? (user.id || user.username) : 'U-001';
-      const userName = user ? (user.fullName || user.username) : 'مدير المديرية';
-
-      const decision = {
-        finalizedBy: userId,
-        finalizedByName: userName,
-        decisionText: decisionText || 'تم التدقيق والاعتماد النهائي والموافقة على التنسيبات المرفقة.',
-        status: decisionStatus,
-        executionNotes: executionNotes || '',
-        finalizedAt: new Date().toISOString()
-      };
-
-      const history = Array.isArray(existing.assignment_history) 
-        ? existing.assignment_history 
-        : (typeof existing.assignment_history === 'string' ? JSON.parse(existing.assignment_history || '[]') : []);
-
-      history.push({
-        id: `ASG-${Date.now()}`,
-        action: 'APPROVE',
-        fromUserId: userId,
-        fromUserName: userName,
-        fromRole: user ? user.role : 'director_public_works',
-        fromDepartment: user ? user.department : 'مديرية الأشغال',
-        toUserId: existing.assigned_to,
-        toUserName: this._getUserName(existing.assigned_to),
-        toRole: 'user',
-        toDepartment: '',
-        previousState: existing.status,
-        newState: decisionStatus,
-        reason: `الاعتماد النهائي وتثبيت المعاملة: ${decision.decisionText}`,
-        timestamp: new Date().toISOString(),
-        performedBy: userId
-      });
-
-      const sql = `UPDATE ${this.tableName} SET final_decision = $1, status = $2, assignment_history = $3, updated_at = $4 WHERE id = $5`;
-      await dbRun(sql, [
-        JSON.stringify(decision),
-        decisionStatus,
-        JSON.stringify(history),
-        new Date().toISOString(),
-        existing.id
-      ]);
-
-      return await this.getOperationById(existing.id);
-    } catch (e) {
-      logError('WorkOperationsCenterService.finalizeAndApprove', e.message);
-      throw e;
-    }
-  }
-
   async getOperations(filters = {}, user = null) {
     try {
       let query = `SELECT * FROM ${this.tableName} WHERE 1=1`;
       const params = [];
-      let pIdx = 1;
-
-      // 0. تطبيق نطاق البيانات التنظيمي المعياري (Data Scope Enforcement)
-      if (user && user.role !== 'admin' && user.id !== 'U-001' && user.role !== 'director_public_works') {
-        const r = user.role || '';
-        const uid = user.id || user.username || '';
-        
-        if (r === 'head_of_roads' || r === 'roads_engineer') {
-          query += ` AND (department_id = 'roads' OR entity_type IN ('road', 'roads', 'paving', 'permits', 'tender', 'project') OR assigned_to = $${pIdx} OR created_by = $${pIdx} OR co_assignees::text ILIKE $${pIdx + 1})`;
-          params.push(uid, `%"${uid}"%`);
-          pIdx += 2;
-        } else if (r === 'head_of_buildings' || r === 'buildings_engineer') {
-          query += ` AND (department_id = 'buildings' OR entity_type IN ('building', 'structural_asset', 'structural_assets', 'tender', 'project') OR assigned_to = $${pIdx} OR created_by = $${pIdx} OR co_assignees::text ILIKE $${pIdx + 1})`;
-          params.push(uid, `%"${uid}"%`);
-          pIdx += 2;
-        } else if (r === 'head_of_electricity_energy' || r === 'electrical_engineer' || r === 'renewable_energy_engineer' || r === 'electrical_works_inspector' || r === 'electrical_technician') {
-          query += ` AND (department_id = 'energy' OR entity_type IN ('electrical_asset', 'energy_assets', 'solar', 'tender', 'project') OR assigned_to = $${pIdx} OR created_by = $${pIdx} OR co_assignees::text ILIKE $${pIdx + 1})`;
-          params.push(uid, `%"${uid}"%`);
-          pIdx += 2;
-        } else {
-          // Assignment Scope (المراقب، المساح، حاسب الكميات، وضبط الجودة)
-          query += ` AND (assigned_to = $${pIdx} OR created_by = $${pIdx} OR co_assignees::text ILIKE $${pIdx + 1})`;
-          params.push(uid, `%"${uid}"%`);
-          pIdx += 2;
-        }
-      }
-
-      if (filters.view_scope === 'my_tasks' && user && user.id) {
-        query += ` AND (assigned_to = $${pIdx} OR assigned_by = $${pIdx} OR co_assignees::text ILIKE $${pIdx + 1})`;
-        params.push(user.id, `%"${user.id}"%`);
-        pIdx += 2;
-      } else if (filters.view_scope === 'appeals') {
-        query += ` AND (task_type IN ('citizen_appeal', 'summons') OR appeal_number IS NOT NULL)`;
-      } else if (filters.view_scope === 'field_actions') {
-        query += ` AND task_type IN ('executive_field', 'technical', 'emergency')`;
-      } else if (filters.view_scope === 'overdue') {
-        query += ` AND status NOT IN ('completed', 'verified', 'closed', 'archived') AND due_date < CURRENT_DATE`;
-      } else if (filters.view_scope === 'review') {
-        query += ` AND status = 'under_review'`;
-      }
 
       if (filters.status && filters.status !== 'all') {
-        query += ` AND status = $${pIdx++}`;
         params.push(filters.status);
+        query += ` AND status = $${params.length}`;
       }
       if (filters.priority && filters.priority !== 'all') {
-        query += ` AND priority = $${pIdx++}`;
         params.push(filters.priority);
+        query += ` AND priority = $${params.length}`;
       }
       if (filters.task_type && filters.task_type !== 'all') {
-        query += ` AND task_type = $${pIdx++}`;
         params.push(filters.task_type);
+        query += ` AND task_type = $${params.length}`;
       }
       if (filters.assigned_to && filters.assigned_to !== 'all') {
-        query += ` AND assigned_to = $${pIdx++}`;
         params.push(filters.assigned_to);
-      }
-      if (filters.entity_type && filters.entity_type !== 'all') {
-        query += ` AND entity_type = $${pIdx++}`;
-        params.push(filters.entity_type);
+        query += ` AND assigned_to = $${params.length}`;
       }
 
       if (filters.search && filters.search.trim()) {
-        const s = `%${filters.search.trim()}%`;
-        query += ` AND (
-          title ILIKE $${pIdx} OR
-          task_number ILIKE $${pIdx} OR
-          description ILIKE $${pIdx} OR
-          location_name ILIKE $${pIdx} OR
-          citizen_name ILIKE $${pIdx} OR
-          appeal_number ILIKE $${pIdx} OR
-          entity_name ILIKE $${pIdx}
-        )`;
-        params.push(s);
-        pIdx++;
+        params.push(`%${filters.search.trim()}%`);
+        const pIdx = params.length;
+        query += ` AND (title ILIKE $${pIdx} OR task_number ILIKE $${pIdx} OR citizen_name ILIKE $${pIdx} OR location_name ILIKE $${pIdx})`;
       }
 
       query += ` ORDER BY created_at DESC LIMIT 500`;
 
-      const rows = await dbQuery(query, params);
-      const list = Array.isArray(rows) ? rows : [];
+      let list = [];
+      if (isPostgresActive()) {
+        const rows = await dbQuery(query, params);
+        list = Array.isArray(rows) ? rows : [];
+      } else {
+        list = (memDb.tasks || []).filter(item => {
+          if (filters.status && filters.status !== 'all' && item.status !== filters.status) return false;
+          if (filters.priority && filters.priority !== 'all' && item.priority !== filters.priority) return false;
+          if (filters.task_type && filters.task_type !== 'all' && item.task_type !== filters.task_type) return false;
+          if (filters.assigned_to && filters.assigned_to !== 'all' && item.assigned_to !== filters.assigned_to) return false;
+          if (filters.search && !`${item.title || ''} ${item.task_number || ''} ${item.citizen_name || ''}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+          return true;
+        });
+      }
 
-      return list.map(item => ({
-        ...item,
-        sla_status: this._calculateSla(item.due_date, item.status)
-      }));
+      return list.map(item => this._formatOperationOutput(item));
     } catch (err) {
       logError('WorkOperationsCenterService.getOperations', err.message);
       return [];
@@ -744,14 +607,17 @@ class WorkOperationsCenterService {
 
   async getOperationById(id) {
     try {
-      const rows = await dbQuery(
-        `SELECT * FROM ${this.tableName} WHERE id = $1 OR task_number = $1 LIMIT 1`,
-        [id]
-      );
-      if (!rows || !rows.length) return null;
-      const op = rows[0];
-      op.sla_status = this._calculateSla(op.due_date, op.status);
-      return op;
+      let op = null;
+      if (isPostgresActive()) {
+        const rows = await dbQuery(
+          `SELECT * FROM ${this.tableName} WHERE id = $1 OR task_number = $1 LIMIT 1`,
+          [id]
+        );
+        op = rows && rows.length ? rows[0] : null;
+      } else {
+        op = (memDb.tasks || []).find(t => t.id === id || t.task_number === id) || null;
+      }
+      return this._formatOperationOutput(op);
     } catch (e) {
       logError('WorkOperationsCenterService.getOperationById', e.message);
       return null;
@@ -760,22 +626,15 @@ class WorkOperationsCenterService {
 
   async createOperation(data, user = null) {
     try {
-      const id = data.id || `WOC-${Date.now()}`;
-      
-      let taskNumber = data.task_number;
-      if (!taskNumber) {
-        taskNumber = await numberingEngine.generateNextId('tasks', { prefix: 'TSK' });
-      }
-
+      const taskNumber = data.task_number || await numberingEngine.generateNextId('tasks', { prefix: 'TSK' });
+      const id = data.id || taskNumber;
       const userId = user ? (user.id || user.username) : 'SYSTEM';
       const userName = user ? (user.fullName || user.username) : 'النظام المركزي';
-      const userRole = user?.role || 'user';
 
       const initialComment = [{
         id: `ACT-${Date.now()}`,
         userId,
         userName,
-        userRole,
         text: 'تم تسجيل وتكليف العملية رسمياً في مركز العمل والمتابعة',
         timestamp: new Date().toISOString()
       }];
@@ -785,17 +644,12 @@ class WorkOperationsCenterService {
         action: 'ASSIGN',
         fromUserId: userId,
         fromUserName: userName,
-        fromRole: userRole,
-        fromDepartment: user?.department || 'مديرية الأشغال',
         toUserId: data.assigned_to || null,
-        toUserName: this._getUserName(data.assigned_to),
-        toRole: 'assigned_role',
-        toDepartment: '',
+        toUserName: await this._resolveUserName(data.assigned_to),
         previousState: 'none',
         newState: data.status || 'new',
         reason: 'التكليف المبدئي عند إنشاء العملية',
-        timestamp: new Date().toISOString(),
-        performedBy: userId
+        timestamp: new Date().toISOString()
       }];
 
       const row = {
@@ -807,12 +661,9 @@ class WorkOperationsCenterService {
         priority: data.priority || 'medium',
         status: data.status || 'new',
         department_id: data.department_id || null,
-        org_unit_id: data.org_unit_id || null,
         assigned_to: data.assigned_to || null,
         co_assignees: JSON.stringify(data.co_assignees || []),
         assigned_by: userId,
-        assigned_team: data.assigned_team || '',
-        external_entity: data.external_entity || '',
         start_date: data.start_date || new Date().toISOString().split('T')[0],
         due_date: data.due_date || null,
         completed_at: null,
@@ -824,20 +675,19 @@ class WorkOperationsCenterService {
         entity_type: data.entity_type || null,
         entity_id: data.entity_id || null,
         entity_name: data.entity_name || '',
-        location_name: data.location_name || 'بلدية كفرنجة الجديدة',
+        location_name: data.location_name || 'كفرنجة',
         lat: data.lat !== undefined && data.lat !== null ? parseFloat(data.lat) : 32.2985,
         lng: data.lng !== undefined && data.lng !== null ? parseFloat(data.lng) : 35.7050,
         appeal_number: data.appeal_number || null,
-        appeal_date: data.appeal_date || null,
         citizen_name: data.citizen_name || null,
         citizen_phone: data.citizen_phone || null,
-        national_id: data.national_id || null,
         subtasks: JSON.stringify(data.subtasks || []),
         field_report: JSON.stringify(data.field_report || {}),
         attachments: JSON.stringify(data.attachments || []),
         comments: JSON.stringify(initialComment),
         approvals: JSON.stringify([]),
         assignment_history: JSON.stringify(initialHistory),
+        notes_and_endorsements: JSON.stringify([]),
         entity_geometry: JSON.stringify(data.entity_geometry || null),
         source_context: JSON.stringify(data.source_context || {}),
         created_by: userId,
@@ -845,209 +695,89 @@ class WorkOperationsCenterService {
         updated_at: new Date().toISOString()
       };
 
-      const sql = `
-        INSERT INTO ${this.tableName} (
-          id, task_number, title, description, task_type, priority, status,
-          department_id, org_unit_id, assigned_to, co_assignees, assigned_by, assigned_team, external_entity,
-          start_date, due_date, completed_at, closed_at, planned_duration_hours, actual_duration_hours, sla_hours, sla_status,
-          entity_type, entity_id, entity_name, location_name, lat, lng,
-          appeal_number, appeal_date, citizen_name, citizen_phone, national_id,
-          subtasks, field_report, attachments, comments, approvals, assignment_history,
-          entity_geometry, source_context, created_by, created_at, updated_at
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7,
-          $8, $9, $10, $11, $12, $13, $14,
-          $15, $16, $17, $18, $19, $20, $21, $22,
-          $23, $24, $25, $26, $27, $28,
-          $29, $30, $31, $32, $33,
-          $34, $35, $36, $37, $38, $39,
-          $40, $41, $42, $43, $44
-        )
-      `;
+      if (isPostgresActive()) {
+        const sql = `
+          INSERT INTO ${this.tableName} (
+            id, task_number, title, description, task_type, priority, status,
+            department_id, assigned_to, co_assignees, assigned_by,
+            start_date, due_date, completed_at, closed_at, planned_duration_hours, actual_duration_hours, sla_hours, sla_status,
+            entity_type, entity_id, entity_name, location_name, lat, lng,
+            appeal_number, citizen_name, citizen_phone,
+            subtasks, field_report, attachments, comments, approvals, assignment_history, notes_and_endorsements,
+            entity_geometry, source_context, created_by, created_at, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,
+            $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36,
+            $37, $38, $39, $40
+          )
+        `;
 
-      await dbRun(sql, [
-        row.id, row.task_number, row.title, row.description, row.task_type, row.priority, row.status,
-        row.department_id, row.org_unit_id, row.assigned_to, row.co_assignees, row.assigned_by, row.assigned_team, row.external_entity,
-        row.start_date, row.due_date, row.completed_at, row.closed_at, row.planned_duration_hours, row.actual_duration_hours, row.sla_hours, row.sla_status,
-        row.entity_type, row.entity_id, row.entity_name, row.location_name, row.lat, row.lng,
-        row.appeal_number, row.appeal_date, row.citizen_name, row.citizen_phone, row.national_id,
-        row.subtasks, row.field_report, row.attachments, row.comments, row.approvals, row.assignment_history,
-        row.entity_geometry, row.source_context, row.created_by, row.created_at, row.updated_at
-      ]);
-
-      if (row.assigned_to && typeof notificationCenter.sendInternalAlert === 'function') {
-        notificationCenter.sendInternalAlert(`تم تكليفك بالعملية رقم [${row.task_number}]: ${row.title}`, {
-          userId: row.assigned_to,
-          type: 'TASK_ASSIGNED',
-          entityId: row.id
-        }).catch(() => null);
+        await dbRun(sql, [
+          row.id, row.task_number, row.title, row.description, row.task_type, row.priority, row.status,
+          row.department_id, row.assigned_to, row.co_assignees, row.assigned_by,
+          row.start_date, row.due_date, row.completed_at, row.closed_at, row.planned_duration_hours, row.actual_duration_hours, row.sla_hours, row.sla_status,
+          row.entity_type, row.entity_id, row.entity_name, row.location_name, row.lat, row.lng,
+          row.appeal_number, row.citizen_name, row.citizen_phone,
+          row.subtasks, row.field_report, row.attachments, row.comments, row.approvals, row.assignment_history, row.notes_and_endorsements,
+          row.entity_geometry, row.source_context, row.created_by, row.created_at, row.updated_at
+        ]);
+      } else {
+        if (!memDb.tasks) memDb.tasks = [];
+        memDb.tasks.unshift(row);
+        saveMemTable('tasks');
       }
 
-      if (global.recordActivity) {
-        global.recordActivity({
-          userId,
-          userName,
-          action: 'تكليف وتسجيل عملية',
-          entity: 'مركز العمل والمتابعة',
-          entityId: row.task_number,
-          details: `إنشاء وتكليف العملية: ${row.title} (${row.priority})`
-        });
+      if (row.assigned_to) {
+        notificationCenter.sendInternalAlert(
+          `تم تكليفك بالعملية رقم [${row.task_number}]: ${row.title}`,
+          { userId: row.assigned_to, entityId: row.id }
+        );
       }
 
-      return {
-        ...row,
-        co_assignees: JSON.parse(row.co_assignees),
-        subtasks: JSON.parse(row.subtasks),
-        field_report: JSON.parse(row.field_report),
-        attachments: JSON.parse(row.attachments),
-        comments: JSON.parse(row.comments),
-        approvals: JSON.parse(row.approvals),
-        assignment_history: JSON.parse(row.assignment_history),
-        entity_geometry: JSON.parse(row.entity_geometry || 'null'),
-        source_context: JSON.parse(row.source_context || '{}')
-      };
+      await this._recordAudit(userId, row.id, 'OPERATION_CREATED', {
+        task_number: row.task_number,
+        title: row.title,
+        assigned_to: row.assigned_to,
+        priority: row.priority
+      });
+
+      return this._formatOperationOutput(row);
     } catch (err) {
       logError('WorkOperationsCenterService.createOperation', err.message);
       throw err;
     }
   }
 
-  async saveFieldReport(id, reportData, user) {
-    try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const userId = user ? (user.id || user.username) : 'SYSTEM';
-      const userName = user ? (user.fullName || user.username) : 'المستخدم';
-
-      const fieldReport = {
-        completionPercentage: reportData.completionPercentage !== undefined ? parseInt(reportData.completionPercentage, 10) : 100,
-        laborAndMachinery: reportData.laborAndMachinery || '',
-        materialsAndQuantities: reportData.materialsAndQuantities || '',
-        fieldNotes: reportData.fieldNotes || '',
-        recordedBy: userName,
-        recordedById: userId,
-        recordedAt: new Date().toISOString()
-      };
-
-      const comments = Array.isArray(existing.comments) ? existing.comments : (typeof existing.comments === 'string' ? JSON.parse(existing.comments || '[]') : []);
-      comments.push({
-        id: `RPT-${Date.now()}`,
-        userId,
-        userName,
-        userRole: user?.role || 'user',
-        text: `تم توثيق تقرير الكشف الميداني بنسبة إنجاز (${fieldReport.completionPercentage}%)`,
-        timestamp: new Date().toISOString()
-      });
-
-      const sql = `UPDATE ${this.tableName} SET field_report = $1, comments = $2, updated_at = $3 WHERE id = $4`;
-      await dbRun(sql, [JSON.stringify(fieldReport), JSON.stringify(comments), new Date().toISOString(), existing.id]);
-
-      if (global.recordActivity) {
-        global.recordActivity({
-          userId,
-          userName,
-          action: 'توثيق تقرير ميداني',
-          entity: 'مركز العمل والمتابعة',
-          entityId: existing.task_number,
-          details: `إنجاز كشف ميداني بنسبة ${fieldReport.completionPercentage}%`
-        });
-      }
-
-      return await this.getOperationById(existing.id);
-    } catch (e) {
-      logError('WorkOperationsCenterService.saveFieldReport', e.message);
-      throw e;
-    }
-  }
-
-  async addComment(id, text, user) {
-    try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const userId = user ? (user.id || user.username) : 'SYSTEM';
-      const userName = user ? (user.fullName || user.username) : 'المستخدم';
-
-      const comments = Array.isArray(existing.comments) ? existing.comments : (typeof existing.comments === 'string' ? JSON.parse(existing.comments || '[]') : []);
-      comments.push({
-        id: `COM-${Date.now()}`,
-        userId,
-        userName,
-        userRole: user?.role || 'user',
-        text: text.trim(),
-        timestamp: new Date().toISOString()
-      });
-
-      const sql = `UPDATE ${this.tableName} SET comments = $1, updated_at = $2 WHERE id = $3`;
-      await dbRun(sql, [JSON.stringify(comments), new Date().toISOString(), existing.id]);
-
-      return await this.getOperationById(existing.id);
-    } catch (e) {
-      logError('WorkOperationsCenterService.addComment', e.message);
-      throw e;
-    }
-  }
-
-  async updateSubtasks(id, subtasks, user) {
-    try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const sql = `UPDATE ${this.tableName} SET subtasks = $1, updated_at = $2 WHERE id = $3`;
-      await dbRun(sql, [JSON.stringify(subtasks), new Date().toISOString(), existing.id]);
-
-      return await this.getOperationById(existing.id);
-    } catch (e) {
-      logError('WorkOperationsCenterService.updateSubtasks', e.message);
-      throw e;
-    }
-  }
-
-  async deleteAttachment(id, attachmentId) {
-    try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const current = Array.isArray(existing.attachments) ? existing.attachments : (typeof existing.attachments === 'string' ? JSON.parse(existing.attachments || '[]') : []);
-      const filtered = current.filter(a => a.id !== attachmentId && a.url !== attachmentId);
-
-      const sql = `UPDATE ${this.tableName} SET attachments = $1, updated_at = $2 WHERE id = $3`;
-      await dbRun(sql, [JSON.stringify(filtered), new Date().toISOString(), existing.id]);
-
-      return await this.getOperationById(existing.id);
-    } catch (e) {
-      logError('WorkOperationsCenterService.deleteAttachment', e.message);
-      throw e;
-    }
-  }
-
+  /**
+   * فحص الازدواجية الدقيق مع استبعاد المواقع الافتراضية
+   */
   async checkDuplicates({ location_name, entity_type, entity_id, lat, lng, citizen_name }) {
     try {
-      const openOps = await dbQuery(
-        `SELECT id, task_number, title, location_name, entity_type, lat, lng, status, citizen_name 
-         FROM ${this.tableName} 
-         WHERE status NOT IN ('completed', 'verified', 'closed', 'archived')`
-      );
-      if (!openOps || !openOps.length) return { hasDuplicates: false, duplicates: [] };
-
+      const openOps = await this.getOperations();
       const duplicates = [];
       const queryLat = parseFloat(lat);
       const queryLng = parseFloat(lng);
 
+      const isGenericLocation = (loc) => {
+        if (!loc) return true;
+        const l = loc.trim().toLowerCase();
+        return l === 'كفرنجة' || l === 'بلدية كفرنجة' || l === 'بلدية كفرنجة الجديدة';
+      };
+
       for (const op of openOps) {
+        if (['completed', 'verified', 'closed', 'archived'].includes(op.status)) continue;
         let matchReason = null;
 
-        if (citizen_name && op.citizen_name && citizen_name.trim() === op.citizen_name.trim()) {
-          matchReason = `يوجد استدعاء مفتوح حالياً لنفس المواطن [${op.task_number}]: ${op.title}`;
-        } else if (entity_type && entity_id && op.entity_type === entity_type && op.entity_id === entity_id) {
+        if (citizen_name && op.citizen_name && citizen_name.trim().length >= 8 && citizen_name.trim() === op.citizen_name.trim()) {
+          matchReason = `يوجد استدعاء نشط لنفس المواطن [${op.task_number}]: ${op.title}`;
+        } else if (entity_type && entity_id && op.entity_type === entity_type && String(op.entity_id) === String(entity_id)) {
           matchReason = `توجد عملية نشطة بالفعل على نفس الكيان [${op.task_number}]: ${op.title}`;
-        } else if (location_name && op.location_name && location_name.trim().toLowerCase() === op.location_name.trim().toLowerCase()) {
-          matchReason = `يوجد بلاغ/كشف نشط في نفس الموقع الجغرافي [${op.task_number}]`;
+        } else if (!isGenericLocation(location_name) && op.location_name && location_name.trim().toLowerCase() === op.location_name.trim().toLowerCase()) {
+          matchReason = `يوجد عمل ميداني نشط في نفس الموقع المحدد [${op.task_number}]: ${op.location_name}`;
         } else if (!isNaN(queryLat) && !isNaN(queryLng) && op.lat && op.lng) {
-          const distanceMeters = calculateHaversineMeters(queryLat, queryLng, op.lat, op.lng);
-          if (distanceMeters < 60) {
-            matchReason = `يوجد عمل ميداني مفتوح في نطاق مكاني مباشر (${Math.round(distanceMeters)}م) [${op.task_number}]`;
+          const dist = calculateHaversineMeters(queryLat, queryLng, op.lat, op.lng);
+          if (dist < 60) {
+            matchReason = `يوجد عمل ميداني نشط في نطاق مكاني مباشر (${Math.round(dist)}م) [${op.task_number}]`;
           }
         }
 
@@ -1063,6 +793,349 @@ class WorkOperationsCenterService {
     }
   }
 
+  /**
+   * تعديل العملية بالصيغة المتوافقة تماماً مع PostgreSQL ($1, $2, ...)
+   */
+  async updateOperation(id, data, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const nowStr = new Date().toISOString();
+      const updated = {
+        ...existing,
+        title: data.title !== undefined ? data.title : existing.title,
+        description: data.description !== undefined ? data.description : existing.description,
+        priority: data.priority !== undefined ? data.priority : existing.priority,
+        task_type: data.task_type !== undefined ? data.task_type : existing.task_type,
+        location_name: data.location_name !== undefined ? data.location_name : existing.location_name,
+        lat: data.lat !== undefined ? parseFloat(data.lat) : existing.lat,
+        lng: data.lng !== undefined ? parseFloat(data.lng) : existing.lng,
+        citizen_name: data.citizen_name !== undefined ? data.citizen_name : existing.citizen_name,
+        citizen_phone: data.citizen_phone !== undefined ? data.citizen_phone : existing.citizen_phone,
+        due_date: data.due_date !== undefined ? data.due_date : existing.due_date,
+        assigned_to: data.assigned_to !== undefined ? data.assigned_to : existing.assigned_to,
+        updated_at: nowStr
+      };
+
+      if (isPostgresActive()) {
+        const sql = `
+          UPDATE ${this.tableName} SET 
+            title = $1, description = $2, priority = $3, task_type = $4,
+            location_name = $5, lat = $6, lng = $7, citizen_name = $8, citizen_phone = $9,
+            due_date = $10, assigned_to = $11, updated_at = $12
+          WHERE id = $13
+        `;
+        await dbRun(sql, [
+          updated.title, updated.description, updated.priority, updated.task_type,
+          updated.location_name, updated.lat, updated.lng, updated.citizen_name, updated.citizen_phone,
+          updated.due_date, updated.assigned_to, nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx] = { ...memDb.tasks[idx], ...updated };
+          saveMemTable('tasks');
+        }
+      }
+
+      await this._recordAudit(user?.id, existing.id, 'OPERATION_UPDATED', {
+        updatedFields: Object.keys(data)
+      });
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.updateOperation', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * حذف العملية بالصيغة المتوافقة واستخدام المعاملة الذرية
+   */
+  async deleteOperation(id, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      if (isPostgresActive()) {
+        await withTransaction(async (client) => {
+          await client.run(`DELETE FROM ${this.tableName} WHERE id = $1`, [existing.id]);
+        });
+      } else {
+        memDb.tasks = (memDb.tasks || []).filter(t => t.id !== existing.id);
+        saveMemTable('tasks');
+      }
+
+      await this._recordAudit(user?.id, existing.id, 'OPERATION_DELETED', {
+        task_number: existing.task_number,
+        title: existing.title
+      });
+
+      return { success: true, id: existing.id, task_number: existing.task_number };
+    } catch (e) {
+      logError('WorkOperationsCenterService.deleteOperation', e.message);
+      throw e;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // دوال التكامل ودعم واجهات المستخدم (WOC Engine API Compatibility Layer)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * توثيق تقرير الكشف الميداني
+   */
+  async saveFieldReport(id, fieldReport, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET field_report = $1, updated_at = $2 WHERE id = $3`, [
+          JSON.stringify(fieldReport), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].field_report = fieldReport;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.saveFieldReport', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * إضافة تعليق على العملية
+   */
+  async addComment(id, text, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const userId = user ? (user.id || user.username) : 'SYSTEM';
+      const userName = user ? (user.fullName || user.username) : 'المستخدم';
+
+      const comments = Array.isArray(existing.comments) ? existing.comments : [];
+      comments.push({
+        id: `COM-${Date.now()}`,
+        userId,
+        userName,
+        userRole: user?.role || 'user',
+        text: text.trim(),
+        timestamp: new Date().toISOString()
+      });
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET comments = $1, updated_at = $2 WHERE id = $3`, [
+          JSON.stringify(comments), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].comments = comments;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.addComment', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * تحديث المهام الفرعية
+   */
+  async updateSubtasks(id, subtasks, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET subtasks = $1, updated_at = $2 WHERE id = $3`, [
+          JSON.stringify(subtasks), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].subtasks = subtasks;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.updateSubtasks', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * إضافة مرفقات إلى العملية
+   */
+  async addAttachments(id, filesList, user) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const userId = user ? (user.id || user.username) : 'SYSTEM';
+      const userName = user ? (user.fullName || user.username) : 'المستخدم';
+
+      const attachedFiles = (filesList || []).map(file => ({
+        id: file.id || `ATT-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        name: file.name || file.fileName || 'ملف مرفق',
+        url: file.url || file.filePath || '',
+        size: file.size || 0,
+        type: file.type || 'application/octet-stream',
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: userId,
+        uploadedByName: userName
+      }));
+
+      const current = Array.isArray(existing.attachments) ? existing.attachments : [];
+      const merged = [...current, ...attachedFiles];
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET attachments = $1, updated_at = $2 WHERE id = $3`, [
+          JSON.stringify(merged), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].attachments = merged;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.addAttachments', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * حذف مرفق من العملية
+   */
+  async deleteAttachment(id, attachmentId) {
+    try {
+      const existing = await this.getOperationById(id);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const current = Array.isArray(existing.attachments) ? existing.attachments : [];
+      const filtered = current.filter(a => a.id !== attachmentId && a.url !== attachmentId);
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET attachments = $1, updated_at = $2 WHERE id = $3`, [
+          JSON.stringify(filtered), nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].attachments = filtered;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.deleteAttachment', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * الاعتماد النهائي وتثبيت المعاملة
+   */
+  async finalizeAndApprove({ opId, decisionStatus = 'completed', decisionText = '', executionNotes = '', user }) {
+    try {
+      const existing = await this.getOperationById(opId);
+      if (!existing) throw new Error('العملية غير موجودة');
+
+      const userId = user ? (user.id || user.username) : 'SYSTEM';
+      const userName = user ? (user.fullName || user.username) : 'مدير المديرية';
+      const uRole = String(user?.role || '').toLowerCase();
+
+      // التحقق من قواعد فصل المهام والمسؤوليات (Separation of Duties)
+      if (existing.created_by === userId && uRole !== 'admin' && uRole !== 'super_admin' && uRole !== 'director_public_works') {
+        throw new Error('⛔ عذراً: تمنع قواعد فصل المهام (Separation of Duties) المستخدم من اعتماد أو إغلاق عملية قام بإنشائها بنفسه.');
+      }
+
+      const decision = {
+        finalizedBy: userId,
+        finalizedByName: userName,
+        decisionText: decisionText || 'تم التدقيق والاعتماد النهائي والموافقة على التنسيبات المرفقة.',
+        status: decisionStatus,
+        executionNotes: executionNotes || '',
+        finalizedAt: new Date().toISOString()
+      };
+
+      const history = Array.isArray(existing.assignment_history) ? existing.assignment_history : [];
+      history.push({
+        id: `ASG-${Date.now()}`,
+        action: 'APPROVE',
+        fromUserId: userId,
+        fromUserName: userName,
+        fromRole: user ? user.role : 'director_public_works',
+        toUserId: existing.assigned_to,
+        toUserName: await this._resolveUserName(existing.assigned_to),
+        previousState: existing.status,
+        newState: decisionStatus,
+        reason: `الاعتماد النهائي وتثبيت المعاملة: ${decision.decisionText}`,
+        timestamp: new Date().toISOString(),
+        performedBy: userId
+      });
+
+      const nowStr = new Date().toISOString();
+      if (isPostgresActive()) {
+        await dbRun(`UPDATE ${this.tableName} SET final_decision = $1, status = $2, assignment_history = $3, completed_at = $4, updated_at = $5 WHERE id = $6`, [
+          JSON.stringify(decision), decisionStatus, JSON.stringify(history), nowStr, nowStr, existing.id
+        ]);
+      } else {
+        const idx = (memDb.tasks || []).findIndex(t => t.id === existing.id);
+        if (idx !== -1) {
+          memDb.tasks[idx].final_decision = decision;
+          memDb.tasks[idx].status = decisionStatus;
+          memDb.tasks[idx].assignment_history = history;
+          memDb.tasks[idx].completed_at = nowStr;
+          memDb.tasks[idx].updated_at = nowStr;
+          saveMemTable('tasks');
+        }
+      }
+
+      await this._recordAudit(userId, existing.id, 'OPERATION_FINALIZED', {
+        decisionStatus,
+        decisionText: decision.decisionText,
+        finalizedAt: decision.finalizedAt
+      });
+
+      return await this.getOperationById(existing.id);
+    } catch (e) {
+      logError('WorkOperationsCenterService.finalizeAndApprove', e.message);
+      throw e;
+    }
+  }
+
+  /**
+   * استخراج الإحصائيات التنفيذية لمركز العمل
+   */
   async getExecutiveStats(user = null) {
     try {
       const all = await this.getOperations({}, user);
@@ -1097,74 +1170,32 @@ class WorkOperationsCenterService {
     }
   }
 
-  /**
-   * تعديل وتحديث بيانات العملية أو الاستدعاء
-   */
-  async updateOperation(id, data, user) {
+  async healthCheck() {
+    let total = 0;
     try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      const title = data.title !== undefined ? data.title : existing.title;
-      const description = data.description !== undefined ? data.description : existing.description;
-      const priority = data.priority !== undefined ? data.priority : existing.priority;
-      const task_type = data.task_type !== undefined ? data.task_type : existing.task_type;
-      const location_name = data.location_name !== undefined ? data.location_name : existing.location_name;
-      const lat = data.lat !== undefined ? data.lat : existing.lat;
-      const lng = data.lng !== undefined ? data.lng : existing.lng;
-      const citizen_name = data.citizen_name !== undefined ? data.citizen_name : existing.citizen_name;
-      const citizen_phone = data.citizen_phone !== undefined ? data.citizen_phone : existing.citizen_phone;
-      const appeal_number = data.appeal_number !== undefined ? data.appeal_number : existing.appeal_number;
-      const due_date = data.due_date !== undefined ? data.due_date : existing.due_date;
-      const assigned_to = data.assigned_to !== undefined ? data.assigned_to : existing.assigned_to;
-      const entity_type = data.entity_type !== undefined ? data.entity_type : existing.entity_type;
-      const entity_id = data.entity_id !== undefined ? data.entity_id : existing.entity_id;
-      const entity_name = data.entity_name !== undefined ? data.entity_name : existing.entity_name;
-      const updated_at = new Date().toISOString();
-
-      await dbRun(
-        `UPDATE ${this.tableName} SET 
-          title = ?, description = ?, priority = ?, task_type = ?,
-          location_name = ?, lat = ?, lng = ?, citizen_name = ?, citizen_phone = ?,
-          appeal_number = ?, due_date = ?, assigned_to = ?, entity_type = ?,
-          entity_id = ?, entity_name = ?, updated_at = ?
-        WHERE id = ?`,
-        [
-          title, description, priority, task_type,
-          location_name, lat, lng, citizen_name, citizen_phone,
-          appeal_number, due_date, assigned_to, entity_type,
-          entity_id, entity_name, updated_at, id
-        ]
-      );
-
-      logInfo('WorkOperationsCenterService.updateOperation', `تم تحديث بيانات العملية [${existing.task_number || id}] بواسطة ${user?.fullName || user?.username}`);
-      return await this.getOperationById(id);
+      if (isPostgresActive()) {
+        const res = await dbGet(`SELECT COUNT(*) as count FROM ${this.tableName}`);
+        total = parseInt(res?.count || 0, 10);
+      } else {
+        total = (memDb.tasks || []).length;
+      }
+      return {
+        healthy: true,
+        status: 'READY',
+        engineId: this.engineId,
+        engineName: this.engineName,
+        aliasEngineId: this.aliasEngineId,
+        totalTasks: total,
+        timestamp: new Date().toISOString()
+      };
     } catch (e) {
-      logError('WorkOperationsCenterService.updateOperation', e.message);
-      throw e;
+      return {
+        healthy: false,
+        status: 'FAILED',
+        engineId: this.engineId,
+        error: e.message
+      };
     }
-  }
-
-  /**
-   * حذف عملية أو استدعاء
-   */
-  async deleteOperation(id, user) {
-    try {
-      const existing = await this.getOperationById(id);
-      if (!existing) throw new Error('العملية غير موجودة');
-
-      await dbRun(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
-      logInfo('WorkOperationsCenterService.deleteOperation', `تم حذف العملية [${existing.task_number || id}] بواسطة ${user?.fullName || user?.username}`);
-      return { success: true, id, task_number: existing.task_number };
-    } catch (e) {
-      logError('WorkOperationsCenterService.deleteOperation', e.message);
-      throw e;
-    }
-  }
-
-  _getUserName(userId) {
-    if (!userId) return 'غير محدد';
-    return userId;
   }
 }
 

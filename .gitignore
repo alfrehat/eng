@@ -33,6 +33,8 @@ database/*.ldb
 # Temporary & Build Output
 tmp/
 temp/
+bin/
+obj/
 uploads/*
 !uploads/.gitkeep
 dist/

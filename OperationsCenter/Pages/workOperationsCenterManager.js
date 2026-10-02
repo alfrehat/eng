@@ -70,7 +70,7 @@ class WorkOperationsCenterManager {
     } catch {
       this._user = null;
     }
-    this.isAdmin = this._user && (this._user.role === 'admin' || this._user.id === 'U-001' || this._user.role === 'director_public_works');
+    this.isAdmin = this._user && (this._user.role === 'admin' || this._user.role === 'super_admin' || this._user.role === 'director_public_works');
   }
 
   async init() {
@@ -359,7 +359,7 @@ class WorkOperationsCenterManager {
   }
 
   getFilteredOperations() {
-    const myId = this._user?.id || 'U-001';
+    const myId = this._user?.id || '';
     const todayStr = new Date().toISOString().split('T')[0];
 
     return this.operations.filter(op => {
@@ -1317,7 +1317,7 @@ class WorkOperationsCenterManager {
 
   _renderQuickActionButtons(op) {
     let html = '';
-    const myId = this._user?.id || 'U-001';
+    const myId = this._user?.id || '';
     const isMine = op.assigned_to === myId;
 
     if (op.status === 'new' || op.status === 'assigned') {
@@ -1850,7 +1850,7 @@ class WorkOperationsCenterManager {
 
   _canEdit(op) {
     if (!this._user) return true;
-    if (this.isAdmin || this._user.role === 'admin' || this._user.role === 'director_public_works' || this._user.id === 'U-001' || this._user.id === 'U-002') return true;
+    if (this.isAdmin || this._user.role === 'admin' || this._user.role === 'super_admin' || this._user.role === 'director_public_works') return true;
     if (op.assigned_to === this._user.id || op.created_by === this._user.id) return true;
     const perms = this._user.permissions || [];
     return perms.includes('tasks.edit') || perms.includes('OPERATIONS.EDIT') || (this._user.role && this._user.role.startsWith('head_of_'));
@@ -1858,7 +1858,7 @@ class WorkOperationsCenterManager {
 
   _canDelete(op) {
     if (!this._user) return false;
-    if (this.isAdmin || this._user.role === 'admin' || this._user.role === 'director_public_works' || this._user.id === 'U-001' || this._user.id === 'U-002') return true;
+    if (this.isAdmin || this._user.role === 'admin' || this._user.role === 'super_admin' || this._user.role === 'director_public_works') return true;
     const perms = this._user.permissions || [];
     return perms.includes('tasks.delete') || perms.includes('OPERATIONS.DELETE');
   }

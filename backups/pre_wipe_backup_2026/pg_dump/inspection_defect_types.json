@@ -1,0 +1,16 @@
+[
+  {
+    "id": "idt-1",
+    "code": "POTHOLING",
+    "label": "حفر وتخسفات إسفلتية",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "idt-2",
+    "code": "CRACKING",
+    "label": "تصدعات وشقوق طولية",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

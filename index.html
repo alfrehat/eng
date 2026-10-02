@@ -76,6 +76,14 @@
         <span class="badge badge-success" id="badge-paving-returns">0</span>
       </a>
 
+      <a class="nav-item" data-page="projects" id="nav-projects">
+        <span class="nav-icon">🏗️</span><span>المشاريع والمحافظ الرأسمالية</span>
+        <span class="badge badge-primary" id="badge-projects">0</span>
+      </a>
+      <a class="nav-item" data-page="project-workspace" id="nav-project-workspace" style="display:none;">
+        <span class="nav-icon">📐</span><span>مساحة عمل المشروع</span>
+      </a>
+
       <a class="nav-item" data-page="tenders" id="nav-tenders">
         <span class="nav-icon">📋</span><span>العطاءات والمشاريع</span>
         <span class="badge badge-accent" id="badge-tenders">0</span>
@@ -138,18 +146,18 @@
     
     <script>
       document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login.html';
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace('/login.html?reason=logged_out');
       });
 
-      // Populate user info
+      // عرض بيانات المستخدم في الشريط الجانبي
       try {
-        const userStr = localStorage.getItem('user');
+        const userStr = localStorage.getItem('user') || sessionStorage.getItem('engineeringUser');
         if (userStr) {
           const user = JSON.parse(userStr);
           document.getElementById('sidebarName').textContent = user.fullName || user.username;
-          document.getElementById('sidebarRole').textContent = user.role === 'admin' ? 'مدير النظام' : user.role === 'engineer' ? 'مهندس' : user.role === 'manager' ? 'مدير' : user.role;
+          document.getElementById('sidebarRole').textContent = user.role === 'admin' ? 'مدير النظام' : (user.role === 'engineer' ? 'مهندس' : user.role);
           document.getElementById('sidebarAvatar').textContent = (user.fullName || user.username).charAt(0);
         }
       } catch(e) {}
@@ -765,8 +773,8 @@
   <script src="Contracts/Pages/unifiedContractManagementManager.js?v=20260830"></script>
   <script src="Contracts/Pages/unifiedClaimsManager.js?v=20260830"></script>
   <script src="Purchases/Pages/unifiedPurchasesManager.js?v=20260830_19"></script>
-  <script src="Tenders/Pages/unifiedTendersManager.js?v=20260830_7"></script>
-  <script src="js/budgetManager.js"></script>
+  <script src="Tenders/Pages/unifiedTendersManager.js?v=20260910_hub1"></script>
+  <script src="Budget/Pages/budgetManager.js?v=20260909"></script>
   <script src="Archive/Pages/unifiedArchiveManager.js?v=20260830_7"></script>
   <script src="Committees/Pages/unifiedCommitteesManager.js?v=20260830_7"></script>
   <script src="Projects/Pages/unifiedProjectsManager.js?v=20260830_7"></script>

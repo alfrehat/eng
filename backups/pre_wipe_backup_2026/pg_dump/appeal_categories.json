@@ -1,0 +1,16 @@
+[
+  {
+    "id": "ac-1",
+    "code": "AMOUNT_APPEAL",
+    "label": "اعتراض على قيمة العوائد",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "ac-2",
+    "code": "BOUNDARY_APPEAL",
+    "label": "اعتراض على الحدود والأطوال",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fs-1",
+    "code": "MUNICIPAL_BUDGET",
+    "label": "موازنة البلدية الذاتية",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "fs-2",
+    "code": "MINISTRY_GRANT",
+    "label": "منح وزارة الإدارة المحلية",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

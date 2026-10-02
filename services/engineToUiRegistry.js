@@ -1,13 +1,11 @@
 /**
  * services/engineToUiRegistry.js
  * 🗺️ سجل ربط المحركات المؤسسية بالواجهة وتوزيع الصلاحيات (Engine-to-UI Registry)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * يربط هذا السجل كافة المحركات الـ 28 بمجموعاتها الوظيفية الثمانية وشاشاتها وصلاحياتها.
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const ENGINE_UI_MODULES = [
-  // ─── 1. التخطيط والمحفظة (Planning & Portfolio) ───
+  // ─── 1. التخطيط والمحفظة الاستثمارية (Planning & Portfolio) ───
   {
     groupId: 'PLANNING_PORTFOLIO',
     groupName: 'التخطيط والمحفظة الاستثمارية',
@@ -89,7 +87,7 @@ const ENGINE_UI_MODULES = [
     ]
   },
 
-  // ─── 2. العطاءات والعقود (Tenders & Contracts) ───
+  // ─── 2. العطاءات والعقود والمطالبات (Tenders & Contracts) ───
   {
     groupId: 'TENDERS_CONTRACTS',
     groupName: 'العطاءات والعقود والمطالبات',
@@ -120,6 +118,16 @@ const ENGINE_UI_MODULES = [
         ]
       },
       {
+        engineId: 'CONTRACT_TEMPLATE_ENGINE',
+        displayName: 'نماذج العقود والصياغة القانونية',
+        pageId: 'contract-templates',
+        icon: '⚖️',
+        requiredPermission: 'CONTRACTS.VIEW',
+        actions: [
+          { action: 'GENERATE', label: 'توليد مسودة عقد', permission: 'CONTRACTS.CREATE' }
+        ]
+      },
+      {
         engineId: 'CLAIMS_ENGINE',
         displayName: 'المطالبات والدفعات المالية',
         pageId: 'claims',
@@ -129,14 +137,25 @@ const ENGINE_UI_MODULES = [
           { action: 'CREATE', label: 'تسجيل مطالبة', permission: 'CLAIMS.CREATE' },
           { action: 'AUDIT', label: 'تدقيق واعتماد', permission: 'CLAIMS.AUDIT' }
         ]
+      },
+      {
+        engineId: 'BUDGET_ENGINE',
+        displayName: 'الموازنة العامة والارتباط المالي',
+        pageId: 'budget',
+        icon: '🏛️',
+        requiredPermission: 'FINANCIAL_PROGRAM.VIEW',
+        actions: [
+          { action: 'CREATE_LINE', label: 'إضافة بند مالي', permission: 'FINANCIAL_PROGRAM.ALLOCATE' },
+          { action: 'ALLOCATE', label: 'حجز مخصص', permission: 'FINANCIAL_PROGRAM.ALLOCATE' }
+        ]
       }
     ]
   },
 
-  // ─── 3. شبكة الطرق والرصفات (Roads & Infrastructure) ───
+  // ─── 3. شبكة الطرق وعوائد التعبيد والـ GIS (Roads & Spatial) ───
   {
     groupId: 'ROADS_INFRASTRUCTURE',
-    groupName: 'شبكة الطرق وعوائد التعبيد',
+    groupName: 'شبكة الطرق وعوائد التعبيد والخرائط',
     groupIcon: '🛣️',
     engines: [
       {
@@ -148,6 +167,16 @@ const ENGINE_UI_MODULES = [
         actions: [
           { action: 'CREATE', label: 'إضافة طريق', permission: 'ROADS.CREATE' },
           { action: 'PCI_SURVEY', label: 'مسح ميداني PCI', permission: 'ROADS.EDIT' }
+        ]
+      },
+      {
+        engineId: 'RAMS_ANALYTICS_ENGINE',
+        displayName: 'تحليلات صيانة الطرق (RAMS)',
+        pageId: 'rams-analytics',
+        icon: '📈',
+        requiredPermission: 'ROADS.VIEW',
+        actions: [
+          { action: 'ANALYZE', label: 'تحليل المؤشرات', permission: 'ROADS.VIEW' }
         ]
       },
       {
@@ -170,6 +199,16 @@ const ENGINE_UI_MODULES = [
         actions: [
           { action: 'VIEW_MAP', label: 'الخريطة التفاعلية', permission: 'ROADS.VIEW' }
         ]
+      },
+      {
+        engineId: 'GIS_SURVEY_ENGINE',
+        displayName: 'الرفع المساحي والنقاط الهندسية',
+        pageId: 'gis-survey',
+        icon: '📍',
+        requiredPermission: 'ROADS.CREATE',
+        actions: [
+          { action: 'IMPORT', label: 'استيراد نقاط مساحية', permission: 'ROADS.CREATE' }
+        ]
       }
     ]
   },
@@ -182,7 +221,7 @@ const ENGINE_UI_MODULES = [
     engines: [
       {
         engineId: 'ASSETS_ENGINE',
-        displayName: 'الأبنية والجدران والآليات',
+        displayName: 'الأبنية والجدران والآليات والإنارة',
         pageId: 'structural-assets',
         icon: '🏛️',
         requiredPermission: 'ASSETS.VIEW',
@@ -194,7 +233,7 @@ const ENGINE_UI_MODULES = [
     ]
   },
 
-  // ─── 5. المشتريات واللوازم (Procurement & Purchases) ───
+  // ─── 5. المشتريات والتوريدات الهندسية (Procurement) ───
   {
     groupId: 'PURCHASES_PROCUREMENT',
     groupName: 'المشتريات والتوريدات الهندسية',
@@ -214,21 +253,22 @@ const ENGINE_UI_MODULES = [
     ]
   },
 
-  // ─── 6. الرقابة والتفتيش واللجان (Inspection & Committees) ───
+  // ─── 6. مركز العمل والرقابة الميدانية واللجان (Operations & Quality) ───
   {
     groupId: 'INSPECTION_COMMITTEES',
-    groupName: 'الرقابة الميدانية واللجان الفنية',
+    groupName: 'مركز العمل والرقابة الميدانية واللجان',
     groupIcon: '🔍',
     engines: [
       {
-        engineId: 'TASKS_ENGINE',
-        displayName: 'المهام والاستدعيات والأعمال الميدانية',
+        engineId: 'OPERATIONS_CENTER',
+        aliasEngineId: 'TASKS_ENGINE',
+        displayName: 'مركز العمل والمتابعة والاستدعاءات',
         pageId: 'tasks',
         icon: '📌',
         requiredPermission: 'TASKS.VIEW',
         actions: [
-          { action: 'CREATE', label: 'إنشاء مهمة / استدعاء', permission: 'TASKS.CREATE' },
-          { action: 'ASSIGN', label: 'إسناد وتوجيه', permission: 'TASKS.ASSIGN' },
+          { action: 'CREATE', label: 'تسجيل عملية / استدعاء', permission: 'TASKS.CREATE' },
+          { action: 'ASSIGN', label: 'توجيه وإسناد', permission: 'TASKS.ASSIGN' },
           { action: 'EXECUTE', label: 'تقرير ميداني', permission: 'TASKS.EDIT' },
           { action: 'APPROVE', label: 'اعتماد وإغلاق', permission: 'TASKS.APPROVE' },
           { action: 'EXPORT', label: 'تصدير وطباعة', permission: 'TASKS.EXPORT' }
@@ -246,7 +286,7 @@ const ENGINE_UI_MODULES = [
       },
       {
         engineId: 'COMMITTEES_ENGINE',
-        displayName: 'محاضر اللجان والاستلام الأولي والنهائي',
+        displayName: 'محاضر اللجان الفنية والاستلام',
         pageId: 'committee-reports',
         icon: '📝',
         requiredPermission: 'TENDERS.VIEW',
@@ -257,10 +297,10 @@ const ENGINE_UI_MODULES = [
     ]
   },
 
-  // ─── 7. الأرشيف والتقارير والطباعة (Archive & Reports) ───
+  // ─── 7. الأرشيف والتقارير والربط الحكومي (Archive & G2G) ───
   {
     groupId: 'ARCHIVE_REPORTS',
-    groupName: 'الأرشيف والتقارير والطباعة',
+    groupName: 'الأرشيف والتقارير والربط الحكومي',
     groupIcon: '📁',
     engines: [
       {
@@ -275,7 +315,7 @@ const ENGINE_UI_MODULES = [
       },
       {
         engineId: 'PRINT_REPORT_ENGINE',
-        displayName: 'التقارير والمخرجات الرسمية',
+        displayName: 'التقارير ونماذج المخرجات الرسمية',
         pageId: 'reports',
         icon: '🖨️',
         requiredPermission: 'REPORTS.VIEW',
@@ -296,15 +336,15 @@ const ENGINE_UI_MODULES = [
     ]
   },
 
-  // ─── 8. إدارة النظام والمستخدمين (Administration) ───
+  // ─── 8. إدارة النظام والمراقبة التشغيلية (Administration & Observability) ───
   {
     groupId: 'SYSTEM_ADMINISTRATION',
-    groupName: 'الإدارة العامة والصلاحيات',
+    groupName: 'الإدارة العامة والصلاحيات والرصد',
     groupIcon: '⚙️',
     engines: [
       {
         engineId: 'AUTHORIZATION_ENGINE',
-        displayName: 'المستخدمون والأدوار والصلاحيات',
+        displayName: 'المستخدمون والأدوار والصلاحيات (RBAC)',
         pageId: 'settings',
         icon: '👥',
         requiredPermission: 'USERS.VIEW',
@@ -323,6 +363,26 @@ const ENGINE_UI_MODULES = [
         actions: [
           { action: 'MANAGE', label: 'تعديل المسار', permission: 'WORKFLOW.MANAGE' }
         ]
+      },
+      {
+        engineId: 'OBSERVABILITY_SERVICE',
+        displayName: 'لوحة الرصد وتتبع أداء السيرفر',
+        pageId: 'observability',
+        icon: '📊',
+        requiredPermission: 'SYSTEM.MANAGE',
+        actions: [
+          { action: 'VIEW_METRICS', label: 'عرض مؤشرات الأداء', permission: 'SYSTEM.MANAGE' }
+        ]
+      },
+      {
+        engineId: 'DATA_RECONCILIATION_ENGINE',
+        displayName: 'المزامنة اللاحقة والتعافي الذاتي',
+        pageId: 'data-reconciliation',
+        icon: '🔁',
+        requiredPermission: 'SYSTEM.MANAGE',
+        actions: [
+          { action: 'TRIGGER_RECONCILIATION', label: 'بدء مزامنة يدوية', permission: 'SYSTEM.MANAGE' }
+        ]
       }
     ]
   }
@@ -333,32 +393,89 @@ class EngineToUiRegistry {
     this.modules = ENGINE_UI_MODULES;
   }
 
-  getModulesForUser(userPermissions = [], userRole = 'engineer') {
-    if (userRole === 'admin' || userPermissions.includes('ADMIN.SUPER') || userPermissions.includes('*')) {
-      return this.modules;
+  /**
+   * فحص مطابقة الصلاحية مع دعم الشمولية والـ Wildcards
+   */
+  _checkPermissionMatch(userPermissions = [], requiredPermission = '') {
+    if (!requiredPermission) return true;
+    if (userPermissions.includes('*') || userPermissions.includes('ADMIN.SUPER')) return true;
+    if (userPermissions.includes(requiredPermission)) return true;
+
+    // فحص البادئة الشاملة (مثال: PROJECTS.* تغطي PROJECTS.VIEW)
+    const domainPrefix = requiredPermission.split('.')[0] + '.*';
+    if (userPermissions.includes(domainPrefix)) return true;
+
+    return false;
+  }
+
+  /**
+   * استخراج وتطبيع بيانات المستخدم والصلاحيات بأمان
+   */
+  _normalizeUserContext(userOrPermissions, optionalRole = 'engineer') {
+    let permissions = [];
+    let role = optionalRole;
+
+    if (Array.isArray(userOrPermissions)) {
+      permissions = userOrPermissions;
+    } else if (userOrPermissions && typeof userOrPermissions === 'object') {
+      role = userOrPermissions.role || optionalRole;
+      if (Array.isArray(userOrPermissions.permissions)) {
+        permissions = userOrPermissions.permissions;
+      } else if (typeof userOrPermissions.permissions === 'string') {
+        permissions = [userOrPermissions.permissions];
+      }
+    } else if (typeof userOrPermissions === 'string') {
+      role = userOrPermissions;
     }
 
-    const filtered = [];
+    return { permissions, role };
+  }
+
+  /**
+   * جلب الوحدات المصرح بها للمستخدم مع منع تسريب مراجع الذاكرة (Deep Clone)
+   */
+  getModulesForUser(userOrPermissions = [], userRole = 'engineer') {
+    const { permissions, role } = this._normalizeUserContext(userOrPermissions, userRole);
+
+    // مدير النظام يمتلك الوصول لكافة الوحدات (مع استنساخ عميق)
+    const isAdmin = role === 'admin' || permissions.includes('ADMIN.SUPER') || permissions.includes('*');
+    if (isAdmin) {
+      return JSON.parse(JSON.stringify(this.modules));
+    }
+
+    const filteredGroups = [];
+
     this.modules.forEach(group => {
-      const allowedEngines = group.engines.filter(engine => {
-        if (!engine.requiredPermission) return true;
-        return userPermissions.includes(engine.requiredPermission);
+      const allowedEngines = [];
+
+      group.engines.forEach(engine => {
+        if (this._checkPermissionMatch(permissions, engine.requiredPermission)) {
+          // تصفية الأزرار والإجراءات المسموحة فقط
+          const allowedActions = (engine.actions || []).filter(action =>
+            this._checkPermissionMatch(permissions, action.permission)
+          );
+
+          allowedEngines.push({
+            ...engine,
+            actions: allowedActions
+          });
+        }
       });
 
       if (allowedEngines.length > 0) {
-        filtered.push({
+        filteredGroups.push({
           ...group,
-          engines: allowedEngines.map(e => ({
-            ...e,
-            actions: e.actions.filter(a => !a.permission || userPermissions.includes(a.permission))
-          }))
+          engines: allowedEngines
         });
       }
     });
 
-    return filtered;
+    return JSON.parse(JSON.stringify(filteredGroups));
   }
 
+  /**
+   * جلب قائمة مسطحة بكافة المحركات مع معلومات مجموعاتها
+   */
   getAllEngines() {
     const list = [];
     this.modules.forEach(g => {
@@ -366,11 +483,12 @@ class EngineToUiRegistry {
         list.push({ ...e, groupId: g.groupId, groupName: g.groupName });
       });
     });
-    return list;
+    return JSON.parse(JSON.stringify(list));
   }
 }
 
 const engineToUiRegistry = new EngineToUiRegistry();
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = engineToUiRegistry;
 }

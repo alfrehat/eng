@@ -1,22 +1,28 @@
 /**
  * Administration/API/workflowEngine.js
- * موجه محرك مسارات العمل وتدفق الموافقات المالية والهندسية (Role-Based Workflow Engine)
- * بلدية كفرنجة الجديدة - الإصدار الموحد v4.0
+ * 🔀 محرك وموجه مسارات العمل الإدارية والمالية المؤسسي (WORKFLOW_ADMIN_ADAPTER)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
+ * v2.0 - Anti-Gravity Enterprise Workflow State Machine Adapter
  */
+
+'use strict';
 
 const express = require('express');
 const router = express.Router();
-const { requireAuth } = require('../../middlewares/authMiddleware');
+const workflowRouter = require('../../routes/workflowRouter');
+const authorizationEngine = require('../../services/authorizationEngineService');
 const notificationCenter = require('../../services/notificationCenter');
+const { requireAuth } = require('../../middlewares/authMiddleware');
 const {
+  isPostgresActive,
+  dbRun,
   dbGet,
   dbQuery,
-  dbRun,
-  isPostgresActive,
   getPool,
   memDb,
   saveMemTable
 } = require('../../utils/database');
+const { logInfo, logWarn, logError } = require('../../services/loggerService');
 
 // مخطط تدفق الموافقات الافتراضي للمطالبات (Fallback Base)
 const DEFAULT_CLAIM_STEPS = {
@@ -72,10 +78,172 @@ async function getWorkflowForEntity(entityType) {
   return null;
 }
 
-/**
- * 1. استعلام كافة مسارات العمل
- * GET /api/v4/workflows أو GET /api/workflows
- */
+class AdministrationWorkflowEngine {
+  constructor() {
+    this.engineId = 'WORKFLOW_ADMIN_ADAPTER';
+    this.engineName = 'Enterprise Administrative & Financial Workflow Adapter';
+    this.version = '2.0.0';
+    this.category = 'CORE_SERVICE';
+    this.status = 'READY';
+    this.capabilities = [
+      'state_machine_delegation',
+      'role_guarded_approvals',
+      'multi_entity_workflow_sync',
+      'automated_transition_alerts',
+      'audit_trail_logging'
+    ];
+  }
+
+  /**
+   * جلب الكيان المستهدف والتأكد من وجوده وحالته الراهنة (تفويض للمحرك الكنوني)
+   */
+  async _fetchEntityCurrentState(entityType, entityId) {
+    if (workflowRouter && typeof workflowRouter.getEntityCurrentState === 'function') {
+      return await workflowRouter.getEntityCurrentState(entityType, entityId);
+    }
+    const tableMap = {
+      TENDER: 'tenders',
+      PROJECT: 'projects',
+      CLAIM: 'claims',
+      TASK: 'tasks',
+      CONTRACT: 'contracts'
+    };
+    const tableName = tableMap[entityType?.toUpperCase()] || 'projects';
+    if (isPostgresActive()) {
+      try {
+        const row = await dbGet(`SELECT id, status FROM public.${tableName} WHERE id = $1`, [entityId]);
+        return row ? { exists: true, status: row.status, tableName } : { exists: false, tableName };
+      } catch (e) {
+        logWarn('WorkflowAdminAdapter', `Entity check fallback: ${e.message}`);
+      }
+    }
+    const list = memDb[tableName] || [];
+    const item = list.find(i => String(i.id) === String(entityId));
+    return item ? { exists: true, status: item.status, tableName } : { exists: false, tableName };
+  }
+
+  /**
+   * تحديث حالة الكيان في قاعدة البيانات بعد نجاح الانتقال (تفويض للمحرك الكنوني)
+   */
+  async _persistEntityState(tableName, entityId, nextState) {
+    if (workflowRouter && typeof workflowRouter._updateEntityTableStatus === 'function') {
+      return await workflowRouter._updateEntityTableStatus(tableName, entityId, nextState);
+    }
+    const now = new Date().toISOString();
+    if (isPostgresActive()) {
+      try {
+        await dbRun(`UPDATE public.${tableName} SET status = $1, updated_at = NOW() WHERE id = $2`, [nextState, entityId]);
+        return true;
+      } catch (e) {
+        logWarn('WorkflowAdminAdapter', `Entity update fallback: ${e.message}`);
+      }
+    }
+    const list = memDb[tableName] || [];
+    const idx = list.findIndex(i => String(i.id) === String(entityId));
+    if (idx !== -1) {
+      list[idx].status = nextState;
+      list[idx].updated_at = now;
+      saveMemTable(tableName);
+    }
+    return true;
+  }
+
+  /**
+   * تنفيذ انتقال إداري رسمي لمعاملة أو مشروع (مفوض بالكامل للمحرك الكنوني)
+   */
+  async executeTransition(reqPayload, actorUser) {
+    const { entityType, entityId, targetState, notes, assignedToNext } = reqPayload || {};
+
+    if (!entityType || !entityId || !targetState) {
+      throw new Error('نوع الكيان، رقم المعرف، والحالة المستهدفة مدخلات إلزامية.');
+    }
+
+    // 1. استرجاع الحالة الراهنة للكيان عبر المحرك الكنوني
+    const entityInfo = await this._fetchEntityCurrentState(entityType, entityId);
+    if (!entityInfo.exists) {
+      throw new Error(`الكيان المطلوب [${entityType} - ${entityId}] غير مسجل في النظام.`);
+    }
+
+    const currentState = entityInfo.status || 'NEW';
+
+    // 2. تفويض الانتقال والتحقق الأمني وتحديث قاعدة البيانات بالكامل إلى WorkflowEngine المركزي
+    const transitionResult = await workflowRouter.transitionState(
+      'ADMIN_PORTAL',
+      {
+        entityType: entityType.toUpperCase(),
+        entityId,
+        currentState,
+        targetState,
+        notes: notes || `اعتماد رسمي بواسطة: ${actorUser?.fullName || actorUser?.username || 'SYSTEM'}`
+      },
+      actorUser,
+      { mutateDatabase: true }
+    );
+
+    // 3. إرسال إشعار فوري للمكلف بالمرحلة التالية إن وُجد عبر Notification Center
+    if (assignedToNext && notificationCenter && typeof notificationCenter.sendInternalAlert === 'function') {
+      try {
+        notificationCenter.sendInternalAlert(
+          `🔔 تم تحويل المعاملة [${entityType} : ${entityId}] إلى مرحلة [${targetState}] بانتظار استكمال الإجراء.`,
+          { userId: assignedToNext, entityId, type: 'WORKFLOW_STEP_PENDING' }
+        );
+      } catch (ne) {
+        logWarn('WorkflowAdminAdapter', `تعذر إرسال إشعار المسار: ${ne.message}`);
+      }
+    }
+
+    logInfo('WorkflowAdminAdapter', `✅ تم إنجاز انتقال المسار عبر المحرك الكنوني [${entityId}]: ${currentState} ⬅️ ${targetState}`);
+    return {
+      success: true,
+      entityId,
+      entityType,
+      previousState: currentState,
+      newState: targetState,
+      approvedBy: actorUser?.username || actorUser?.id || 'SYSTEM',
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  /**
+   * فحص الصحة والجاهزية التشغيلية للمحول
+   */
+  async healthCheck() {
+    const canonicalHealth = (workflowRouter && typeof workflowRouter.healthCheck === 'function')
+      ? await workflowRouter.healthCheck()
+      : { healthy: true, status: 'READY' };
+
+    return {
+      healthy: canonicalHealth.healthy !== false,
+      status: 'READY',
+      engineId: this.engineId,
+      version: this.version,
+      delegationTarget: 'WORKFLOW_ENGINE',
+      canonicalEngine: canonicalHealth,
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+const administrationWorkflowEngine = new AdministrationWorkflowEngine();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. نقاط النهاية لموجه Express (HTTP REST API Endpoints)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+router.get('/health', async (req, res) => {
+  const health = await administrationWorkflowEngine.healthCheck();
+  res.json(health);
+});
+
+router.post('/execute-transition', requireAuth, async (req, res) => {
+  try {
+    const result = await administrationWorkflowEngine.executeTransition(req.body, req.user);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
 router.get('/', requireAuth, async (req, res) => {
   try {
     let rows = null;
@@ -93,18 +261,10 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * 2. استعلام مراحل تدفق العمل القياسية
- * GET /api/v4/workflows/steps
- */
 router.get('/steps', requireAuth, (req, res) => {
   res.json({ success: true, steps: DEFAULT_CLAIM_STEPS });
 });
 
-/**
- * 3. إنشاء مسار عمل جديد ديناميكياً (Zero-Code Workflow Creator)
- * POST /api/v4/workflows
- */
 router.post('/', requireAuth, async (req, res) => {
   const { name, entityType, description, stepsJson } = req.body;
   if (!name || !entityType) return res.status(400).json({ error: 'اسم المسار ونوع الكيان مطلوبان' });
@@ -129,10 +289,6 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * 4. تعديل وتصميم مسار عمل وسلسلة اعتماده (Zero-Code Workflow Designer)
- * PUT /api/v4/workflows/:id
- */
 router.put('/:id', requireAuth, async (req, res) => {
   const { name, entityType, description, stepsJson } = req.body;
   try {
@@ -159,10 +315,6 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * 5. حذف مسار عمل
- * DELETE /api/v4/workflows/:id
- */
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
     if (isPostgresActive()) {
@@ -180,10 +332,6 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * 6. استعلام مسار العمل الخاص بمطالبة معينة (Claims Workflow Status)
- * GET /api/v4/workflows/claims/:id
- */
 router.get('/claims/:id', requireAuth, async (req, res) => {
   const claimId = req.params.id;
   try {
@@ -224,10 +372,6 @@ router.get('/claims/:id', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * 7. ترقية المطالبة إلى الخطوة التالية (Next Step Action)
- * POST /api/v4/workflows/claims/:id/next-step
- */
 router.post('/claims/:id/next-step', requireAuth, async (req, res) => {
   const claimId = req.params.id;
   const user = req.user;
@@ -293,20 +437,6 @@ router.post('/claims/:id/next-step', requireAuth, async (req, res) => {
             'UPDATE claims SET status = $1, history = $2::jsonb, "approvalStage" = $3, "updatedAt" = NOW() WHERE id = $4',
             [nextStatus, JSON.stringify(currentHistory), nextStatus, claimId]
           );
-
-          try {
-            await client.query(`
-              INSERT INTO enterprise.audit_logs (userId, action, entity, entityId, details)
-              VALUES ($1, $2, $3, $4, $5)
-            `, [
-              user.id,
-              'تحديث مسار الموافقة',
-              'claims',
-              claimId,
-              `تمرير المطالبة من ${currentStatus} إلى ${nextStatus} بواسطة ${user.fullName || user.username}`
-            ]);
-          } catch (auditErr) {}
-
           await client.query('COMMIT');
         } catch (txErr) {
           await client.query('ROLLBACK');
@@ -332,13 +462,15 @@ router.post('/claims/:id/next-step', requireAuth, async (req, res) => {
       global.logActivity(user.id, 'ترقية مسار مطالبة', 'المطالبات', claimId, `تمرير المطالبة إلى ${nextStatus}`);
     }
 
-    notificationCenter.emit('CLAIM_SUBMITTED', {
-      tenderId: claim.tenderId || claim.id,
-      amount: claim.netAmount || claim.amount || 0,
-      userId: 'all',
-      title: `ترقية مطالبة مالية (${claimId})`,
-      type: 'info'
-    });
+    if (notificationCenter && typeof notificationCenter.emit === 'function') {
+      notificationCenter.emit('CLAIM_SUBMITTED', {
+        tenderId: claim.tenderId || claim.id,
+        amount: claim.netAmount || claim.amount || 0,
+        userId: 'all',
+        title: `ترقية مطالبة مالية (${claimId})`,
+        type: 'info'
+      });
+    }
 
     return res.json({
       success: true,
@@ -354,5 +486,23 @@ router.post('/claims/:id/next-step', requireAuth, async (req, res) => {
   }
 });
 
-router.DEFAULT_CLAIM_STEPS = DEFAULT_CLAIM_STEPS;
+// إلحاق كافة خصائص وخدمات المهايئ المؤسسي على الموجه لضمان التوافقية 100%
+Object.assign(router, {
+  engineId: administrationWorkflowEngine.engineId,
+  engineName: administrationWorkflowEngine.engineName,
+  version: administrationWorkflowEngine.version,
+  category: administrationWorkflowEngine.category,
+  status: administrationWorkflowEngine.status,
+  capabilities: administrationWorkflowEngine.capabilities,
+  executeTransition: administrationWorkflowEngine.executeTransition.bind(administrationWorkflowEngine),
+  healthCheck: administrationWorkflowEngine.healthCheck.bind(administrationWorkflowEngine),
+  _fetchEntityCurrentState: administrationWorkflowEngine._fetchEntityCurrentState.bind(administrationWorkflowEngine),
+  _persistEntityState: administrationWorkflowEngine._persistEntityState.bind(administrationWorkflowEngine),
+  AdministrationWorkflowEngine,
+  DEFAULT_CLAIM_STEPS,
+  getWorkflowForEntity
+});
+
 module.exports = router;
+module.exports.AdministrationWorkflowEngine = AdministrationWorkflowEngine;
+module.exports.administrationWorkflowEngine = administrationWorkflowEngine;

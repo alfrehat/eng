@@ -1,0 +1,22 @@
+[
+  {
+    "sequence_key": "C_GLOBAL_2026",
+    "current_val": "38",
+    "updated_at": "2026-09-01T21:57:43.671Z"
+  },
+  {
+    "sequence_key": "TSK_GLOBAL_2026",
+    "current_val": "56",
+    "updated_at": "2026-09-01T21:58:51.632Z"
+  },
+  {
+    "sequence_key": "T_GLOBAL_2026",
+    "current_val": "39",
+    "updated_at": "2026-09-01T21:58:57.092Z"
+  },
+  {
+    "sequence_key": "PUR_GLOBAL_2026",
+    "current_val": "1",
+    "updated_at": "2026-09-01T21:58:57.210Z"
+  }
+]

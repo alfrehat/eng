@@ -1,0 +1,16 @@
+[
+  {
+    "id": "rst-1",
+    "code": "HOT_MIX_ASPHALT",
+    "label": "خلطة إسفلتية ساخنة",
+    "sort_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "rst-2",
+    "code": "CONCRETE_PAVEMENT",
+    "label": "بلاط خرساني وتعبيد جزئي",
+    "sort_order": 2,
+    "is_active": true
+  }
+]

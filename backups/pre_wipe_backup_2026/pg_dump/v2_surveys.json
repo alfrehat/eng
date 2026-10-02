@@ -1,0 +1,20 @@
+[
+  {
+    "survey_id": "8a0d328b-3856-44bc-aa30-4208ad142c18",
+    "survey_number": "SRV-2026-0001",
+    "title": "استطلاع رأي المواطنين حول الأولويات التنموية لعام 2026",
+    "description": "يهدف الاستبيان لتحديد أولويات مشاريع الطرق والإنارة والخدمات البيئية",
+    "survey_type": "SATISFACTION",
+    "target_group": "ALL_CITIZENS",
+    "start_date": "2026-09-05T13:45:39.082Z",
+    "end_date": "2026-10-05T13:45:39.082Z",
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "dev_director",
+    "created_at": "2026-09-05T13:45:39.084Z",
+    "updated_by": "dev_director",
+    "updated_at": "2026-09-05T13:45:39.084Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

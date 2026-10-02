@@ -1,15 +1,7 @@
 /**
  * services/projectSchedulingEngineService.js
- * ⏱️ محرك الجدولة الزمنية وحسابات المسار الحرج للمشاريع الهندسية (PROJECT_SCHEDULING_ENGINE — Phase 04-E)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. حسابات المسار الحرج المعيارية (CPM): Forward Pass (ES, EF) و Backward Pass (LS, LF).
- * 2. احتساب الطفو الزمني الكلي والحر (Total Float & Free Float) وتحديد الأنشطة والمشاريع الحرجة (Critical Path).
- * 3. دعم علاقات الأسبقية الأربعة (FS, SS, FF, SF مع lag_days) زمنياً وتقويمياً.
- * 4. رصد وكشف التعارضات والانحرافات الزمنية (Schedule Conflict Detection).
- * 5. إدارة واعتماد الخطوط المرجعية للجدول الزمني (Schedule Baselines & Versioning).
- * 6. العزل التام لبيانات الجدولة في جدول مستقل دون تشويه بيانات المشاريع الأساسية أو المالية.
+ * ⏱️ محرك الجدولة الزمنية وحسابات المسار الحرج للمشاريع الهندسية (PROJECT_SCHEDULING_ENGINE)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -28,7 +20,7 @@ class ProjectSchedulingEngineService {
   constructor() {
     this.engineId = 'PROJECT_SCHEDULING_ENGINE';
     this.engineName = 'Enterprise Project Scheduling & CPM Timeline Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
@@ -36,7 +28,8 @@ class ProjectSchedulingEngineService {
       'critical_path_analysis',
       'float_computation',
       'schedule_conflict_detection',
-      'schedule_baselining'
+      'schedule_baselining',
+      'negative_float_tracking'
     ];
   }
 
@@ -46,23 +39,15 @@ class ProjectSchedulingEngineService {
   async _recordAudit(userId, entityId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء الجدولة الزمنية [${action}] على المعرف [${entityId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'الجدولة الزمنية والمسار الحرج', entityId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-SCHED-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'الجدولة الزمنية والمسار الحرج',
-          entityId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'الجدولة الزمنية للمشاريع',
+        entityId: String(entityId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectSchedulingEngine', `Audit log failed: ${e.message}`);
     }
@@ -72,9 +57,6 @@ class ProjectSchedulingEngineService {
   // 1️⃣ دوال مساعدة لحساب التواريخ والمدد (Date & Duration Utilities)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /**
-   * تنسيق التاريخ إلى YYYY-MM-DD
-   */
   _formatDate(dateObj) {
     if (!dateObj) return null;
     const d = new Date(dateObj);
@@ -82,18 +64,12 @@ class ProjectSchedulingEngineService {
     return d.toISOString().split('T')[0];
   }
 
-  /**
-   * إضافة عدد أيام إلى تاريخ معين
-   */
   _addDays(dateStr, days) {
     const d = new Date(dateStr);
     d.setDate(d.getDate() + days);
     return this._formatDate(d);
   }
 
-  /**
-   * حساب الفرق بالأيام بين تاريخين شامل اليوم الأول
-   */
   _getDaysBetween(startDateStr, endDateStr) {
     const d1 = new Date(startDateStr);
     const d2 = new Date(endDateStr);
@@ -106,31 +82,29 @@ class ProjectSchedulingEngineService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * احتساب شبكة المسار الحرج والتواريخ المبكرة والمتأخرة لشبكة المشاريع
+   * احتساب شبكة المسار الحرج مع استبعاد المشاريع الملغاة ورصد الطفو السلبي بدقة
    */
   async calculateNetworkCPM(filters = {}, user = null) {
-    // 1. جلب قائمة المشاريع والاعتماديات
-    let projects = await projectsEngineService.getProjects(filters, user);
-    if (!projects || projects.length === 0) {
+    let rawProjects = await projectsEngineService.getProjects(filters, user);
+    if (!rawProjects || rawProjects.length === 0) {
       return { totalProjects: 0, criticalProjects: 0, schedules: [] };
     }
 
+    // 1. استبعاد المشاريع الملغاة من شبكة الحسابات الزمنية
+    const projects = rawProjects.filter(p => (p.status || 'DRAFT') !== 'CANCELLED');
     const dependencies = await projectDependencyEngineService.getDependencies({ status: 'ACTIVE' });
+    
     const projectMap = new Map();
     const projIds = new Set();
-
     const todayStr = this._formatDate(new Date());
 
     projects.forEach(p => {
       const id = p.id;
       projIds.add(id);
 
-      // استخراج تواريخ البداية والنهاية أو وضع افتراضات منطقية
-      let pStart = this._formatDate(p.planned_start_date || p.plannedStartDate);
-      let pEnd = this._formatDate(p.planned_end_date || p.plannedEndDate);
-
-      if (!pStart) pStart = todayStr;
-      if (!pEnd) pEnd = this._addDays(pStart, 30); // مدة افتراضية 30 يوماً إن لم تحدد
+      // اعتماد التاريخ الفعلي إن وجد، وإلا التخطيطي
+      let pStart = this._formatDate(p.actual_start_date || p.planned_start_date || p.plannedStartDate) || todayStr;
+      let pEnd = this._formatDate(p.actual_end_date || p.planned_end_date || p.plannedEndDate) || this._addDays(pStart, 30);
 
       let duration = this._getDaysBetween(pStart, pEnd) + 1;
       if (duration <= 0) {
@@ -142,6 +116,7 @@ class ProjectSchedulingEngineService {
         id,
         projectNumber: p.project_number || p.projectNumber || id,
         projectName: p.project_name || p.projectName || 'مشروع هندسي',
+        status: p.status || 'DRAFT',
         plannedStartDate: pStart,
         plannedEndDate: pEnd,
         durationDays: duration,
@@ -157,7 +132,7 @@ class ProjectSchedulingEngineService {
       });
     });
 
-    // 2. ربط الاعتماديات في الذاكرة
+    // 2. ربط الاعتماديات النشطة بين المشاريع المؤهلة فقط
     dependencies.forEach(dep => {
       const predId = dep.predecessor_project_id || dep.predecessorProjectId;
       const succId = dep.successor_project_id || dep.successorProjectId;
@@ -170,7 +145,7 @@ class ProjectSchedulingEngineService {
       }
     });
 
-    // 3. الترتيب الطوبولوجي (Topological Sort — Kahn's Algorithm)
+    // 3. الترتيب الطوبولوجي المنيع (Kahn's Algorithm)
     const inDegree = new Map();
     projIds.forEach(id => inDegree.set(id, projectMap.get(id).predecessors.length));
 
@@ -193,12 +168,12 @@ class ProjectSchedulingEngineService {
       }
     }
 
-    // للمشاريع غير المرتبطة بحلقات، إذا تبقى مشاريع نضيفها
+    // إدراج المشاريع المنفصلة غير المرتبطة بحلقات
     projIds.forEach(id => {
       if (!topoOrder.includes(id)) topoOrder.push(id);
     });
 
-    // 4. التمرير الأمامي (Forward Pass) لحساب Early Start (ES) و Early Finish (EF)
+    // 4. التمرير الأمامي (Forward Pass)
     for (const id of topoOrder) {
       const node = projectMap.get(id);
       let calculatedES = node.plannedStartDate;
@@ -209,16 +184,16 @@ class ProjectSchedulingEngineService {
 
         let constraintDate = null;
         switch (predEdge.type) {
-          case 'FS': // Finish-to-Start: ES >= EF(pred) + lag + 1
+          case 'FS':
             constraintDate = this._addDays(predNode.earlyFinishDate, predEdge.lag + 1);
             break;
-          case 'SS': // Start-to-Start: ES >= ES(pred) + lag
+          case 'SS':
             constraintDate = this._addDays(predNode.earlyStartDate, predEdge.lag);
             break;
-          case 'FF': // Finish-to-Finish: EF >= EF(pred) + lag => ES >= EF(pred) + lag - duration + 1
+          case 'FF':
             constraintDate = this._addDays(predNode.earlyFinishDate, predEdge.lag - node.durationDays + 1);
             break;
-          case 'SF': // Start-to-Finish: EF >= ES(pred) + lag => ES >= ES(pred) + lag - duration + 1
+          case 'SF':
             constraintDate = this._addDays(predNode.earlyStartDate, predEdge.lag - node.durationDays + 1);
             break;
         }
@@ -232,8 +207,7 @@ class ProjectSchedulingEngineService {
       node.earlyFinishDate = this._addDays(calculatedES, node.durationDays - 1);
     }
 
-    // 5. التمرير الخلفي (Backward Pass) لحساب Late Start (LS) و Late Finish (LF)
-    // تحديد تاريخ نهاية الشبكة الإجمالي
+    // 5. التمرير العكسي (Backward Pass)
     let networkMaxFinish = todayStr;
     projectMap.forEach(node => {
       if (new Date(node.earlyFinishDate) > new Date(networkMaxFinish)) {
@@ -241,13 +215,11 @@ class ProjectSchedulingEngineService {
       }
     });
 
-    // التمرير العكسي
     const reverseTopo = [...topoOrder].reverse();
     for (const id of reverseTopo) {
       const node = projectMap.get(id);
 
       if (node.successors.length === 0) {
-        // عقدة نهاية (Finish Node)
         node.lateFinishDate = networkMaxFinish;
         node.lateStartDate = this._addDays(node.lateFinishDate, -(node.durationDays - 1));
       } else {
@@ -259,16 +231,16 @@ class ProjectSchedulingEngineService {
 
           let constraintDate = null;
           switch (succEdge.type) {
-            case 'FS': // LF(pred) <= LS(succ) - lag - 1
+            case 'FS':
               constraintDate = this._addDays(succNode.lateStartDate, -(succEdge.lag + 1));
               break;
-            case 'SS': // LS(pred) <= LS(succ) - lag => LF(pred) <= LS(succ) - lag + duration - 1
+            case 'SS':
               constraintDate = this._addDays(succNode.lateStartDate, -succEdge.lag + node.durationDays - 1);
               break;
-            case 'FF': // LF(pred) <= LF(succ) - lag
+            case 'FF':
               constraintDate = this._addDays(succNode.lateFinishDate, -succEdge.lag);
               break;
-            case 'SF': // LS(pred) <= LF(succ) - lag => LF(pred) <= LF(succ) - lag + duration - 1
+            case 'SF':
               constraintDate = this._addDays(succNode.lateFinishDate, -succEdge.lag + node.durationDays - 1);
               break;
           }
@@ -284,25 +256,40 @@ class ProjectSchedulingEngineService {
         node.lateStartDate = this._addDays(node.lateFinishDate, -(node.durationDays - 1));
       }
 
-      // 6. احتساب الطفو الزمني والمسار الحرج (Total Float & Critical Path)
-      // Total Float = LS - ES (أو LF - EF)
-      const floatDays = this._getDaysBetween(node.earlyStartDate, node.lateStartDate);
-      node.totalFloatDays = Math.max(0, floatDays);
-      node.isCritical = node.totalFloatDays === 0;
+      // 6. احتساب الطفو الزمني الكلي بدقة متناهية (رصد الطفو السالب للتأخيرات)
+      node.totalFloatDays = this._getDaysBetween(node.earlyStartDate, node.lateStartDate);
+      node.isCritical = node.totalFloatDays <= 0;
 
-      // Free Float = min(ES(succ) - EF(pred) - lag - 1)
+      // 7. احتساب الطفو الحر (Free Float) الشامل لكافة العلاقات الأربع
       let minFreeFloat = node.totalFloatDays;
-      for (const succEdge of node.successors) {
-        const succNode = projectMap.get(succEdge.succId);
-        if (succNode && succEdge.type === 'FS') {
-          const gap = this._getDaysBetween(node.earlyFinishDate, succNode.earlyStartDate) - (succEdge.lag + 1);
-          if (gap < minFreeFloat) minFreeFloat = Math.max(0, gap);
+      if (node.successors.length > 0) {
+        for (const succEdge of node.successors) {
+          const succNode = projectMap.get(succEdge.succId);
+          if (!succNode) continue;
+
+          let gap = node.totalFloatDays;
+          switch (succEdge.type) {
+            case 'FS':
+              gap = this._getDaysBetween(node.earlyFinishDate, succNode.earlyStartDate) - (succEdge.lag + 1);
+              break;
+            case 'SS':
+              gap = this._getDaysBetween(node.earlyStartDate, succNode.earlyStartDate) - succEdge.lag;
+              break;
+            case 'FF':
+              gap = this._getDaysBetween(node.earlyFinishDate, succNode.earlyFinishDate) - succEdge.lag;
+              break;
+            case 'SF':
+              gap = this._getDaysBetween(node.earlyStartDate, succNode.earlyFinishDate) - succEdge.lag;
+              break;
+          }
+
+          if (gap < minFreeFloat) minFreeFloat = gap;
         }
       }
       node.freeFloatDays = minFreeFloat;
     }
 
-    // 7. حفظ وتحديث النتائج في جدول project_schedules
+    // 8. حفظ النتائج في جدول project_schedules
     const schedulesList = [];
     for (const [pId, node] of projectMap.entries()) {
       const scheduleId = `SCH-${pId}-${Date.now().toString(36)}`;
@@ -322,7 +309,7 @@ class ProjectSchedulingEngineService {
         is_baseline: false,
         schedule_version: 'v1.0',
         status: 'ACTIVE',
-        notes: `تم احتساب الجدولة والمسار الحرج بتاريخ ${new Date().toISOString().split('T')[0]}`,
+        notes: `تم احتساب الجدولة والمسار الحرج بتاريخ ${todayStr}`,
         calculated_at: new Date().toISOString(),
         calculated_by: user?.id || 'SYSTEM'
       };
@@ -345,7 +332,7 @@ class ProjectSchedulingEngineService {
         if (!memDb.project_schedules) memDb.project_schedules = [];
         const idx = memDb.project_schedules.findIndex(s => s.project_id === pId && s.schedule_version === 'v1.0');
         if (idx !== -1) {
-          memDb.project_schedules[idx] = { ...memDb.project_schedules[idx], ...record };
+          memDb.project_schedules[idx] = record;
         } else {
           memDb.project_schedules.push(record);
         }
@@ -361,18 +348,17 @@ class ProjectSchedulingEngineService {
 
     await this._recordAudit(user?.id, 'NETWORK_CPM', 'PROJECT_SCHEDULE_CALCULATED', null, { count: schedulesList.length });
 
-    const criticalCount = schedulesList.filter(s => s.is_critical).length;
     return {
       success: true,
       totalProjects: schedulesList.length,
-      criticalProjects: criticalCount,
+      criticalProjects: schedulesList.filter(s => s.is_critical).length,
       networkFinishDate: networkMaxFinish,
       schedules: schedulesList
     };
   }
 
   /**
-   * استرجاع الجدول الزمني لمشروع محدد
+   * استرجاع الجدول الزمني لمشروع محدد دون إعادة حساب عشوائية
    */
   async getProjectSchedule(projectId, version = 'v1.0') {
     const project = await projectsEngineService.getProjectById(projectId);
@@ -386,14 +372,10 @@ class ProjectSchedulingEngineService {
       sched = (memDb.project_schedules || []).find(s => (s.project_id === actualProjectId || s.projectId === actualProjectId) && s.schedule_version === version);
     }
 
-    if (!sched) {
-      // إذا لم يكن محسوباً مسبقاً، نحسبه للمشروع فوراً
-      await this.calculateNetworkCPM({}, null);
-      if (isPostgresActive()) {
-        sched = await dbGet('SELECT * FROM public.project_schedules WHERE project_id = $1 AND schedule_version = $2', [actualProjectId, version]);
-      } else {
-        sched = (memDb.project_schedules || []).find(s => (s.project_id === actualProjectId || s.projectId === actualProjectId) && s.schedule_version === version);
-      }
+    // إعادة الحساب الموجه فقط إذا كان المطلوب هو v1.0 ولم يُحسب من قبل
+    if (!sched && version === 'v1.0') {
+      const cpmRes = await this.calculateNetworkCPM({}, null);
+      sched = (cpmRes.schedules || []).find(s => s.project_id === actualProjectId) || null;
     }
 
     return {
@@ -409,7 +391,7 @@ class ProjectSchedulingEngineService {
    */
   async getCriticalPath(filters = {}) {
     const cpmResult = await this.calculateNetworkCPM(filters);
-    const criticalList = (cpmResult.schedules || []).filter(s => s.is_critical || s.total_float_days === 0);
+    const criticalList = (cpmResult.schedules || []).filter(s => s.is_critical || s.total_float_days <= 0);
     return {
       totalCritical: criticalList.length,
       networkFinishDate: cpmResult.networkFinishDate,
@@ -418,11 +400,11 @@ class ProjectSchedulingEngineService {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 3️⃣ كشف التعارضات والانحرافات الزمنية (Conflict Detection)
+  // 3️⃣ كشف التعارضات والانحرافات الميدانية (Conflict Detection)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * رصد التعارضات الزمنية التي تنتهك علاقات الأسبقية
+   * رصد التعارضات الزمنية بالاستناد إلى التواريخ الفعلية والتخطيطية معاً
    */
   async detectScheduleConflicts() {
     const deps = await projectDependencyEngineService.getDependencies({ status: 'ACTIVE' });
@@ -437,40 +419,39 @@ class ProjectSchedulingEngineService {
       const pred = await projectsEngineService.getProjectById(predId);
       const succ = await projectsEngineService.getProjectById(succId);
       if (!pred || !succ) continue;
+      if (pred.status === 'CANCELLED' || succ.status === 'CANCELLED') continue;
 
-      const predStart = this._formatDate(pred.planned_start_date || pred.plannedStartDate);
-      const predEnd = this._formatDate(pred.planned_end_date || pred.plannedEndDate);
-      const succStart = this._formatDate(succ.planned_start_date || succ.plannedStartDate);
-      const succEnd = this._formatDate(succ.planned_end_date || succ.plannedEndDate);
-
-      if (!predEnd || !succStart) continue;
+      const predStart = this._formatDate(pred.actual_start_date || pred.planned_start_date || pred.plannedStartDate);
+      const predEnd = this._formatDate(pred.actual_end_date || pred.planned_end_date || pred.plannedEndDate);
+      const succStart = this._formatDate(succ.actual_start_date || succ.planned_start_date || succ.plannedStartDate);
+      const succEnd = this._formatDate(succ.actual_end_date || succ.planned_end_date || succ.plannedEndDate);
 
       let isViolated = false;
       let expectedDate = '';
 
       switch (type) {
         case 'FS':
-          expectedDate = this._addDays(predEnd, lag + 1);
-          if (new Date(succStart) < new Date(expectedDate)) {
-            isViolated = true;
+          if (predEnd && succStart) {
+            expectedDate = this._addDays(predEnd, lag + 1);
+            if (new Date(succStart) < new Date(expectedDate)) isViolated = true;
           }
           break;
         case 'SS':
-          expectedDate = this._addDays(predStart, lag);
-          if (new Date(succStart) < new Date(expectedDate)) {
-            isViolated = true;
+          if (predStart && succStart) {
+            expectedDate = this._addDays(predStart, lag);
+            if (new Date(succStart) < new Date(expectedDate)) isViolated = true;
           }
           break;
         case 'FF':
-          expectedDate = this._addDays(predEnd, lag);
-          if (succEnd && new Date(succEnd) < new Date(expectedDate)) {
-            isViolated = true;
+          if (predEnd && succEnd) {
+            expectedDate = this._addDays(predEnd, lag);
+            if (new Date(succEnd) < new Date(expectedDate)) isViolated = true;
           }
           break;
         case 'SF':
-          expectedDate = this._addDays(predStart, lag);
-          if (succEnd && new Date(succEnd) < new Date(expectedDate)) {
-            isViolated = true;
+          if (predStart && succEnd) {
+            expectedDate = this._addDays(predStart, lag);
+            if (new Date(succEnd) < new Date(expectedDate)) isViolated = true;
           }
           break;
       }
@@ -480,14 +461,12 @@ class ProjectSchedulingEngineService {
           dependencyId: dep.id,
           predecessorId: predId,
           predecessorNumber: pred.project_number || predId,
-          predecessorEndDate: predEnd,
           successorId: succId,
           successorNumber: succ.project_number || succId,
-          successorStartDate: succStart,
           dependencyType: type,
           lagDays: lag,
           expectedEarliestDate: expectedDate,
-          conflictReason: `المشروع اللاحق مخطط للبدء في (${succStart}) وهو أسبق من الحد الأدنى المسموح به بعد انتهاء المشروع السابق (${expectedDate})`
+          conflictReason: `تعارض زمني: المشروع اللاحق يبدأ/ينتهي في تاريخ ينتهك العلاقة (${type}+${lag}) مع المشروع السابق`
         });
       }
     }
@@ -500,11 +479,11 @@ class ProjectSchedulingEngineService {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 4️⃣ إدارة الخطوط المرجعية (Schedule Baselines)
+  // 4️⃣ إدارة الخطوط المرجعية التراكمية (Schedule Baselines & Versioning)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * إنشاء واعتماد خط مرجعي للجدول الزمني (Schedule Baseline)
+   * إنشاء خط مرجعي جديد مع حفظ تاريخ النسخ السابقة (Versioning)
    */
   async createScheduleBaseline(projectId, user = null) {
     const project = await projectsEngineService.getProjectById(projectId);
@@ -513,7 +492,18 @@ class ProjectSchedulingEngineService {
     const actualProjectId = project.id;
     const currentSched = await this.getProjectSchedule(actualProjectId, 'v1.0');
     if (!currentSched || !currentSched.schedule) {
-      throw new Error('لا يوجد جدول زمني محسوب لهذا المشروع.');
+      throw new Error('لا يوجد جدول زمني محسوب لهذا المشروع لتثبيت خط الأساس.');
+    }
+
+    // استخراج رقم النسخة المرجعية التالية
+    let nextVersion = 'BASELINE_1';
+    if (isPostgresActive()) {
+      const res = await dbGet("SELECT COUNT(*) as count FROM public.project_schedules WHERE project_id = $1 AND is_baseline = true", [actualProjectId]);
+      const count = parseInt(res?.count || 0, 10);
+      nextVersion = `BASELINE_${count + 1}`;
+    } else {
+      const count = (memDb.project_schedules || []).filter(s => s.project_id === actualProjectId && s.is_baseline).length;
+      nextVersion = `BASELINE_${count + 1}`;
     }
 
     const baselineId = `BSL-${actualProjectId}-${Date.now().toString(36)}`;
@@ -531,9 +521,9 @@ class ProjectSchedulingEngineService {
       free_float_days: currentSched.schedule.free_float_days,
       is_critical: currentSched.schedule.is_critical,
       is_baseline: true,
-      schedule_version: 'BASELINE',
+      schedule_version: nextVersion,
       status: 'APPROVED',
-      notes: `تم تثبيت الخط المرجعي للجدول الزمني بواسطة ${user?.username || 'مدير النظام'}`,
+      notes: `تم تثبيت الخط المرجعي (${nextVersion}) بواسطة ${user?.fullName || user?.username || 'مدير النظام'}`,
       calculated_at: new Date().toISOString(),
       calculated_by: user?.id || 'SYSTEM'
     };
@@ -544,38 +534,46 @@ class ProjectSchedulingEngineService {
         (id, project_id, planned_start_date, planned_end_date, duration_days, early_start_date, early_finish_date,
          late_start_date, late_finish_date, total_float_days, free_float_days, is_critical, is_baseline, schedule_version, status, notes, calculated_at, calculated_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
-        ON CONFLICT (project_id, schedule_version) DO UPDATE
-        SET planned_start_date = EXCLUDED.planned_start_date, planned_end_date = EXCLUDED.planned_end_date,
-            duration_days = EXCLUDED.duration_days, early_start_date = EXCLUDED.early_start_date,
-            early_finish_date = EXCLUDED.early_finish_date, late_start_date = EXCLUDED.late_start_date,
-            late_finish_date = EXCLUDED.late_finish_date, total_float_days = EXCLUDED.total_float_days,
-            free_float_days = EXCLUDED.free_float_days, is_critical = EXCLUDED.is_critical,
-            calculated_at = NOW(), calculated_by = EXCLUDED.calculated_by
       `, Object.values(baselineRecord));
     } else {
       if (!memDb.project_schedules) memDb.project_schedules = [];
-      const idx = memDb.project_schedules.findIndex(s => s.project_id === actualProjectId && s.schedule_version === 'BASELINE');
-      if (idx !== -1) {
-        memDb.project_schedules[idx] = baselineRecord;
-      } else {
-        memDb.project_schedules.push(baselineRecord);
-      }
+      memDb.project_schedules.push(baselineRecord);
       saveMemTable('project_schedules');
     }
 
     await this._recordAudit(user?.id, actualProjectId, 'PROJECT_SCHEDULE_BASELINED', null, baselineRecord);
     return {
       success: true,
-      message: 'تم تثبيت الخط المرجعي للجدول الزمني بنجاح.',
+      message: `تم تثبيت الخط المرجعي (${nextVersion}) بنجاح.`,
       baseline: baselineRecord
     };
   }
 
   /**
-   * استرجاع الخط المرجعي للمشروع
+   * استرجاع آخر خط مرجعي معتمد للمشروع
    */
   async getScheduleBaseline(projectId) {
-    return await this.getProjectSchedule(projectId, 'BASELINE');
+    const project = await projectsEngineService.getProjectById(projectId);
+    if (!project) return null;
+
+    const actualProjectId = project.id;
+    let baseline = null;
+    if (isPostgresActive()) {
+      baseline = await dbGet(
+        'SELECT * FROM public.project_schedules WHERE project_id = $1 AND is_baseline = true ORDER BY calculated_at DESC LIMIT 1',
+        [actualProjectId]
+      );
+    } else {
+      const list = (memDb.project_schedules || []).filter(s => (s.project_id === actualProjectId || s.projectId === actualProjectId) && s.is_baseline);
+      baseline = list.length > 0 ? list[list.length - 1] : null;
+    }
+
+    return {
+      projectId: actualProjectId,
+      projectNumber: project.project_number || project.projectNumber,
+      projectName: project.project_name || project.projectName,
+      baseline
+    };
   }
 
   /**
@@ -614,5 +612,4 @@ class ProjectSchedulingEngineService {
   }
 }
 
-const projectSchedulingEngineService = new ProjectSchedulingEngineService();
-module.exports = projectSchedulingEngineService;
+module.exports = new ProjectSchedulingEngineService();

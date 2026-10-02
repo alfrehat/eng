@@ -1,4 +1,10 @@
-const { app, BrowserWindow } = require('electron');
+/**
+ * electron-main.js
+ * 🖥️ مشغل سطح المكتب المؤسسي لنظام بلدية كفرنجة الجديدة
+ * v2.0 - Anti-Gravity Enterprise Electron Desktop Packaging
+ */
+
+const { app, BrowserWindow, dialog } = require('electron');
 const { fork } = require('child_process');
 const path = require('path');
 
@@ -11,31 +17,31 @@ function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function waitForServer(maxAttempts = 60) {
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+async function waitForServer(maxAttempts = 50) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const response = await fetch(`${APP_URL}api/stats`);
-      if (response.ok) return;
-    } catch (error) {
-      // Retry until the local server is up.
+      const response = await fetch(`${APP_URL}api/health`);
+      if (response.ok) return true;
+    } catch (e) {
+      // انتظار استقرار الخادم
     }
-    await wait(500);
+    await wait(400);
   }
-  throw new Error('Local server did not become ready in time');
+  return false;
 }
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 960,
-    minWidth: 1200,
-    minHeight: 800,
-    backgroundColor: '#0f172a',
-    title: 'نظام إدارة الأشغال - بلدية كفرنجة',
+    minWidth: 1100,
+    minHeight: 750,
+    backgroundColor: '#0a0f1d',
+    title: 'نظام إدارة المشاريع والأشغال الهندسية — بلدية كفرنجة الجديدة',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   });
 
@@ -47,36 +53,48 @@ function createWindow() {
 
 async function start() {
   const serverPath = path.join(__dirname, 'server.js');
-  serverProcess = fork(serverPath, [], { stdio: 'inherit' });
+  
+  // تشغيل خادم Node كعملية فرعية معزولة
+  serverProcess = fork(serverPath, [], {
+    env: { ...process.env, PORT: String(PORT) },
+    stdio: 'inherit'
+  });
 
   serverProcess.on('exit', code => {
     if (code && code !== 0) {
+      dialog.showErrorBox('خطأ في تشغيل النظام', `توقف خادم النظام المحلي بكود الخطأ: ${code}`);
       app.quit();
     }
   });
 
-  await waitForServer();
+  const isReady = await waitForServer();
+  if (!isReady) {
+    dialog.showErrorBox('تعذر بدء الخدمة', `استغرق خادم النظام وقتاً طويلاً للإقلاع على المنفذ ${PORT}. يرجى التحقق من قاعدة البيانات.`);
+    app.quit();
+    return;
+  }
+
   createWindow();
 }
 
+function cleanExit() {
+  if (serverProcess) {
+    serverProcess.kill('SIGTERM');
+    serverProcess = null;
+  }
+}
+
 app.whenReady().then(start).catch(error => {
-  console.error(error);
+  console.error('Electron initialization error:', error);
+  cleanExit();
   app.quit();
 });
 
 app.on('window-all-closed', () => {
-  if (serverProcess) {
-    serverProcess.kill();
-    serverProcess = null;
-  }
+  cleanExit();
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on('before-quit', () => {
-  if (serverProcess) {
-    serverProcess.kill();
-    serverProcess = null;
-  }
-});
+app.on('before-quit', cleanExit);

@@ -9,10 +9,13 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { requireAuth, requireAdmin } = require('../../middlewares/authMiddleware');
 const rbacManager = require('../../middlewares/rbacManager');
+const numberingEngine = require('../../services/numberingEngine');
+const { logInfo, logWarn, logError } = require('../../services/loggerService');
 const {
   dbQuery,
   dbGet,
   dbRun,
+  withTransaction,
   isPostgresActive,
   memDb,
   saveMemTable
@@ -163,18 +166,33 @@ router.post('/users/merge', requireAdmin, async (req, res) => {
       return res.status(404).json({ error: 'أحد الحسابين المحددين غير موجود في النظام' });
     }
 
-    // نقل المهام
+    // تنفيذ الدمج ضمن معاملة ذرية متكاملة لضمان سلامة العلاقات
     if (isPostgresActive()) {
-      try {
-        await dbRun('UPDATE tasks SET "assignedTo" = $1 WHERE "assignedTo" = $2 OR "assignedTo" = $3', [targetUser.fullName, sourceUser.fullName, sourceUserId]);
-      } catch (e) {}
-      // دمج الصلاحيات
-      const sPerms = rbacManager.parseUserPermissions(sourceUser);
-      const tPerms = rbacManager.parseUserPermissions(targetUser);
-      const mergedPerms = Array.from(new Set([...tPerms, ...sPerms]));
-      await dbRun('UPDATE users SET permissions = $1 WHERE id = $2', [mergedPerms.join(','), targetUserId]);
-      // حذف الحساب المصدر
-      await dbRun('DELETE FROM users WHERE id = $1', [sourceUserId]);
+      await withTransaction(async (client) => {
+        // 1. نقل المهام المسندة للحساب المصدر
+        await client.query(
+          'UPDATE tasks SET "assignedTo" = $1 WHERE "assignedTo" = $2 OR "assignedTo" = $3',
+          [targetUser.fullName, sourceUser.fullName, sourceUserId]
+        );
+
+        // 2. نقل ارتباطات الوحدات التنظيمية
+        await client.query(
+          'UPDATE user_org_units SET "userId" = $1 WHERE "userId" = $2',
+          [targetUserId, sourceUserId]
+        );
+
+        // 3. دمج مصفوفة الصلاحيات المشتركة
+        const sPerms = rbacManager.parseUserPermissions(sourceUser);
+        const tPerms = rbacManager.parseUserPermissions(targetUser);
+        const mergedPerms = Array.from(new Set([...tPerms, ...sPerms]));
+        await client.query(
+          'UPDATE users SET permissions = $1, "updatedAt" = NOW() WHERE id = $2',
+          [mergedPerms.join(','), targetUserId]
+        );
+
+        // 4. حذف الحساب المصدر بعد نقل كافة العلاقات
+        await client.query('DELETE FROM users WHERE id = $1', [sourceUserId]);
+      });
     } else {
       if (memDb.tasks) {
         memDb.tasks.forEach(t => {
@@ -183,6 +201,12 @@ router.post('/users/merge', requireAdmin, async (req, res) => {
           }
         });
         saveMemTable('tasks');
+      }
+      if (memDb.user_org_units) {
+        memDb.user_org_units.forEach(uou => {
+          if (uou.userId === sourceUserId) uou.userId = targetUserId;
+        });
+        saveMemTable('user_org_units');
       }
       const sPerms = rbacManager.parseUserPermissions(sourceUser);
       const tPerms = rbacManager.parseUserPermissions(targetUser);
@@ -274,13 +298,8 @@ router.post('/users', requireAdmin, async (req, res) => {
         return res.status(400).json({ error: `اسم المستخدم "${trimmedUsername}" مسجل مسبقاً في النظام` });
       }
 
-      const maxIdRes = await dbGet("SELECT id FROM users WHERE id ~ '^U-[0-9]+$' ORDER BY CAST(SUBSTRING(id FROM 3) AS INTEGER) DESC LIMIT 1");
-      let nextNum = 6;
-      if (maxIdRes && maxIdRes.id) {
-        const lastNum = parseInt(maxIdRes.id.replace('U-', ''), 10);
-        if (!isNaN(lastNum)) nextNum = lastNum + 1;
-      }
-      const id = `U-${String(nextNum).padStart(3, '0')}`;
+      // توليد معرف المستخدم الموحد عبر المحرك المركزي
+      const id = await numberingEngine.generateNextId('users', { prefix: 'U', padding: 3, includeYear: false });
 
       await dbRun(`
         INSERT INTO users (id, username, password, "fullName", role, email, phone, avatar, department, job_title, two_factor_enabled, permissions, "createdAt", "updatedAt")
@@ -300,7 +319,7 @@ router.post('/users', requireAdmin, async (req, res) => {
       if ((memDb.users || []).find(u => u.username && u.username.toLowerCase() === trimmedUsername.toLowerCase())) {
         return res.status(400).json({ error: `اسم المستخدم "${trimmedUsername}" مسجل مسبقاً` });
       }
-      const id = 'U-' + String((memDb.users || []).length + 1).padStart(3, '0');
+      const id = await numberingEngine.generateNextId('users', { prefix: 'U', padding: 3, includeYear: false });
       const now = new Date().toISOString();
       memInsert('users', {
         id, username: trimmedUsername, password: hashedPassword, fullName: fullName.trim(),
@@ -422,7 +441,6 @@ router.get('/roles', requireAuth, async (req, res) => {
     let rows;
     if (isPostgresActive()) {
       try {
-        await dbRun('ALTER TABLE roles ADD COLUMN IF NOT EXISTS label VARCHAR(255)');
         rows = await dbQuery('SELECT id, name, label, description FROM roles ORDER BY id ASC');
       } catch (e) {
         try {
@@ -452,12 +470,18 @@ router.post('/roles', requireAdmin, async (req, res) => {
   const { name, label, description } = req.body;
   if (!name) return res.status(400).json({ error: 'اسم الدور مطلوب' });
   try {
-    const id = `R-${Date.now().toString().slice(-4)}`;
+    let id = `R-${Date.now().toString().slice(-4)}`;
+    try {
+      if (numberingEngine && typeof numberingEngine.generateNextId === 'function') {
+        id = await numberingEngine.generateNextId('roles', { prefix: 'R' });
+      }
+    } catch (ne) {
+      logWarn('UsersEngine', `Fallback role numbering: ${ne.message}`);
+    }
     const finalLabel = (label && String(label).trim()) ? label.trim() : name;
     const roleObj = { id, name, label: finalLabel, description: description || '' };
     if (isPostgresActive()) {
       try {
-        await dbRun('ALTER TABLE roles ADD COLUMN IF NOT EXISTS label VARCHAR(255)');
         await dbRun('INSERT INTO roles (id, name, label, description) VALUES ($1, $2, $3, $4)', [id, name, finalLabel, description || '']);
       } catch (dbE) {
         console.warn('⚠️ [Roles API] Postgres insert role error:', dbE.message);
@@ -481,7 +505,6 @@ router.put('/roles/:id', requireAdmin, async (req, res) => {
 
     if (isPostgresActive()) {
       try {
-        await dbRun('ALTER TABLE roles ADD COLUMN IF NOT EXISTS label VARCHAR(255)');
         await dbRun('UPDATE roles SET name = $1, label = $2, description = $3 WHERE id = $4 OR name = $4',
           [finalName, finalLabel, finalDesc, targetId]);
       } catch (dbE) {
@@ -612,7 +635,14 @@ router.post('/org-units', requireAdmin, async (req, res) => {
   const { name, parentId, type, description } = req.body;
   if (!name) return res.status(400).json({ error: 'اسم الوحدة / القسم مطلوب' });
   try {
-    const id = `OU-${Date.now().toString().slice(-4)}`;
+    let id = `OU-${Date.now().toString().slice(-4)}`;
+    try {
+      if (numberingEngine && typeof numberingEngine.generateNextId === 'function') {
+        id = await numberingEngine.generateNextId('org_units', { prefix: 'OU' });
+      }
+    } catch (ne) {
+      logWarn('UsersEngine', `Fallback org_unit numbering: ${ne.message}`);
+    }
     const pid = (!parentId || parentId === 'NULL' || parentId === 'null') ? null : parentId;
     if (isPostgresActive()) {
       try {
@@ -708,7 +738,14 @@ router.post('/user-org-units', requireAdmin, async (req, res) => {
   const { userId, orgUnitId, roleId } = req.body;
   if (!userId || !orgUnitId || !roleId) return res.status(400).json({ error: 'كافة الحقول مطلوبة' });
   try {
-    const id = `uou-${Date.now().toString().slice(-6)}`;
+    let id = `uou-${Date.now().toString().slice(-6)}`;
+    try {
+      if (numberingEngine && typeof numberingEngine.generateNextId === 'function') {
+        id = await numberingEngine.generateNextId('user_org_units', { prefix: 'UOU' });
+      }
+    } catch (ne) {
+      logWarn('UsersEngine', `Fallback user_org_unit numbering: ${ne.message}`);
+    }
     if (isPostgresActive()) {
       await dbRun(
         'INSERT INTO user_org_units (id, "userId", "orgUnitId", "roleId", "createdAt") VALUES ($1, $2, $3, $4, NOW())',
@@ -823,93 +860,9 @@ router.delete('/lookups/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// 13. مسارات العمل وسلاسل الاعتماد (Workflows)
-router.get('/workflows', requireAuth, async (req, res) => {
-  try {
-    let rows = null;
-    if (isPostgresActive()) {
-      try {
-        const pgRows = await dbQuery('SELECT * FROM workflows ORDER BY id ASC');
-        if (pgRows && pgRows.length > 0) rows = pgRows;
-      } catch (e) {}
-    }
-    if (!rows || rows.length === 0) {
-      rows = memDb.workflows || [];
-      if (!rows.length) {
-        const p = require('path').join(__dirname, '../../database/workflows.json');
-        const fs = require('fs');
-        if (fs.existsSync(p)) {
-          try {
-            rows = JSON.parse(fs.readFileSync(p, 'utf8') || '[]');
-            memDb.workflows = rows;
-          } catch (e) {}
-        }
-      }
-    }
-    res.json(rows || []);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-router.post('/workflows', requireAdmin, async (req, res) => {
-  const { name, entityType, description, stepsJson } = req.body;
-  if (!name || !entityType) return res.status(400).json({ error: 'اسم المسار ونوع الكيان مطلوبان' });
-  try {
-    const id = `WF-${Date.now().toString().slice(-4)}`;
-    const item = { id, name, entityType, description: description || '', stepsJson: typeof stepsJson === 'string' ? stepsJson : JSON.stringify(stepsJson || []) };
-    if (isPostgresActive()) {
-      try {
-        await dbRun('INSERT INTO workflows (id, name, "entityType", description, "stepsJson") VALUES ($1, $2, $3, $4, $5)',
-          [id, name, entityType, item.description, item.stepsJson]);
-      } catch (e) {
-        memInsert('workflows', item);
-      }
-    } else {
-      memInsert('workflows', item);
-    }
-    res.status(201).json({ id, message: 'تم حفظ مسار العمل بنجاح', success: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-router.put('/workflows/:id', requireAdmin, async (req, res) => {
-  const { name, entityType, description, stepsJson } = req.body;
-  try {
-    const stepsStr = typeof stepsJson === 'string' ? stepsJson : (stepsJson ? JSON.stringify(stepsJson) : null);
-    if (isPostgresActive()) {
-      try {
-        await dbRun('UPDATE workflows SET name = COALESCE($1, name), "entityType" = COALESCE($2, "entityType"), description = COALESCE($3, description), "stepsJson" = COALESCE($4, "stepsJson") WHERE id = $5',
-          [name, entityType, description, stepsStr, req.params.id]);
-      } catch (e) {
-        memUpdate('workflows', req.params.id, { name, entityType, description, stepsJson: stepsStr });
-      }
-    } else {
-      memUpdate('workflows', req.params.id, { name, entityType, description, stepsJson: stepsStr });
-    }
-    res.json({ message: 'تم تحديث مسار العمل بنجاح', success: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-router.delete('/workflows/:id', requireAdmin, async (req, res) => {
-  try {
-    if (isPostgresActive()) {
-      try {
-        await dbRun('DELETE FROM workflows WHERE id = $1', [req.params.id]);
-      } catch (e) {
-        memDelete('workflows', req.params.id);
-      }
-    } else {
-      memDelete('workflows', req.params.id);
-    }
-    res.json({ message: 'تم حذف مسار العمل بنجاح', success: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+// 13. مسارات العمل وسلاسل الاعتماد (Workflows) - تفويض مباشر لمحرك مسارات العمل لمنع الازدواجية والتضارب
+const workflowEngine = require('./workflowEngine');
+router.use('/workflows', workflowEngine);
 
 module.exports = router;
 

@@ -1,0 +1,38 @@
+[
+  {
+    "response_id": "3f9e9816-e5d0-4791-8728-11bc051fa118",
+    "response_number": "RSP-2026-0001",
+    "case_id": "f255997d-938a-45f4-b116-ae25279eaef8",
+    "response_date": "2026-09-05T13:45:39.057Z",
+    "response_channel": "SMS",
+    "response_text": "الأخ المواطن الكريم، تم إنجاز أعمال صيانة وتعبيد مقطع شارع الحي الشرقي بنجاح. نشكر تعاونكم.",
+    "responsible_user": "media_officer",
+    "status": "SENT",
+    "acknowledged_by_citizen": true,
+    "acknowledgement_date": "2026-09-05T13:45:39.062Z",
+    "citizen_feedback": null,
+    "metadata": {},
+    "created_by": "media_officer",
+    "created_at": "2026-09-05T13:45:39.058Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "response_id": "2a2bc9eb-6af1-4bef-883c-7639f8c0a852",
+    "response_number": "RSP-2026-0002",
+    "case_id": "af9f6da5-d30d-4352-982c-540449397909",
+    "response_date": "2026-09-05T13:45:39.204Z",
+    "response_channel": "SMS",
+    "response_text": "أخي المواطن، تم إنجاز طلبكم بنجاح.",
+    "responsible_user": "media_officer",
+    "status": "SENT",
+    "acknowledged_by_citizen": false,
+    "acknowledgement_date": null,
+    "citizen_feedback": null,
+    "metadata": {},
+    "created_by": "media_officer",
+    "created_at": "2026-09-05T13:45:39.204Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

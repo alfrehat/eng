@@ -1,0 +1,38 @@
+[
+  {
+    "issue_item_id": "daa67339-504e-4702-8d82-3795cffe1652",
+    "issue_id": "2ab2abd0-08d4-4e33-98a7-17637bc66542",
+    "receipt_item_id": null,
+    "item_code": "ASPH-COLD-01",
+    "description": "خلطة إسفلتية باردة",
+    "unit": "TON",
+    "quantity": "15.000",
+    "condition": "GOOD",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "warehouse_officer",
+    "created_at": "2026-09-05T13:45:38.307Z",
+    "updated_by": "warehouse_officer",
+    "updated_at": "2026-09-05T13:45:38.308Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "issue_item_id": "b43691d3-b751-4d00-a999-75caa6fca60a",
+    "issue_id": "79801ea2-7ba1-4159-9725-55025f32f354",
+    "receipt_item_id": null,
+    "item_code": "PIPE-CONC-600",
+    "description": "مواسير خرسانية مسلحة قطر 600 ملم",
+    "unit": "METER",
+    "quantity": "100.000",
+    "condition": "GOOD",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "storekeeper",
+    "created_at": "2026-09-05T13:45:38.482Z",
+    "updated_by": "storekeeper",
+    "updated_at": "2026-09-05T13:45:38.483Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

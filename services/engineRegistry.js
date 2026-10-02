@@ -1,13 +1,7 @@
 /**
  * services/engineRegistry.js
  * 🏛️ سجل المحركات المركزي الموحد (Enterprise Engine Registry)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v1.0
- * 
- * المبادئ المعمارية:
- * 1. نقطة مركزية وحيدة لتسجيل وتوثيق كافة محركات النظام (Core Services & Domain Engines).
- * 2. تتبع الحالة التشغيلية (Lifecycle State Machine): REGISTERED -> INITIALIZED -> READY / FAILED.
- * 3. تعريف شامل للقدرات (Capabilities)، التبعيات (Dependencies)، والعمليات المصرح بها (Exposed Operations).
- * 4. رصد المقاييس الحية ومراقبة الصحة الذاتية الفورية (Real-time Health Monitoring).
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const { logInfo, logWarn, logError } = require('../utils/logger');
@@ -19,8 +13,16 @@ class EngineRegistry {
   }
 
   /**
+   * التحقق من التهيئة الكسولة للمحركات عند أول طلب
+   */
+  _ensureInitialized() {
+    if (!this._initialized) {
+      this.autoRegisterAll();
+    }
+  }
+
+  /**
    * تسجيل محرك في السجل المركزي
-   * @param {Object} descriptor - مواصفات المحرك
    */
   register(descriptor) {
     if (!descriptor || !descriptor.engineId) {
@@ -29,17 +31,29 @@ class EngineRegistry {
 
     const engineId = descriptor.engineId.toUpperCase();
     
+    // تأمين ربط النطاقات لكافة العمليات المكشوفة (.bind)
+    const safeOperations = {};
+    if (descriptor.exposedOperations && typeof descriptor.exposedOperations === 'object') {
+      for (const [opName, fn] of Object.entries(descriptor.exposedOperations)) {
+        if (typeof fn === 'function') {
+          safeOperations[opName] = descriptor.instance ? fn.bind(descriptor.instance) : fn;
+        }
+      }
+    }
+
     const entry = {
       engineId,
       engineName: descriptor.engineName || engineId,
       version: descriptor.version || '1.0.0',
-      category: descriptor.category || 'DOMAIN_ENGINE', // CORE_SERVICE | DOMAIN_ENGINE | INTEGRATION_GATEWAY
-      status: descriptor.status || 'REGISTERED', // REGISTERED | INITIALIZED | READY | FAILED
+      category: descriptor.category || 'DOMAIN_ENGINE',
+      status: descriptor.status || 'REGISTERED',
       capabilities: Array.isArray(descriptor.capabilities) ? descriptor.capabilities : [],
-      dependencies: Array.isArray(descriptor.dependencies) ? descriptor.dependencies : [],
-      exposedOperations: descriptor.exposedOperations || {},
+      dependencies: Array.isArray(descriptor.dependencies) ? descriptor.dependencies.map(d => d.toUpperCase()) : [],
+      exposedOperations: safeOperations,
       instance: descriptor.instance || null,
-      healthCheck: typeof descriptor.healthCheck === 'function' ? descriptor.healthCheck : null,
+      healthCheck: typeof descriptor.healthCheck === 'function' 
+        ? (descriptor.instance ? descriptor.healthCheck.bind(descriptor.instance) : descriptor.healthCheck) 
+        : null,
       registeredAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       metrics: {
@@ -57,32 +71,24 @@ class EngineRegistry {
     return entry;
   }
 
-  /**
-   * جلب محرك عبر المعرف
-   * @param {string} engineId
-   * @returns {Object|null}
-   */
   get(engineId) {
     if (!engineId) return null;
-    return this._engines.get(engineId.toUpperCase()) || null;
+    this._ensureInitialized();
+    const id = engineId.toUpperCase();
+    if (this._engines.has(id)) return this._engines.get(id);
+    if (id === 'WORK_OPERATIONS_CENTER') return this._engines.get('OPERATIONS_CENTER') || null;
+    return null;
   }
 
-  /**
-   * التحقق من وجود محرك
-   * @param {string} engineId
-   * @returns {boolean}
-   */
   has(engineId) {
     if (!engineId) return false;
-    return this._engines.has(engineId.toUpperCase());
+    this._ensureInitialized();
+    const id = engineId.toUpperCase();
+    return this._engines.has(id) || (id === 'WORK_OPERATIONS_CENTER' && this._engines.has('OPERATIONS_CENTER'));
   }
 
-  /**
-   * جلب قائمة كافة المحركات المسجلة
-   * @param {Object} filter { category, status }
-   * @returns {Array<Object>}
-   */
   list(filter = {}) {
+    this._ensureInitialized();
     const list = Array.from(this._engines.values()).map(e => ({
       engineId: e.engineId,
       engineName: e.engineName,
@@ -104,12 +110,8 @@ class EngineRegistry {
     });
   }
 
-  /**
-   * تحديث حالة المحرك
-   * @param {string} engineId
-   * @param {string} status - REGISTERED | INITIALIZED | READY | FAILED
-   */
   setStatus(engineId, status) {
+    this._ensureInitialized();
     const entry = this.get(engineId);
     if (entry) {
       entry.status = status;
@@ -118,41 +120,73 @@ class EngineRegistry {
   }
 
   /**
-   * تحديث مقاييس استدعاء المحرك
+   * تسجيل آمن للمقاييس مع الحماية من القيم غير المعرفة (NaN Protection)
    */
   recordInvocation(engineId, durationMs, success = true, error = null) {
+    this._ensureInitialized();
     const entry = this.get(engineId);
-    if (entry) {
-      const m = entry.metrics;
-      m.invocations++;
-      if (success) {
-        m.successCount++;
-      } else {
-        m.failureCount++;
-        m.lastError = error ? (error.message || String(error)) : 'Unknown error';
-      }
-      m.totalDurationMs += durationMs;
-      m.avgDurationMs = Math.round((m.totalDurationMs / m.invocations) * 100) / 100;
-      m.lastInvokedAt = new Date().toISOString();
+    if (!entry) return;
+
+    const safeDuration = (typeof durationMs === 'number' && !isNaN(durationMs) && durationMs >= 0) ? durationMs : 0;
+    const m = entry.metrics;
+    
+    m.invocations++;
+    if (success) {
+      m.successCount++;
+    } else {
+      m.failureCount++;
+      m.lastError = error ? (error.message || String(error)) : 'Unknown error';
     }
+
+    m.totalDurationMs += safeDuration;
+    m.avgDurationMs = Math.round((m.totalDurationMs / m.invocations) * 100) / 100;
+    m.lastInvokedAt = new Date().toISOString();
   }
 
   /**
-   * فحص صحة محرك معين
-   * @param {string} engineId
-   * @returns {Promise<Object>}
+   * فحص صحة محرك مع التدقيق التبادلي للتبعيات (Cascade Health Check)
    */
-  async checkEngineHealth(engineId) {
+  async checkEngineHealth(engineId, visited = new Set()) {
+    this._ensureInitialized();
     const entry = this.get(engineId);
     if (!entry) {
-      return { engineId, status: 'NOT_FOUND', healthy: false };
+      return { engineId, status: 'NOT_FOUND', healthy: false, error: 'المحرك غير مسجل' };
     }
 
+    // منع الحلقات أثناء فحص شجرة التبعيات
+    if (visited.has(entry.engineId)) {
+      return { engineId: entry.engineId, status: entry.status, healthy: entry.status === 'READY' };
+    }
+    visited.add(entry.engineId);
+
+    // 1. فحص صحة التبعيات أولاً
+    const unreadyDependencies = [];
+    for (const depId of entry.dependencies) {
+      const depEntry = this.get(depId);
+      if (!depEntry || depEntry.status === 'FAILED') {
+        unreadyDependencies.push(depId);
+      }
+    }
+
+    if (unreadyDependencies.length > 0) {
+      entry.status = 'DEGRADED';
+      return {
+        engineId: entry.engineId,
+        engineName: entry.engineName,
+        category: entry.category,
+        status: 'DEGRADED',
+        healthy: false,
+        error: `تعطل أو غياب التبعيات التشغيلية للمحرك: [${unreadyDependencies.join(', ')}]`,
+        checkedAt: new Date().toISOString()
+      };
+    }
+
+    // 2. تنفيذ فحص الصحة الذاتي
     if (entry.healthCheck) {
       try {
         const res = await entry.healthCheck();
-        const isHealthy = res.status === 'READY' || res.status === 'HEALTHY' || res.healthy === true;
-        entry.status = isHealthy ? 'READY' : (res.status || 'DEGRADED');
+        const isHealthy = Boolean(res && (res.status === 'READY' || res.status === 'HEALTHY' || res.healthy === true));
+        entry.status = isHealthy ? 'READY' : (res?.status || 'DEGRADED');
         return {
           engineId: entry.engineId,
           engineName: entry.engineName,
@@ -187,21 +221,28 @@ class EngineRegistry {
   }
 
   /**
-   * فحص شامل لكافة المحركات
-   * @returns {Promise<Object>}
+   * فحص متوازٍ فائق السرعة لكافة المحركات دون حجب السيرفر (Promise.allSettled)
    */
   async checkAllHealth() {
+    this._ensureInitialized();
+    const engineIds = Array.from(this._engines.keys());
+    const healthPromises = engineIds.map(id => this.checkEngineHealth(id));
+    const settled = await Promise.allSettled(healthPromises);
+
     const results = {};
     let totalHealthy = 0;
-    let totalCount = 0;
 
-    for (const [id] of this._engines.entries()) {
-      totalCount++;
-      const health = await this.checkEngineHealth(id);
-      results[id] = health;
-      if (health.healthy) totalHealthy++;
-    }
+    settled.forEach((res, idx) => {
+      const id = engineIds[idx];
+      if (res.status === 'fulfilled') {
+        results[id] = res.value;
+        if (res.value.healthy) totalHealthy++;
+      } else {
+        results[id] = { engineId: id, status: 'FAILED', healthy: false, error: res.reason?.message };
+      }
+    });
 
+    const totalCount = engineIds.length;
     return {
       systemHealth: totalHealthy === totalCount ? 'HEALTHY' : (totalHealthy > 0 ? 'DEGRADED' : 'UNHEALTHY'),
       totalEngines: totalCount,
@@ -213,23 +254,49 @@ class EngineRegistry {
   }
 
   /**
-   * التسجيل الذاتي لكافة المحركات والخدمات المركزية في النظام
+   * التسجيل الكسول الآمن لكافة المحركات الـ 37 للمنظومة (Lazy Dependency Loading)
    */
   autoRegisterAll() {
     if (this._initialized) return;
 
-    // 1️⃣ المحركات والخدمات المركزية المشتركة (Core Services)
-    // -------------------------------------------------------------
-    // Numbering Engine
-    try {
-      const numberingEngine = require('./numberingEngine');
+    // دالة مساعدة للتحميل الآمن ومنع انهيار السجل عند وجود خلل في موديول فردي
+    const safeRequire = (path) => {
+      try { return require(path); } catch (e) {
+        logWarn('EngineRegistry', `Dynamic require skipped for "${path}": ${e.message}`);
+        return null;
+      }
+    };
+
+    // ─── 1. بنية المنصة والخدمات المركزية (Core Platform Engines) ───
+    
+    const dbModule = safeRequire('../utils/database');
+    if (dbModule) {
+      this.register({
+        engineId: 'DATABASE_ENGINE',
+        engineName: 'محرك قواعد البيانات والاتصال المزدوج المعاملاتي',
+        category: 'CORE_SERVICE',
+        status: 'READY',
+        capabilities: ['dual_persistence', 'acid_transactions', 'in_memory_fallback'],
+        dependencies: [],
+        instance: dbModule,
+        exposedOperations: {
+          dbQuery: dbModule.dbQuery,
+          dbGet: dbModule.dbGet,
+          dbRun: dbModule.dbRun,
+          isPostgresActive: dbModule.isPostgresActive
+        },
+        healthCheck: async () => ({ status: 'READY', mode: dbModule.isPostgresActive() ? 'PostgreSQL' : 'In-Memory' })
+      });
+    }
+
+    const numberingEngine = safeRequire('./numberingEngine');
+    if (numberingEngine) {
       this.register({
         engineId: 'NUMBERING_ENGINE',
         engineName: 'محرك الترقيم والترميز المتسلسل الموحد',
-        version: '1.0.0',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['atomic_sequence', 'custom_prefixes', 'format_validation', 'multi_entity_numbering'],
+        capabilities: ['atomic_sequence', 'custom_prefixes'],
         dependencies: ['DATABASE_ENGINE'],
         instance: numberingEngine,
         exposedOperations: {
@@ -239,832 +306,885 @@ class EngineRegistry {
         },
         healthCheck: () => numberingEngine.healthCheck()
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register NUMBERING_ENGINE: ${e.message}`);
     }
 
-    // Business Rules & Calculation Engine
-    try {
-      const businessRulesEngine = require('./businessRulesEngine');
-      this.register({
-        engineId: 'BUSINESS_RULES_ENGINE',
-        engineName: 'محرك قواعد الأعمال والعمليات الحسابية المركزي',
-        version: '1.0.0',
-        category: 'CORE_SERVICE',
-        status: 'READY',
-        capabilities: ['pci_calculation', 'paving_returns', 'claim_deductions', 'guarantee_validation', 'asset_depreciation', 'permit_fees'],
-        dependencies: ['DATABASE_ENGINE'],
-        instance: businessRulesEngine,
-        exposedOperations: {
-          calculatePciScore: (distresses, surfaceType) => businessRulesEngine.calculatePciScore(distresses, surfaceType),
-          calculatePavingReturns: (params) => businessRulesEngine.calculatePavingReturns(params),
-          calculateClaimFinancials: (params) => businessRulesEngine.calculateClaimFinancials(params),
-          validateGuaranteeStatus: (params) => businessRulesEngine.validateGuaranteeStatus(params),
-          calculateAssetDepreciation: (params) => businessRulesEngine.calculateAssetDepreciation(params),
-          calculateExcavationPermitFee: (params) => businessRulesEngine.calculateExcavationPermitFee(params)
-        },
-        healthCheck: async () => {
-          const testPci = businessRulesEngine.calculatePciScore([]);
-          return { status: testPci && testPci.pciScore === 100 ? 'READY' : 'DEGRADED' };
-        }
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register BUSINESS_RULES_ENGINE: ${e.message}`);
-    }
-
-    // Authorization & RBAC Engine
-    try {
-      const rbacManager = require('../middlewares/rbacManager');
+    const authService = safeRequire('./authorizationEngineService');
+    const rbacManager = safeRequire('../middlewares/rbacManager');
+    const authInstance = authService || rbacManager;
+    if (authInstance) {
       this.register({
         engineId: 'AUTHORIZATION_ENGINE',
         engineName: 'محرك التحكم بالوصول والمصفوفة الأمنية (RBAC)',
-        version: '1.0.0',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['jwt_auth', 'role_verification', 'permission_matrix', 'dynamic_permissions'],
+        capabilities: ['jwt_auth', 'role_verification', 'permission_matrix', 'district_scope_filtering', 'field_level_access_control', 'security_audit'],
         dependencies: ['DATABASE_ENGINE'],
-        instance: rbacManager,
+        instance: authInstance,
         exposedOperations: {
-          hasPermission: (role, perm) => rbacManager.hasPermission ? rbacManager.hasPermission(role, perm) : true,
-          generateToken: (user) => rbacManager.generateToken(user),
-          verifyToken: rbacManager.verifyToken,
-          authorize: rbacManager.authorize,
-          authorizeRoles: rbacManager.authorizeRoles
+          hasPermission: (userOrRole, perm, entity, district) => authInstance.hasPermission(userOrRole, perm, entity, district),
+          generateToken: (user) => (authInstance.generateToken ? authInstance.generateToken(user) : rbacManager?.generateToken?.(user)),
+          verifyToken: (token) => (authInstance.verifyToken ? authInstance.verifyToken(token) : rbacManager?.verifyToken?.(token)),
+          isTokenBlacklisted: (jti) => (authInstance.isTokenBlacklisted ? authInstance.isTokenBlacklisted(jti) : false),
+          revokeToken: (jti, userId) => (authInstance.revokeToken ? authInstance.revokeToken(jti, userId) : false),
+          sanitizeEntityFields: (user, data) => (authInstance.sanitizeEntityFields ? authInstance.sanitizeEntityFields(user, data) : data)
         },
-        healthCheck: async () => {
-          const t = rbacManager.generateToken({ id: 'HEALTH_CHECK', role: 'admin' });
-          return { status: t ? 'READY' : 'FAILED' };
-        }
+        healthCheck: async () => (authInstance.healthCheck ? authInstance.healthCheck() : { status: 'READY' })
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register AUTHORIZATION_ENGINE: ${e.message}`);
     }
 
-    // Cryptographic Verification Engine
-    try {
-      const cryptoSignatureService = require('./cryptoSignatureService');
-      this.register({
-        engineId: 'VERIFICATION_ENGINE',
-        engineName: 'محرك التحقق الرقمي والختم الأمني المشفر',
-        version: '1.0.0',
-        category: 'CORE_SERVICE',
-        status: 'READY',
-        capabilities: ['sha256_hash', 'digital_seal', 'document_verification', 'integrity_check'],
-        dependencies: [],
-        instance: cryptoSignatureService,
-        exposedOperations: {
-          calculateDocumentHash: (doc) => cryptoSignatureService.calculateDocumentHash ? cryptoSignatureService.calculateDocumentHash(doc) : null,
-          signDocument: (userId, doc) => cryptoSignatureService.signDocument ? cryptoSignatureService.signDocument(userId, doc) : null,
-          verifyDocumentSignature: (doc, sig) => cryptoSignatureService.verifyDocumentSignature ? cryptoSignatureService.verifyDocumentSignature(doc, sig) : true
-        },
-        healthCheck: async () => ({ status: 'READY' })
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register VERIFICATION_ENGINE: ${e.message}`);
-    }
-
-    // Spatial & GIS Engine
-    try {
-      const spatialTranslator = require('./spatialTranslator');
-      this.register({
-        engineId: 'SPATIAL_GIS_ENGINE',
-        engineName: 'محرك التحليل المكاني والخرائط الجغرافية',
-        version: '1.0.0',
-        category: 'CORE_SERVICE',
-        status: 'READY',
-        capabilities: ['distance_calculation', 'spatial_buffer', 'geojson_conversion', 'coordinate_transform'],
-        dependencies: ['DATABASE_ENGINE'],
-        instance: spatialTranslator,
-        exposedOperations: {
-          calculateDistanceMeters: (lat1, lon1, lat2, lon2) => spatialTranslator.calculateDistanceMeters(lat1, lon1, lat2, lon2),
-          getBufferNearbyAssets: (lat, lng, radius) => spatialTranslator.getBufferNearbyAssets ? spatialTranslator.getBufferNearbyAssets(lat, lng, radius) : []
-        },
-        healthCheck: async () => {
-          const d = spatialTranslator.calculateDistanceMeters(32.298, 35.702, 32.300, 35.705);
-          return { status: d > 0 ? 'READY' : 'DEGRADED', distance: d };
-        }
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register SPATIAL_GIS_ENGINE: ${e.message}`);
-    }
-
-    // Notification Center Engine
-    try {
-      const notificationCenter = require('./notificationCenter');
+    const notificationCenter = safeRequire('./notificationCenter');
+    if (notificationCenter) {
       this.register({
         engineId: 'NOTIFICATION_ENGINE',
-        engineName: 'محرك الإشعارات والبث اللحظي للفعاليات',
-        version: '1.0.0',
+        engineName: 'مركز الإشعارات والبث اللحظي للفعاليات',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['event_dispatch', 'user_notifications', 'role_broadcast', 'websocket_sync'],
+        capabilities: ['event_dispatch', 'user_notifications', 'async_alerts'],
         dependencies: [],
         instance: notificationCenter,
         exposedOperations: {
-          notifyUser: (userId, title, message, type) => notificationCenter.notifyUser(userId, title, message, type),
-          broadcast: (event, payload) => notificationCenter.emit(event, payload)
+          notifyUser: (userId, title, msg, type) => notificationCenter.notifyUser(userId, title, msg, type),
+          sendInternalAlert: (msg, payload) => notificationCenter.sendInternalAlert(msg, payload)
         },
         healthCheck: async () => ({ status: 'READY' })
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register NOTIFICATION_ENGINE: ${e.message}`);
     }
 
-    // Database & Persistence Engine
-    try {
-      const dbModule = require('../utils/database');
+    const obsService = safeRequire('./observabilityService');
+    if (obsService) {
       this.register({
-        engineId: 'DATABASE_ENGINE',
-        engineName: 'محرك قواعد البيانات والاتصال المزدوج المعاملاتي',
-        version: '1.0.0',
+        engineId: 'OBSERVABILITY_SERVICE',
+        engineName: 'خدمة الرصد وتتبع الأداء والأحداث الأمنية',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['dual_persistence', 'acid_transactions', 'in_memory_fallback', 'sql_queries'],
+        capabilities: ['latency_tracking', 'security_sanitization', 'metrics_export'],
         dependencies: [],
-        instance: dbModule,
+        instance: obsService,
         exposedOperations: {
-          dbQuery: dbModule.dbQuery,
-          dbGet: dbModule.dbGet,
-          dbRun: dbModule.dbRun,
-          withTransaction: dbModule.withTransaction,
-          isPostgresActive: dbModule.isPostgresActive
-        },
-        healthCheck: async () => {
-          const active = dbModule.isPostgresActive();
-          return { status: 'READY', mode: active ? 'PostgreSQL' : 'In-Memory' };
-        }
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register DATABASE_ENGINE: ${e.message}`);
-    }
-
-    // 2️⃣ محركات مجالات الأعمال المحددة (Domain Engines)
-    // -------------------------------------------------------------
-    // RAMS Analytics Engine
-    try {
-      const RamsAnalyticsEngine = require('../Roads/Reports/ramsAnalyticsEngine');
-      this.register({
-        engineId: 'RAMS_ANALYTICS_ENGINE',
-        engineName: 'محرك التحليلات الفنية ومؤشرات أداء شبكة الطرق',
-        version: '4.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['network_kpis', 'pci_distribution', 'maintenance_recommendations', 'spatial_heatmap'],
-        dependencies: ['DATABASE_ENGINE', 'BUSINESS_RULES_ENGINE'],
-        instance: RamsAnalyticsEngine,
-        exposedOperations: {
-          getNetworkKpis: () => RamsAnalyticsEngine.getNetworkKpis(),
-          calculatePciBreakdown: () => RamsAnalyticsEngine.calculatePciBreakdown ? RamsAnalyticsEngine.calculatePciBreakdown() : null
-        },
-        healthCheck: async () => {
-          const kpis = await RamsAnalyticsEngine.getNetworkKpis();
-          return { status: kpis ? 'READY' : 'DEGRADED', totalRoads: kpis?.total_roads };
-        }
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register RAMS_ANALYTICS_ENGINE: ${e.message}`);
-    }
-
-    // Contract Template & Legal Engine
-    try {
-      const contractTemplateEngine = require('./contractTemplateEngine');
-      this.register({
-        engineId: 'CONTRACT_TEMPLATE_ENGINE',
-        engineName: 'محرك الصياغة القانونية ونماذج العقود الإنشائية',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['official_html_contract', 'clause_builder', 'placeholder_replacement'],
-        dependencies: ['BUSINESS_RULES_ENGINE'],
-        instance: contractTemplateEngine,
-        exposedOperations: {
-          generateOfficialContractHTML: contractTemplateEngine.generateOfficialContractHTML,
-          replacePlaceholders: contractTemplateEngine.replacePlaceholders
+          recordTiming: (name, ms, meta) => obsService.recordTiming(name, ms, meta),
+          recordSecurityEvent: (type, details, req) => obsService.recordSecurityEvent(type, details, req),
+          getMetricsSummary: () => obsService.getMetricsSummary()
         },
         healthCheck: async () => ({ status: 'READY' })
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register CONTRACT_TEMPLATE_ENGINE: ${e.message}`);
     }
 
-    // Workflow Engine
-    try {
-      const workflowRouter = require('../Administration/API/workflowEngine');
+    const reconcilService = safeRequire('./dataReconciliationService');
+    if (reconcilService) {
       this.register({
-        engineId: 'WORKFLOW_ENGINE',
-        engineName: 'محرك مسارات العمل وتدفق الموافقات',
-        version: '4.0.0',
+        engineId: 'DATA_RECONCILIATION_ENGINE',
+        engineName: 'محرك المزامنة اللاحقة ومعالجة الانقطاع',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['step_transitions', 'role_approval_gates', 'zero_code_workflows', 'audit_logging'],
-        dependencies: ['DATABASE_ENGINE', 'AUTHORIZATION_ENGINE', 'NOTIFICATION_ENGINE'],
-        instance: workflowRouter,
-        exposedOperations: {},
+        capabilities: ['offline_sync', 'conflict_resolution', 'eventual_consistency', 'cross_store_reconciliation'],
+        dependencies: ['DATABASE_ENGINE'],
+        instance: reconcilService,
+        exposedOperations: {
+          reconcileOfflineData: () => reconcilService.reconcileOfflineData ? reconcilService.reconcileOfflineData() : null,
+          reconcileDataStores: (t) => reconcilService.reconcileDataStores ? reconcilService.reconcileDataStores(t) : null,
+          healthCheck: () => reconcilService.healthCheck ? reconcilService.healthCheck() : ({ status: 'READY' })
+        },
+        healthCheck: () => reconcilService.healthCheck ? reconcilService.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const loggerService = safeRequire('./loggerService');
+    if (loggerService) {
+      this.register({
+        engineId: 'LOGGER_SERVICE',
+        engineName: 'محرك السجلات والتدقيق المركزي الموحد',
+        category: 'CORE_SERVICE',
+        status: 'READY',
+        capabilities: ['file_logging', 'audit_trail', 'rotation'],
+        dependencies: [],
+        instance: loggerService,
+        exposedOperations: {
+          logInfo: loggerService.logInfo,
+          logWarn: loggerService.logWarn,
+          logError: loggerService.logError
+        },
         healthCheck: async () => ({ status: 'READY' })
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register WORKFLOW_ENGINE: ${e.message}`);
     }
 
-    // Projects Engine
-    try {
-      const projectsEngineService = require('./projectsEngineService');
-      const projectsRouter = require('../Projects/API/projectsEngine');
+    const cryptoService = safeRequire('./cryptoSignatureService');
+    if (cryptoService) {
       this.register({
-        engineId: 'PROJECTS_ENGINE',
-        engineName: 'محرك إدارة المشاريع الهندسية والمحافظ الرأسمالية',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
+        engineId: 'VERIFICATION_ENGINE',
+        engineName: 'محرك الختم والتحقق الرقمي المشفر',
+        category: 'CORE_SERVICE',
+        status: 'READY',
+        capabilities: ['sha256_hash', 'digital_seal', 'hmac_signing', 'tamper_detection'],
+        dependencies: [],
+        instance: cryptoService,
+        exposedOperations: {
+          calculateDocumentHash: (doc) => cryptoService.calculateDocumentHash ? cryptoService.calculateDocumentHash(doc) : null,
+          signDocument: (p) => cryptoService.signDocument ? cryptoService.signDocument(p) : null,
+          verifyDocumentSignature: (p, s, d) => cryptoService.verifyDocumentSignature ? cryptoService.verifyDocumentSignature(p, s, d) : null
+        },
+        healthCheck: () => cryptoService.healthCheck ? cryptoService.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const businessRules = safeRequire('./rulesEngineService') || safeRequire('./businessRulesEngine');
+    if (businessRules) {
+      this.register({
+        engineId: 'BUSINESS_RULES_ENGINE',
+        engineName: 'محرك قواعد الأعمال والعمليات الحسابية',
+        category: 'CORE_SERVICE',
+        status: 'READY',
+        capabilities: ['pci_calculation', 'paving_returns', 'claim_deductions', 'safe_expression_evaluation', 'dynamic_rule_evaluation'],
+        dependencies: ['DATABASE_ENGINE'],
+        instance: businessRules,
+        exposedOperations: {
+          calculatePciScore: (d, s) => businessRules.calculatePciScore(d, s),
+          calculateClaimFinancials: (p) => businessRules.calculateClaimFinancials(p),
+          evaluateSafeExpression: (expr, ctx) => businessRules.evaluateSafeExpression(expr, ctx),
+          getRules: (f) => businessRules.getRules(f),
+          createRule: (d, u) => businessRules.createRule(d, u)
+        },
+        healthCheck: async () => (businessRules.healthCheck ? businessRules.healthCheck() : { status: 'READY' })
+      });
+    }
+
+    const spatialTrans = safeRequire('./spatialTranslator');
+    if (spatialTrans) {
+      this.register({
+        engineId: 'SPATIAL_GIS_ENGINE',
+        engineName: 'محرك التحليل المكاني والترجمة الجغرافية',
+        category: 'CORE_SERVICE',
+        status: 'READY',
+        capabilities: ['haversine_distance', 'spatial_buffer', 'postgis_fallback'],
+        dependencies: [],
+        instance: spatialTrans,
+        exposedOperations: {
+          calculateDistanceMeters: spatialTrans.calculateHaversineDistance,
+          isWithinDistance: spatialTrans.isWithinDistance
+        },
+        healthCheck: async () => ({ status: 'READY' })
+      });
+    }
+
+    const reportsEngine = safeRequire('./reportsEngineService');
+    if (reportsEngine) {
+      this.register({
+        engineId: 'PRINT_REPORT_ENGINE',
+        engineName: 'محرك التقارير الرسمية والطباعة الموحدة',
+        category: 'CORE_SERVICE',
         status: 'READY',
         capabilities: [
-          'project_aggregate',
-          'lifecycle_workflow',
-          'progress_tracking',
-          'milestones_management',
-          'risk_register',
-          'financial_variance_analytics',
-          'gis_spatial_mapping',
-          'tender_contract_linking'
+          'official_municipal_reports',
+          'structured_layout_generation',
+          'audit_report_tracking',
+          'multi_domain_reporting',
+          'official_print_layout',
+          'excel_export',
+          'watermark_rendering',
+          'dynamic_variables',
+          'pdf_generation',
+          'digital_seal_embedding'
         ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'NUMBERING_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'WORKFLOW_ENGINE',
-          'BUSINESS_RULES_ENGINE',
-          'SPATIAL_GIS_ENGINE',
-          'ARCHIVE_DOCUMENT_ENGINE',
-          'PRINT_REPORT_ENGINE'
-        ],
-        instance: projectsRouter,
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+        instance: reportsEngine,
         exposedOperations: {
-          getProjects: (filters, user) => projectsEngineService.getProjects(filters, user),
-          getProjectById: (id) => projectsEngineService.getProjectById(id),
-          createProject: (data, user) => projectsEngineService.createProject(data, user),
-          updateProject: (id, data, user) => projectsEngineService.updateProject(id, data, user),
-          transitionStatus: (id, status, user, remarks) => projectsEngineService.transitionStatus(id, status, user, remarks),
-          addMilestone: (id, data, user) => projectsEngineService.addMilestone(id, data, user),
-          addRisk: (id, data, user) => projectsEngineService.addRisk(id, data, user),
-          addProgressLog: (id, data, user) => projectsEngineService.addProgressLog(id, data, user),
-          calculateFinancialSummary: (project, contract) => projectsEngineService.calculateFinancialSummary(project, contract)
+          generateOfficialReport: (cfg, u) => reportsEngine.generateOfficialReport(cfg, u),
+          generateOfficialHeader: (t, b, u) => reportsEngine.generateOfficialHeader(t, b, u),
+          generateTableReport: (t, c, r, u) => reportsEngine.generateTableReport(t, c, r, u),
+          healthCheck: () => reportsEngine.healthCheck()
         },
-        healthCheck: () => projectsEngineService.healthCheck()
+        healthCheck: () => reportsEngine.healthCheck()
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECTS_ENGINE: ${e.message}`);
     }
 
-    // Project Portfolio Engine
-    try {
-      const projectPortfolioEngineService = require('./projectPortfolioEngineService');
-      const portfolioRouter = require('../Projects/API/portfolioEngine');
-      this.register({
-        engineId: 'PROJECT_PORTFOLIO_ENGINE',
-        engineName: 'محرك إدارة محافظ وخطط المشاريع الهندسية',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: [
-          'portfolio_aggregate',
-          'plan_management',
-          'project_linking'
-        ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'NUMBERING_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'PROJECTS_ENGINE'
-        ],
-        instance: portfolioRouter,
-        exposedOperations: {
-          createPortfolio: (data, user) => projectPortfolioEngineService.createPortfolio(data, user),
-          getPortfolios: (filters, user) => projectPortfolioEngineService.getPortfolios(filters, user),
-          getPortfolioById: (id) => projectPortfolioEngineService.getPortfolioById(id),
-          updatePortfolio: (id, data, user) => projectPortfolioEngineService.updatePortfolio(id, data, user),
-          deletePortfolio: (id, user) => projectPortfolioEngineService.deletePortfolio(id, user),
-          addProjectToPortfolio: (id, projectId, user) => projectPortfolioEngineService.addProjectToPortfolio(id, projectId, user),
-          removeProjectFromPortfolio: (id, projectId, user) => projectPortfolioEngineService.removeProjectFromPortfolio(id, projectId, user),
-          createPlan: (data, user) => projectPortfolioEngineService.createPlan(data, user),
-          getPlans: (filters, user) => projectPortfolioEngineService.getPlans(filters, user),
-          getPlanById: (id) => projectPortfolioEngineService.getPlanById(id),
-          updatePlan: (id, data, user) => projectPortfolioEngineService.updatePlan(id, data, user),
-          deletePlan: (id, user) => projectPortfolioEngineService.deletePlan(id, user),
-          addProjectToPlan: (id, projectId, user) => projectPortfolioEngineService.addProjectToPlan(id, projectId, user),
-          removeProjectFromPlan: (id, projectId, user) => projectPortfolioEngineService.removeProjectFromPlan(id, projectId, user),
-          getIntegratedPortfolioKPIs: (filters) => projectPortfolioEngineService.getIntegratedPortfolioKPIs(filters),
-          getPortfolioKPIs: (portfolioId) => projectPortfolioEngineService.getPortfolioKPIs(portfolioId)
-        },
-        healthCheck: () => projectPortfolioEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECT_PORTFOLIO_ENGINE: ${e.message}`);
-    }
-
-    // Project Prioritization Engine
-    try {
-      const projectPrioritizationEngineService = require('./projectPrioritizationEngineService');
-      const prioritizationRouter = require('../Projects/API/projectPrioritizationEngine');
-      this.register({
-        engineId: 'PROJECT_PRIORITIZATION_ENGINE',
-        engineName: 'محرك ترجيح وأولويات المشاريع الهندسية',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: [
-          'criteria_weighting',
-          'project_scoring',
-          'priority_ranking',
-          'score_recalculation'
-        ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'PROJECTS_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'BUSINESS_RULES_ENGINE'
-        ],
-        instance: prioritizationRouter,
-        exposedOperations: {
-          createPriorityCriterion: (data, user) => projectPrioritizationEngineService.createPriorityCriterion(data, user),
-          getPriorityCriteria: (filters) => projectPrioritizationEngineService.getPriorityCriteria(filters),
-          getPriorityCriterionById: (id) => projectPrioritizationEngineService.getPriorityCriterionById(id),
-          updatePriorityCriterion: (id, data, user) => projectPrioritizationEngineService.updatePriorityCriterion(id, data, user),
-          activatePriorityCriterion: (id, user) => projectPrioritizationEngineService.activatePriorityCriterion(id, user),
-          deactivatePriorityCriterion: (id, user) => projectPrioritizationEngineService.deactivatePriorityCriterion(id, user),
-          setProjectCriterionScore: (projectId, criterionId, score, notes, user) => projectPrioritizationEngineService.setProjectCriterionScore(projectId, criterionId, score, notes, user),
-          getProjectScores: (projectId) => projectPrioritizationEngineService.getProjectScores(projectId),
-          calculateProjectPriority: (projectId, user) => projectPrioritizationEngineService.calculateProjectPriority(projectId, user),
-          getProjectPriority: (projectId) => projectPrioritizationEngineService.getProjectPriority(projectId),
-          recalculateProjectPriority: (projectId, user) => projectPrioritizationEngineService.recalculateProjectPriority(projectId, user),
-          rankProjects: () => projectPrioritizationEngineService.rankProjects()
-        },
-        healthCheck: () => projectPrioritizationEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECT_PRIORITIZATION_ENGINE: ${e.message}`);
-    }
-
-    // Project Financial Programming Engine
-    try {
-      const projectFinancialProgrammingEngineService = require('./projectFinancialProgrammingEngineService');
-      const financialProgrammingRouter = require('../Projects/API/projectFinancialProgrammingEngine');
-      this.register({
-        engineId: 'PROJECT_FINANCIAL_PROGRAMMING_ENGINE',
-        engineName: 'محرك البرمجة والتخصيص المالي للمشاريع',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: [
-          'annual_programming',
-          'multi_year_allocation',
-          'budget_ceiling_validation',
-          'plan_financial_aggregation'
-        ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'PROJECTS_ENGINE',
-          'PROJECT_PORTFOLIO_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'BUSINESS_RULES_ENGINE'
-        ],
-        instance: financialProgrammingRouter,
-        exposedOperations: {
-          createFinancialProgram: (data, user) => projectFinancialProgrammingEngineService.createFinancialProgram(data, user),
-          getFinancialPrograms: (filters) => projectFinancialProgrammingEngineService.getFinancialPrograms(filters),
-          getFinancialProgramById: (id) => projectFinancialProgrammingEngineService.getFinancialProgramById(id),
-          updateFinancialProgram: (id, data, user) => projectFinancialProgrammingEngineService.updateFinancialProgram(id, data, user),
-          deleteFinancialProgram: (id, user) => projectFinancialProgrammingEngineService.deleteFinancialProgram(id, user),
-          getProjectFinancialProgram: (projectId) => projectFinancialProgrammingEngineService.getProjectFinancialProgram(projectId),
-          getPlanFinancialProgram: (planId) => projectFinancialProgrammingEngineService.getPlanFinancialProgram(planId),
-          calculateProgrammedTotal: (projectId) => projectFinancialProgrammingEngineService.calculateProgrammedTotal(projectId),
-          calculateAnnualProgrammedTotal: (planId, year) => projectFinancialProgrammingEngineService.calculateAnnualProgrammedTotal(planId, year),
-          calculateRemainingProgramAmount: (projectId) => projectFinancialProgrammingEngineService.calculateRemainingProgramAmount(projectId)
-        },
-        healthCheck: () => projectFinancialProgrammingEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECT_FINANCIAL_PROGRAMMING_ENGINE: ${e.message}`);
-    }
-
-    // Project Dependency Engine
-    try {
-      const projectDependencyEngineService = require('./projectDependencyEngineService');
-      const dependencyRouter = require('../Projects/API/projectDependencyEngine');
-      this.register({
-        engineId: 'PROJECT_DEPENDENCY_ENGINE',
-        engineName: 'محرك شبكة واعتماديات تتابع المشاريع',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: [
-          'dependency_network',
-          'cycle_detection',
-          'readiness_validation',
-          'dependency_graph'
-        ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'PROJECTS_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'BUSINESS_RULES_ENGINE'
-        ],
-        instance: dependencyRouter,
-        exposedOperations: {
-          createDependency: (data, user) => projectDependencyEngineService.createDependency(data, user),
-          getDependencies: (filters) => projectDependencyEngineService.getDependencies(filters),
-          getDependencyById: (id) => projectDependencyEngineService.getDependencyById(id),
-          updateDependency: (id, data, user) => projectDependencyEngineService.updateDependency(id, data, user),
-          deleteDependency: (id, user) => projectDependencyEngineService.deleteDependency(id, user),
-          getProjectDependencies: (projectId) => projectDependencyEngineService.getProjectDependencies(projectId),
-          validateProjectReadiness: (projectId) => projectDependencyEngineService.validateProjectReadiness(projectId),
-          getDependencyGraph: () => projectDependencyEngineService.getDependencyGraph(),
-          detectCycle: (fromId, toId, excludeId) => projectDependencyEngineService.detectCycle(fromId, toId, excludeId)
-        },
-        healthCheck: () => projectDependencyEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECT_DEPENDENCY_ENGINE: ${e.message}`);
-    }
-
-    // Project Scheduling Engine
-    try {
-      const projectSchedulingEngineService = require('./projectSchedulingEngineService');
-      const schedulingRouter = require('../Projects/API/projectSchedulingEngine');
-      this.register({
-        engineId: 'PROJECT_SCHEDULING_ENGINE',
-        engineName: 'محرك الجدولة الزمنية وحسابات المسار الحرج',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: [
-          'cpm_calculation',
-          'critical_path_analysis',
-          'float_computation',
-          'schedule_conflict_detection',
-          'schedule_baselining'
-        ],
-        dependencies: [
-          'DATABASE_ENGINE',
-          'PROJECTS_ENGINE',
-          'PROJECT_DEPENDENCY_ENGINE',
-          'AUTHORIZATION_ENGINE',
-          'BUSINESS_RULES_ENGINE'
-        ],
-        instance: schedulingRouter,
-        exposedOperations: {
-          calculateNetworkCPM: (filters, user) => projectSchedulingEngineService.calculateNetworkCPM(filters, user),
-          getProjectSchedule: (projectId, version) => projectSchedulingEngineService.getProjectSchedule(projectId, version),
-          getCriticalPath: (filters) => projectSchedulingEngineService.getCriticalPath(filters),
-          detectScheduleConflicts: () => projectSchedulingEngineService.detectScheduleConflicts(),
-          createScheduleBaseline: (projectId, user) => projectSchedulingEngineService.createScheduleBaseline(projectId, user),
-          getScheduleBaseline: (projectId) => projectSchedulingEngineService.getScheduleBaseline(projectId)
-        },
-        healthCheck: () => projectSchedulingEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PROJECT_SCHEDULING_ENGINE: ${e.message}`);
-    }
-
-    // Tenders Engine
-    try {
-      const tendersEngineService = require('./tendersEngineService');
-      const tendersRouter = require('../Tenders/API/tendersEngine');
-      this.register({
-        engineId: 'TENDERS_ENGINE',
-        engineName: 'محرك إدارة العطاءات والمشاريع الرأسمالية',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['tender_crud', 'boq_management', 'daily_reports', 'financial_tracking', 'tender_awarding'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'AUTHORIZATION_ENGINE'],
-        instance: tendersRouter,
-        exposedOperations: {
-          getTenders: (filters, user) => tendersEngineService.getTenders(filters, user),
-          getTenderById: (id) => tendersEngineService.getTenderById(id),
-          createTender: (data, user) => tendersEngineService.createTender(data, user),
-          updateTender: (id, updates, user) => tendersEngineService.updateTender(id, updates, user),
-          deleteTender: (id, user) => tendersEngineService.deleteTender(id, user),
-          awardTender: (id, data, user) => tendersEngineService.awardTender(id, data, user)
-        },
-        healthCheck: () => tendersEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register TENDERS_ENGINE: ${e.message}`);
-    }
-
-    // Claims Engine
-    try {
-      const claimsEngineService = require('./claimsEngineService');
-      const claimsRouter = require('../Tenders/API/claimsEngine');
-      this.register({
-        engineId: 'CLAIMS_ENGINE',
-        engineName: 'محرك المطالبات والدفعات المالية للمقاولين',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['claims_crud', 'workflow_transition', 'deductions_calculation', 'payment_certification', 'cumulative_financial_tracking'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUSINESS_RULES_ENGINE', 'WORKFLOW_ENGINE'],
-        instance: claimsRouter,
-        exposedOperations: {
-          getClaims: (filters, user) => claimsEngineService.getClaims(filters, user),
-          getClaimById: (id) => claimsEngineService.getClaimById(id),
-          createClaim: (data, user) => claimsEngineService.createClaim(data, user),
-          auditClaim: (id, data, user) => claimsEngineService.auditClaim(id, data, user),
-          deleteClaim: (id, user) => claimsEngineService.deleteClaim(id, user),
-          calculateClaimDeductions: (amount, options) => claimsEngineService.calculateClaimDeductions(amount, options)
-        },
-        healthCheck: () => claimsEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register CLAIMS_ENGINE: ${e.message}`);
-    }
-
-    // Roads Engine
-    try {
-      const roadsEngineService = require('./roadsEngineService');
-      const roadsRouter = require('../Roads/API/roadsEngine');
-      this.register({
-        engineId: 'ROADS_ENGINE',
-        engineName: 'محرك إدارة شبكة الطرق وتقييم الرصفات',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['roads_crud', 'gis_heatmap', 'chainage_segments', 'pci_assessment', 'network_statistics'],
-        dependencies: ['DATABASE_ENGINE', 'SPATIAL_GIS_ENGINE', 'BUSINESS_RULES_ENGINE', 'RAMS_ANALYTICS_ENGINE'],
-        instance: roadsRouter,
-        exposedOperations: {
-          getRoads: (filters, user) => roadsEngineService.getRoads(filters, user),
-          getRoadById: (id) => roadsEngineService.getRoadById(id),
-          createRoad: (data, user) => roadsEngineService.createRoad(data, user),
-          calculatePCI: (distresses) => roadsEngineService.calculatePCI(distresses),
-          addPciSurvey: (id, data, user) => roadsEngineService.addPciSurvey(id, data, user),
-          getNetworkStats: () => roadsEngineService.getNetworkStats()
-        },
-        healthCheck: () => roadsEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register ROADS_ENGINE: ${e.message}`);
-    }
-
-    // Purchases Engine
-    try {
-      const purchasesEngineService = require('./purchasesEngineService');
-      const purchasesRouter = require('../Purchases/API/purchasesEngine');
-      this.register({
-        engineId: 'PURCHASES_ENGINE',
-        engineName: 'محرك أوامر الشراء والتوريدات الهندسية',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['purchases_crud', 'budget_allocation', 'supplier_management', 'receiving_committee'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'AUTHORIZATION_ENGINE'],
-        instance: purchasesRouter,
-        exposedOperations: {
-          getPurchases: (filters, user) => purchasesEngineService.getPurchases(filters, user),
-          getPurchaseById: (id) => purchasesEngineService.getPurchaseById(id),
-          createPurchase: (data, user) => purchasesEngineService.createPurchase(data, user),
-          receivePurchaseItems: (id, data, user) => purchasesEngineService.receivePurchaseItems(id, data, user),
-          getPurchasesStats: () => purchasesEngineService.getPurchasesStats()
-        },
-        healthCheck: () => purchasesEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PURCHASES_ENGINE: ${e.message}`);
-    }
-
-    // Directorate General Budget Engine
-    try {
-      const budgetEngineService = require('./budgetEngineService');
-      this.register({
-        engineId: 'BUDGET_ENGINE',
-        engineName: 'محرك الموازنة العامة لمديرية الأشغال والخدمات الهندسية',
-        version: '1.0.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['budget_crud', 'budget_allocation', 'budget_ceiling_validation', 'variance_analysis', 'expenditure_tracking'],
-        dependencies: ['DATABASE_ENGINE', 'AUTHORIZATION_ENGINE'],
-        instance: budgetEngineService,
-        exposedOperations: {
-          getBudgetSummary: (year) => budgetEngineService.getBudgetSummary(year),
-          getBudgetLines: (filters) => budgetEngineService.getBudgetLines(filters),
-          getBudgetLineById: (id) => budgetEngineService.getBudgetLineById(id),
-          createBudgetLine: (data) => budgetEngineService.createBudgetLine(data),
-          updateBudgetLine: (id, data) => budgetEngineService.updateBudgetLine(id, data),
-          deleteBudgetLine: (id) => budgetEngineService.deleteBudgetLine(id),
-          createAllocation: (data) => budgetEngineService.createAllocation(data),
-          getAllocations: (filters) => budgetEngineService.getAllocations(filters)
-        },
-        healthCheck: () => budgetEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register BUDGET_ENGINE: ${e.message}`);
-    }
-
-    // Contracts Engine
-    try {
-      const contractsEngineService = require('./contractsEngineService');
-      const contractsRouter = require('../Contracts/API/contractManagementEngine');
-      this.register({
-        engineId: 'CONTRACTS_ENGINE',
-        engineName: 'محرك إدارة العقود والضمانات البنكية',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['contracts_crud', 'bank_guarantees', 'variation_orders', 'legal_clauses', 'guarantee_alerts', 'legal_limit_enforcement'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'CONTRACT_TEMPLATE_ENGINE', 'BUSINESS_RULES_ENGINE'],
-        instance: contractsRouter,
-        exposedOperations: {
-          getContracts: (filters, user) => contractsEngineService.getContracts(filters, user),
-          getContractById: (id) => contractsEngineService.getContractById(id),
-          createContract: (data, user) => contractsEngineService.createContract(data, user),
-          updateContract: (id, updates, user) => contractsEngineService.updateContract(id, updates, user),
-          deleteContract: (id, user) => contractsEngineService.deleteContract(id, user),
-          addVariationOrder: (id, data, user) => contractsEngineService.addVariationOrder(id, data, user),
-          getVariationOrders: (id) => contractsEngineService.getVariationOrders(id),
-          addBankGuarantee: (id, data, user) => contractsEngineService.addBankGuarantee(id, data, user),
-          getBankGuarantees: (id) => contractsEngineService.getBankGuarantees(id),
-          extendBankGuarantee: (id, data, user) => contractsEngineService.extendBankGuarantee(id, data, user),
-          releaseBankGuarantee: (id, data, user) => contractsEngineService.releaseBankGuarantee(id, data, user),
-          getGuaranteesAlerts: () => contractsEngineService.getGuaranteesAlerts()
-        },
-        healthCheck: () => contractsEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register CONTRACTS_ENGINE: ${e.message}`);
-    }
-
-    // Pavement Returns Engine
-    try {
-      const pavementReturnsEngineService = require('./pavementReturnsEngineService');
-      const pavingRouter = require('../PavementReturns/API/pavingReturns');
-      this.register({
-        engineId: 'PAVEMENT_RETURNS_ENGINE',
-        engineName: 'محرك عوائد التعبيد والتحققات البلدية',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['paving_returns_calculation', 'returns_crud', 'revenue_collection', 'basin_parcel_tracking'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUSINESS_RULES_ENGINE', 'AUTHORIZATION_ENGINE'],
-        instance: pavingRouter,
-        exposedOperations: {
-          getPavingReturns: (filters, user) => pavementReturnsEngineService.getPavingReturns(filters, user),
-          getPavingReturnById: (id) => pavementReturnsEngineService.getPavingReturnById(id),
-          createPavingReturn: (data, user) => pavementReturnsEngineService.createPavingReturn(data, user),
-          recordPayment: (id, data, user) => pavementReturnsEngineService.recordPayment(id, data, user),
-          calculatePavingReturn: (l, w, p, r) => pavementReturnsEngineService.calculatePavingReturn(l, w, p, r),
-          getReturnsStats: () => pavementReturnsEngineService.getReturnsStats()
-        },
-        healthCheck: () => pavementReturnsEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PAVEMENT_RETURNS_ENGINE: ${e.message}`);
-    }
-
-    // Assets & Infrastructure Engine
-    try {
-      const assetsEngineService = require('./assetsEngineService');
-      const assetsRouter = require('../Assets/API/assetsEngine');
-      this.register({
-        engineId: 'ASSETS_ENGINE',
-        engineName: 'محرك الأصول البلدية والمرافق والآليات الهندسية',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['assets_crud', 'structural_assets', 'infrastructure_networks', 'energy_lighting', 'condition_depreciation_calculation'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUSINESS_RULES_ENGINE'],
-        instance: assetsRouter,
-        exposedOperations: {
-          getAssets: (filters, user) => assetsEngineService.getAssets(filters, user),
-          getAssetById: (id) => assetsEngineService.getAssetById(id),
-          createAsset: (data, user) => assetsEngineService.createAsset(data, user),
-          calculateAssetDepreciation: (cost, year, life, salvage) => assetsEngineService.calculateAssetDepreciation(cost, year, life, salvage),
-          getAssetsStats: () => assetsEngineService.getAssetsStats()
-        },
-        healthCheck: () => assetsEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register ASSETS_ENGINE: ${e.message}`);
-    }
-
-    // Archive & Document Engine
-    try {
-      const archiveEngineService = require('./archiveEngineService');
-      const archiveRouter = require('../Archive/API/archiveEngine');
+    const archiveEngine = safeRequire('./archiveEngineService');
+    if (archiveEngine) {
       this.register({
         engineId: 'ARCHIVE_DOCUMENT_ENGINE',
         engineName: 'محرك الأرشفة الرقمية وتخزين المستندات',
-        version: '4.1.0',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['file_storage', 'document_linking', 'metadata_indexing', 'ocr_search'],
+        capabilities: ['file_storage', 'document_indexing', 'sha256_integrity', 'soft_delete', 'retention_policy', 'storage_analytics'],
         dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
-        instance: archiveRouter,
+        instance: archiveEngine,
         exposedOperations: {
-          getDocuments: (filters, user) => archiveEngineService.getDocuments(filters, user),
-          indexDocument: (data, user) => archiveEngineService.indexDocument(data, user)
+          getDocuments: (f, u) => archiveEngine.getDocuments(f, u),
+          getDocumentById: (id) => archiveEngine.getDocumentById(id),
+          archiveDocument: (d, u) => archiveEngine.archiveDocument(d, u),
+          indexDocument: (d, u) => archiveEngine.indexDocument(d, u),
+          updateDocument: (id, d, u) => archiveEngine.updateDocument(id, d, u),
+          softDeleteDocument: (id, u) => archiveEngine.softDeleteDocument(id, u),
+          batchLockDocuments: (ids, lock, u) => archiveEngine.batchLockDocuments(ids, lock, u),
+          batchTagDocuments: (ids, tags, u) => archiveEngine.batchTagDocuments(ids, tags, u),
+          batchDeleteDocuments: (ids, u) => archiveEngine.batchDeleteDocuments(ids, u),
+          verifyDocumentIntegrity: (id) => archiveEngine.verifyDocumentIntegrity(id),
+          getStats: () => archiveEngine.getStats(),
+          getStorageBreakdown: () => archiveEngine.getStorageBreakdown()
         },
-        healthCheck: () => archiveEngineService.healthCheck()
+        healthCheck: () => archiveEngine.healthCheck()
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register ARCHIVE_DOCUMENT_ENGINE: ${e.message}`);
     }
 
-    // Reports & Print Templates Engine
-    try {
-      const reportsEngineService = require('./reportsEngineService');
-      const reportsRouter = require('../Reports/API/printTemplatesEngine');
+    const workflowEngine = safeRequire('../routes/workflowRouter');
+    const workflowAdmin = safeRequire('../Administration/API/workflowEngine');
+    const activeWorkflow = workflowEngine || workflowAdmin;
+    if (activeWorkflow) {
       this.register({
-        engineId: 'PRINT_REPORT_ENGINE',
-        engineName: 'محرك التقارير ونماذج الطباعة الموحدة',
-        version: '4.1.0',
+        engineId: 'WORKFLOW_ENGINE',
+        engineName: 'محرك مسارات العمل وتدفق الموافقات',
         category: 'CORE_SERVICE',
         status: 'READY',
-        capabilities: ['official_print_layout', 'excel_export', 'watermark_rendering', 'dynamic_variables', 'pdf_generation'],
-        dependencies: ['DATABASE_ENGINE', 'VERIFICATION_ENGINE'],
-        instance: reportsRouter,
+        capabilities: [
+          'state_machine_transitions',
+          'approval_guard_validation',
+          'workflow_history_tracking',
+          'audit_trail_integration',
+          'step_transitions',
+          'role_approval_gates',
+          'zero_code_workflows',
+          'multi_entity_workflow_sync',
+          'automated_transition_alerts'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'AUTHORIZATION_ENGINE', 'NOTIFICATION_ENGINE'],
+        instance: activeWorkflow,
         exposedOperations: {
-          generateOfficialHeader: (title, branch) => reportsEngineService.generateOfficialHeader(title, branch)
+          transitionState: (c, t, u) => activeWorkflow.transitionState ? activeWorkflow.transitionState(c, t, u) : null,
+          executeTransition: (p, u) => workflowAdmin && workflowAdmin.executeTransition ? workflowAdmin.executeTransition(p, u) : null,
+          healthCheck: () => activeWorkflow.healthCheck ? activeWorkflow.healthCheck() : ({ status: 'READY' })
         },
-        healthCheck: () => reportsEngineService.healthCheck()
+        healthCheck: () => activeWorkflow.healthCheck ? activeWorkflow.healthCheck() : ({ status: 'READY' })
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register PRINT_REPORT_ENGINE: ${e.message}`);
     }
 
-    // Field Inspection Engine
-    try {
-      const inspectionEngineService = require('./inspectionEngineService');
-      const inspectionsRouter = require('../Inspection/API/inspections');
+    const contractTemplateEngine = safeRequire('./contractTemplateEngine');
+    if (contractTemplateEngine) {
+      this.register({
+        engineId: 'CONTRACT_TEMPLATE_ENGINE',
+        engineName: 'محرك الصياغة القانونية ونماذج العقود الإنشائية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['official_html_contract', 'clause_builder', 'placeholder_replacement', 'construction_contract_rendering'],
+        dependencies: ['BUSINESS_RULES_ENGINE', 'NUMBERING_ENGINE', 'ARCHIVE_DOCUMENT_ENGINE'],
+        instance: contractTemplateEngine,
+        exposedOperations: {
+          generateOfficialContractHTML: (c, t, p) => contractTemplateEngine.generateOfficialContractHTML(c, t, p),
+          replacePlaceholders: (t, d) => contractTemplateEngine.replacePlaceholders(t, d),
+          generateConstructionContract: (d, u) => contractTemplateEngine.generateConstructionContract(d, u)
+        },
+        healthCheck: () => contractTemplateEngine.healthCheck ? contractTemplateEngine.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const ramsAnalytics = safeRequire('../Roads/Reports/ramsAnalyticsEngine');
+    if (ramsAnalytics) {
+      this.register({
+        engineId: 'RAMS_ANALYTICS_ENGINE',
+        engineName: 'محرك تحليلات الطرق ونمذجة تدهور الرصفة (RAMS Analytics)',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'astm_d6433_pci_computation',
+          'pavement_deterioration_modeling',
+          'treatment_decision_matrix',
+          'cost_of_deferral_analysis',
+          'weighted_network_scoring',
+          'rams_audit_logging',
+          'pci_distribution',
+          'maintenance_backlog',
+          'network_kpis'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'SPATIAL_GIS_ENGINE'],
+        instance: ramsAnalytics,
+        exposedOperations: {
+          analyzeRoadNetwork: (f) => ramsAnalytics.analyzeRoadNetwork(f),
+          getNetworkKpis: () => ramsAnalytics.getNetworkKpis(),
+          getMaintenancePriorities: () => ramsAnalytics.getMaintenancePriorities(),
+          resolveTreatment: (p) => ramsAnalytics.resolveTreatment(p),
+          simulateDeterioration: (p, y, t) => ramsAnalytics.simulateDeterioration(p, y, t),
+          healthCheck: () => ramsAnalytics.healthCheck()
+        },
+        healthCheck: () => ramsAnalytics.healthCheck()
+      });
+    }
+
+    // ─── 2. محركات النطاق الهندسي والمشاريع (Engineering & Projects) ───
+
+    const projectsEngine = safeRequire('./projectsEngineService');
+    if (projectsEngine) {
+      this.register({
+        engineId: 'PROJECTS_ENGINE',
+        engineName: 'محرك المشاريع الهندسية والمحافظ الرأسمالية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['project_aggregate', 'lifecycle_workflow', 'progress_tracking'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'AUTHORIZATION_ENGINE'],
+        instance: projectsEngine,
+        exposedOperations: {
+          getProjects: (f, u) => projectsEngine.getProjects(f, u),
+          getProjectById: (id) => projectsEngine.getProjectById(id),
+          createProject: (d, u) => projectsEngine.createProject(d, u),
+          updateProject: (id, d, u) => projectsEngine.updateProject(id, d, u),
+          deleteProject: (id, u) => projectsEngine.deleteProject(id, u),
+          transitionStatus: (id, s, u, r) => projectsEngine.transitionStatus(id, s, u, r),
+          addMilestone: (id, d, u) => projectsEngine.addMilestone(id, d, u),
+          addRisk: (id, d, u) => projectsEngine.addRisk(id, d, u),
+          addProgressLog: (id, d, u) => projectsEngine.addProgressLog(id, d, u),
+          calculateFinancialSummary: (p, c) => projectsEngine.calculateFinancialSummary(p, c)
+        },
+        healthCheck: () => projectsEngine.healthCheck()
+      });
+    }
+
+    const portfolioEngine = safeRequire('./projectPortfolioEngineService');
+    if (portfolioEngine) {
+      this.register({
+        engineId: 'PROJECT_PORTFOLIO_ENGINE',
+        engineName: 'محرك محافظ وخطط المشاريع الهندسية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['portfolio_aggregate', 'plan_management', 'project_linking'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'PROJECTS_ENGINE'],
+        instance: portfolioEngine,
+        exposedOperations: {
+          createPortfolio: (d, u) => portfolioEngine.createPortfolio(d, u),
+          getPortfolios: (f, u) => portfolioEngine.getPortfolios(f, u),
+          getPortfolioById: (id) => portfolioEngine.getPortfolioById(id),
+          createPlan: (d, u) => portfolioEngine.createPlan(d, u),
+          getPlans: (f, u) => portfolioEngine.getPlans(f, u),
+          getPlanById: (id) => portfolioEngine.getPlanById(id),
+          getIntegratedPortfolioKPIs: (f) => portfolioEngine.getIntegratedPortfolioKPIs(f)
+        },
+        healthCheck: () => portfolioEngine.healthCheck()
+      });
+    }
+
+    const prioritizationEngine = safeRequire('./projectPrioritizationEngineService');
+    if (prioritizationEngine) {
+      this.register({
+        engineId: 'PROJECT_PRIORITIZATION_ENGINE',
+        engineName: 'محرك ترجيح وأولويات المشاريع الهندسية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['criteria_weighting', 'project_scoring', 'priority_ranking'],
+        dependencies: ['DATABASE_ENGINE', 'PROJECTS_ENGINE'],
+        instance: prioritizationEngine,
+        exposedOperations: {
+          createPriorityCriterion: (d, u) => prioritizationEngine.createPriorityCriterion(d, u),
+          setProjectCriterionScore: (pId, cId, s, n, u) => prioritizationEngine.setProjectCriterionScore(pId, cId, s, n, u),
+          calculateProjectPriority: (pId, u) => prioritizationEngine.calculateProjectPriority(pId, u),
+          rankProjects: () => prioritizationEngine.rankProjects()
+        },
+        healthCheck: () => prioritizationEngine.healthCheck()
+      });
+    }
+
+    const finProgEngine = safeRequire('./projectFinancialProgrammingEngineService');
+    if (finProgEngine) {
+      this.register({
+        engineId: 'PROJECT_FINANCIAL_PROGRAMMING_ENGINE',
+        engineName: 'محرك البرمجة والتخصيص المالي للمشاريع',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['annual_programming', 'budget_ceiling_validation'],
+        dependencies: ['DATABASE_ENGINE', 'PROJECTS_ENGINE', 'PROJECT_PORTFOLIO_ENGINE'],
+        instance: finProgEngine,
+        exposedOperations: {
+          createFinancialProgram: (d, u) => finProgEngine.createFinancialProgram(d, u),
+          getProjectFinancialProgram: (id) => finProgEngine.getProjectFinancialProgram(id),
+          calculateProgrammedTotal: (id) => finProgEngine.calculateProgrammedTotal(id)
+        },
+        healthCheck: () => finProgEngine.healthCheck()
+      });
+    }
+
+    const dependencyEngine = safeRequire('./projectDependencyEngineService');
+    if (dependencyEngine) {
+      this.register({
+        engineId: 'PROJECT_DEPENDENCY_ENGINE',
+        engineName: 'محرك شبكة واعتماديات تتابع المشاريع',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['dependency_network', 'cycle_detection', 'readiness_validation'],
+        dependencies: ['DATABASE_ENGINE', 'PROJECTS_ENGINE'],
+        instance: dependencyEngine,
+        exposedOperations: {
+          createDependency: (d, u) => dependencyEngine.createDependency(d, u),
+          getDependencies: (f) => dependencyEngine.getDependencies(f),
+          validateProjectReadiness: (id) => dependencyEngine.validateProjectReadiness(id),
+          detectCycle: (fId, tId, eId) => dependencyEngine.detectCycle(fId, tId, eId)
+        },
+        healthCheck: () => dependencyEngine.healthCheck()
+      });
+    }
+
+    const schedulingEngine = safeRequire('./projectSchedulingEngineService');
+    if (schedulingEngine) {
+      this.register({
+        engineId: 'PROJECT_SCHEDULING_ENGINE',
+        engineName: 'محرك الجدولة الزمنية والمسار الحرج (CPM)',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['cpm_calculation', 'critical_path_analysis', 'conflict_detection'],
+        dependencies: ['DATABASE_ENGINE', 'PROJECTS_ENGINE', 'PROJECT_DEPENDENCY_ENGINE'],
+        instance: schedulingEngine,
+        exposedOperations: {
+          calculateNetworkCPM: (f, u) => schedulingEngine.calculateNetworkCPM(f, u),
+          getProjectSchedule: (id, v) => schedulingEngine.getProjectSchedule(id, v),
+          getCriticalPath: (f) => schedulingEngine.getCriticalPath(f),
+          detectScheduleConflicts: () => schedulingEngine.detectScheduleConflicts()
+        },
+        healthCheck: () => schedulingEngine.healthCheck()
+      });
+    }
+
+    // ─── 3. محركات العطاءات، العقود، والمشتريات (Contracts & Procurement) ───
+
+    const tendersEngine = safeRequire('./tendersEngineService');
+    if (tendersEngine) {
+      this.register({
+        engineId: 'TENDERS_ENGINE',
+        engineName: 'محرك إدارة العطاءات والمشاريع الرأسمالية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['tender_crud', 'boq_management', 'tender_awarding'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+        instance: tendersEngine,
+        exposedOperations: {
+          getTenders: (f, u) => tendersEngine.getTenders(f, u),
+          getTenderById: (id) => tendersEngine.getTenderById(id),
+          createTender: (d, u) => tendersEngine.createTender(d, u),
+          awardTender: (id, d, u) => tendersEngine.awardTender(id, d, u)
+        },
+        healthCheck: () => tendersEngine.healthCheck()
+      });
+    }
+
+    const contractsEngine = safeRequire('./contractsEngineService');
+    if (contractsEngine) {
+      this.register({
+        engineId: 'CONTRACTS_ENGINE',
+        engineName: 'محرك العقود والكفالات البنكية والأوامر التغييرية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['contracts_crud', 'bank_guarantees', 'variation_orders', 'clauses', 'workflow', 'digital_signatures', 'guarantee_alerts'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUDGET_ENGINE'],
+        instance: contractsEngine,
+        exposedOperations: {
+          getContracts: (f, u) => contractsEngine.getContracts(f, u),
+          getContractById: (id) => contractsEngine.getContractById(id),
+          createContract: (d, u) => contractsEngine.createContract(d, u),
+          updateContract: (id, d, u) => contractsEngine.updateContract(id, d, u),
+          deleteContract: (id, u) => contractsEngine.deleteContract(id, u),
+          addVariationOrder: (id, d, u) => contractsEngine.addVariationOrder(id, d, u),
+          getVariationOrders: (id) => contractsEngine.getVariationOrders(id),
+          deleteVariationOrder: (id, vId, u) => contractsEngine.deleteVariationOrder(id, vId, u),
+          addBankGuarantee: (id, d, u) => contractsEngine.addBankGuarantee(id, d, u),
+          getBankGuarantees: (id) => contractsEngine.getBankGuarantees(id),
+          getGuaranteesAlerts: () => contractsEngine.getGuaranteesAlerts(),
+          transitionWorkflow: (id, d, u) => contractsEngine.transitionWorkflow(id, d, u),
+          signContract: (id, d, u) => contractsEngine.signContract(id, d, u),
+          getClauses: (id) => contractsEngine.getClauses(id),
+          addClause: (id, d, u) => contractsEngine.addClause(id, d, u),
+          getKpis: () => contractsEngine.getKpis()
+        },
+        healthCheck: () => contractsEngine.healthCheck ? contractsEngine.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const claimsEngine = safeRequire('./claimsEngineService');
+    if (claimsEngine) {
+      this.register({
+        engineId: 'CLAIMS_ENGINE',
+        engineName: 'محرك المطالبات والدفعات المالية للمقاولين',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['claims_crud', 'deductions_calculation'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+        instance: claimsEngine,
+        exposedOperations: {
+          getClaims: (f, u) => claimsEngine.getClaims(f, u),
+          getClaimById: (id) => claimsEngine.getClaimById(id),
+          createClaim: (d, u) => claimsEngine.createClaim(d, u)
+        },
+        healthCheck: () => claimsEngine.healthCheck ? claimsEngine.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const budgetEngine = safeRequire('./budgetEngineService');
+    if (budgetEngine) {
+      this.register({
+        engineId: 'BUDGET_ENGINE',
+        engineName: 'محرك الموازنة العامة لمديرية الأشغال',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['budget_allocation', 'ceiling_validation'],
+        dependencies: ['DATABASE_ENGINE'],
+        instance: budgetEngine,
+        exposedOperations: {
+          createAllocation: (d) => budgetEngine.createAllocation(d),
+          getBudgetSummary: (y) => budgetEngine.getBudgetSummary(y)
+        },
+        healthCheck: () => budgetEngine.healthCheck ? budgetEngine.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const purchasesEngine = safeRequire('./purchasesEngineService');
+    if (purchasesEngine) {
+      this.register({
+        engineId: 'PURCHASES_ENGINE',
+        engineName: 'محرك أوامر الشراء والتوريدات ولجان الاستلام',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['purchases_crud', 'receiving_committee', 'workflow_dispatch', 'budget_commitment', 'archive_integration'],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUDGET_ENGINE', 'ARCHIVE_DOCUMENT_ENGINE', 'AUDIT_LOG_ENGINE'],
+        instance: purchasesEngine,
+        exposedOperations: {
+          getPurchases: (f, u) => purchasesEngine.getPurchases(f, u),
+          getPurchaseById: (id) => purchasesEngine.getPurchaseById(id),
+          createPurchase: (d, u) => purchasesEngine.createPurchase(d, u),
+          updatePurchase: (id, d, u) => purchasesEngine.updatePurchase(id, d, u),
+          advanceWorkflow: (id, d, u) => purchasesEngine.advanceWorkflow(id, d, u),
+          approvePurchase: (id, d, u) => purchasesEngine.approvePurchase(id, d, u),
+          receivePurchaseItems: (id, d, u) => purchasesEngine.receivePurchaseItems(id, d, u),
+          deletePurchase: (id, u) => purchasesEngine.deletePurchase(id, u),
+          batchDeletePurchases: (ids, u) => purchasesEngine.batchDeletePurchases(ids, u),
+          getPurchasesStats: () => purchasesEngine.getPurchasesStats()
+        },
+        healthCheck: () => purchasesEngine.healthCheck()
+      });
+    }
+
+    // ─── 4. محركات الطرق، الأصول، والمساحة (Roads, Assets & GIS) ───
+
+    const roadsEngine = safeRequire('./roadsEngineService');
+    if (roadsEngine) {
+      this.register({
+        engineId: 'ROADS_ENGINE',
+        engineName: 'محرك شبكة الطرق وتقييم الرصفات (PCI)',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['roads_crud', 'pci_assessment', 'network_statistics'],
+        dependencies: ['DATABASE_ENGINE', 'SPATIAL_GIS_ENGINE'],
+        instance: roadsEngine,
+        exposedOperations: {
+          getRoads: (f) => roadsEngine.getRoads(f),
+          getRoadById: (id) => roadsEngine.getRoadById(id),
+          createRoad: (d, u) => roadsEngine.createRoad(d, u),
+          calculatePCI: (distresses) => roadsEngine.calculatePCI(distresses),
+          addPciSurvey: (id, d, u) => roadsEngine.addPciSurvey(id, d, u),
+          getNetworkStats: () => roadsEngine.getNetworkStats()
+        },
+        healthCheck: () => roadsEngine.healthCheck()
+      });
+    }
+
+    const gisSurvey = safeRequire('./gisSurveyService');
+    if (gisSurvey) {
+      this.register({
+        engineId: 'GIS_SURVEY_ENGINE',
+        engineName: 'محرك الرفع المساحي واستيراد النقاط الجغرافية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: ['survey_import', 'postgis_geom', 'geojson_conversion'],
+        dependencies: ['DATABASE_ENGINE'],
+        instance: gisSurvey,
+        exposedOperations: {
+          importSurveyPoints: (pts, user) => gisSurvey.importSurveyPoints(pts, user)
+        },
+        healthCheck: async () => ({ status: 'READY' })
+      });
+    }
+
+    const pavementReturns = safeRequire('./pavementReturnsEngineService');
+    if (pavementReturns) {
+      this.register({
+        engineId: 'PAVEMENT_RETURNS_ENGINE',
+        engineName: 'محرك عوائد التعبيد والتحققات البلدية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'returns_calculation',
+          'returns_crud',
+          'revenue_collection',
+          'workflow_approval_lifecycle',
+          'spatial_gis_mapping'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+        instance: pavementReturns,
+        exposedOperations: {
+          getPavingReturns: (f, u) => pavementReturns.getPavingReturns(f, u),
+          getPavingReturnById: (id) => pavementReturns.getPavingReturnById(id),
+          createPavingReturn: (d, u) => pavementReturns.createPavingReturn(d, u),
+          updatePavingReturn: (id, d, u) => pavementReturns.updatePavingReturn(id, d, u),
+          deletePavingReturn: (id, u) => pavementReturns.deletePavingReturn(id, u),
+          recordPayment: (id, d, u) => pavementReturns.recordPayment(id, d, u),
+          advanceApproval: (id, p, u) => pavementReturns.advanceApproval(id, p, u),
+          calculatePavingReturn: (l, w, p, r) => pavementReturns.calculatePavingReturn(l, w, p, r),
+          getReturnsStats: (f, u) => pavementReturns.getReturnsStats(f, u)
+        },
+        healthCheck: () => pavementReturns.healthCheck()
+      });
+    }
+
+    const assetsEngine = safeRequire('./assetsEngineService');
+    if (assetsEngine) {
+      this.register({
+        engineId: 'ASSETS_ENGINE',
+        engineName: 'محرك الأصول البلدية والمرافق والآليات (Valuation & Depreciation)',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'asset_registry_lifecycle',
+          'straight_line_depreciation',
+          'book_value_valuation',
+          'specialized_engine_bridge',
+          'maintenance_expenditure_logging',
+          'dual_persistence_storage',
+          'assets_crud'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+        instance: assetsEngine,
+        exposedOperations: {
+          registerAsset: (d, u) => assetsEngine.registerAsset(d, u),
+          createAsset: (d, u) => assetsEngine.createAsset(d, u),
+          getAssets: (f, u) => assetsEngine.getAssets(f, u),
+          getAssetById: (id) => assetsEngine.getAssetById(id),
+          updateAsset: (id, u, user) => assetsEngine.updateAsset(id, u, user),
+          deleteAsset: (id, user) => assetsEngine.deleteAsset(id, user),
+          calculateDepreciation: (a, y, l, s) => assetsEngine.calculateDepreciation(a, y, l, s),
+          recordMaintenanceExpense: (id, d, u) => assetsEngine.recordMaintenanceExpense(id, d, u),
+          getAssetsStats: () => assetsEngine.getAssetsStats(),
+          healthCheck: () => assetsEngine.healthCheck()
+        },
+        healthCheck: () => assetsEngine.healthCheck()
+      });
+    }
+
+    const specializedAssets = safeRequire('./specializedAssetsEngine');
+    if (specializedAssets) {
+      this.register({
+        engineId: 'SPECIALIZED_ASSETS_ENGINE',
+        engineName: 'محرك الأصول التخصصية وشبكات البنية التحتية والإنارة',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'lighting_networks_management',
+          'infrastructure_assets_tracking',
+          'structural_buildings_audit',
+          'specialized_numbering_integration',
+          'asset_condition_monitoring'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'ASSETS_ENGINE'],
+        instance: specializedAssets,
+        exposedOperations: {
+          registerSpecializedAsset: (d, u) => specializedAssets.registerSpecializedAsset(d, u),
+          getSpecializedAssets: (f) => specializedAssets.getSpecializedAssets(f),
+          getAssetsSummary: () => specializedAssets.getAssetsSummary(),
+          getStructuralAssets: (f) => specializedAssets.getStructuralAssets(f),
+          createStructuralAsset: (d, u) => specializedAssets.createStructuralAsset(d, u),
+          deleteStructuralAsset: (id, u) => specializedAssets.deleteStructuralAsset(id, u),
+          getInfrastructureNetworks: (f) => specializedAssets.getInfrastructureNetworks(f),
+          createInfrastructureNetwork: (d, u) => specializedAssets.createInfrastructureNetwork(d, u),
+          deleteInfrastructureNetwork: (id, u) => specializedAssets.deleteInfrastructureNetwork(id, u),
+          getEnergyAssets: (f) => specializedAssets.getEnergyAssets(f),
+          createEnergyAsset: (d, u) => specializedAssets.createEnergyAsset(d, u),
+          deleteEnergyAsset: (id, u) => specializedAssets.deleteEnergyAsset(id, u),
+          getExcavationPermits: (f) => specializedAssets.getExcavationPermits(f),
+          createExcavationPermit: (d, u) => specializedAssets.createExcavationPermit(d, u),
+          reinstateExcavationPermit: (id, d, u) => specializedAssets.reinstateExcavationPermit(id, d, u),
+          deleteExcavationPermit: (id, u) => specializedAssets.deleteExcavationPermit(id, u),
+          healthCheck: () => specializedAssets.healthCheck()
+        },
+        healthCheck: () => specializedAssets.healthCheck()
+      });
+    }
+
+    // ENERGY_LIGHTING_ENGINE — instance يُستمَد من specializedAssetsEngine (محرك حقيقي مسجّل)
+    // لا safeRequire لملفات UI (Assets/Pages/energyLighting.js ملف واجهة متصفح فقط)
+    this.register({
+      engineId: 'ENERGY_LIGHTING_ENGINE',
+      engineName: 'محرك شبكات الطاقة والإنارة العامة',
+      category: 'DOMAIN_ENGINE',
+      status: specializedAssets ? 'READY' : 'DEGRADED',
+      capabilities: ['lighting_network_tracking', 'energy_efficiency'],
+      dependencies: ['DATABASE_ENGINE', 'ASSETS_ENGINE', 'SPECIALIZED_ASSETS_ENGINE'],
+      instance: specializedAssets || null,
+      exposedOperations: {
+        registerLightingAsset: (d, u) => specializedAssets ? specializedAssets.createEnergyAsset(d, u) : null,
+        getLightingAssets: (f) => specializedAssets ? specializedAssets.getEnergyAssets(f) : [],
+        deleteEnergyAsset: (id, u) => specializedAssets ? specializedAssets.deleteEnergyAsset(id, u) : null
+      },
+      healthCheck: async () => specializedAssets ? specializedAssets.healthCheck() : ({ status: 'DEGRADED', reason: 'SPECIALIZED_ASSETS_ENGINE not loaded' })
+    });
+
+    // INFRASTRUCTURE_NETWORKS_ENGINE — instance يُستمَد من specializedAssetsEngine
+    // لا safeRequire لملفات UI (Assets/Pages/infrastructureNetworks.js ملف واجهة متصفح فقط)
+    this.register({
+      engineId: 'INFRASTRUCTURE_NETWORKS_ENGINE',
+      engineName: 'محرك شبكات البنية التحتية والمرافق',
+      category: 'DOMAIN_ENGINE',
+      status: specializedAssets ? 'READY' : 'DEGRADED',
+      capabilities: ['infrastructure_lines', 'utility_coordination'],
+      dependencies: ['DATABASE_ENGINE', 'ASSETS_ENGINE', 'SPECIALIZED_ASSETS_ENGINE'],
+      instance: specializedAssets || null,
+      exposedOperations: {
+        registerInfrastructureAsset: (d, u) => specializedAssets ? specializedAssets.createInfrastructureNetwork(d, u) : null,
+        getInfrastructureAssets: (f) => specializedAssets ? specializedAssets.getInfrastructureNetworks(f) : [],
+        deleteInfrastructureNetwork: (id, u) => specializedAssets ? specializedAssets.deleteInfrastructureNetwork(id, u) : null
+      },
+      healthCheck: async () => specializedAssets ? specializedAssets.healthCheck() : ({ status: 'DEGRADED', reason: 'SPECIALIZED_ASSETS_ENGINE not loaded' })
+    });
+
+    // STRUCTURAL_ASSETS_ENGINE — instance يُستمَد من specializedAssetsEngine
+    // لا safeRequire لملفات UI (Assets/Pages/structuralAssets.js ملف واجهة متصفح فقط)
+    this.register({
+      engineId: 'STRUCTURAL_ASSETS_ENGINE',
+      engineName: 'محرك الأصول الإنشائية والجدران الاستنادية',
+      category: 'DOMAIN_ENGINE',
+      status: specializedAssets ? 'READY' : 'DEGRADED',
+      capabilities: ['retaining_walls', 'public_buildings_monitoring'],
+      dependencies: ['DATABASE_ENGINE', 'ASSETS_ENGINE', 'SPECIALIZED_ASSETS_ENGINE'],
+      instance: specializedAssets || null,
+      exposedOperations: {
+        registerStructuralAsset: (d, u) => specializedAssets ? specializedAssets.createStructuralAsset(d, u) : null,
+        getStructuralAssets: (f) => specializedAssets ? specializedAssets.getStructuralAssets(f) : [],
+        deleteStructuralAsset: (id, u) => specializedAssets ? specializedAssets.deleteStructuralAsset(id, u) : null
+      },
+      healthCheck: async () => specializedAssets ? specializedAssets.healthCheck() : ({ status: 'DEGRADED', reason: 'SPECIALIZED_ASSETS_ENGINE not loaded' })
+    });
+
+    // ─── 5. العمليات الميدانية والرقابة والتكامل الحكومي (Operations & G2G) ───
+
+    const tasksEngine = safeRequire('./tasksEngineService');
+    if (tasksEngine) {
+      this.register({
+        engineId: 'TASKS_ENGINE',
+        engineName: 'محرك إدارة المهام والتكليفات الإدارية والتشغيلية الداخلية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'tasks_crud',
+          'atomic_task_numbering',
+          'assignee_notifications',
+          'status_lifecycle',
+          'dual_storage_persistence'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'NOTIFICATION_ENGINE'],
+        instance: tasksEngine,
+        exposedOperations: {
+          getTasks: (f, u) => tasksEngine.getTasks(f, u),
+          getTaskById: (id) => tasksEngine.getTaskById(id),
+          createTask: (d, u) => tasksEngine.createTask(d, u),
+          updateTask: (id, d, u) => tasksEngine.updateTask(id, d, u),
+          deleteTask: (id, u) => tasksEngine.deleteTask(id, u)
+        },
+        healthCheck: async () => tasksEngine.healthCheck ? tasksEngine.healthCheck() : ({ status: 'READY' })
+      });
+    }
+
+    const wocService = safeRequire('./workOperationsCenterService');
+    if (wocService) {
+      this.register({
+        engineId: 'OPERATIONS_CENTER',
+        engineName: 'مركز العمليات والتحكم الهندسي والمتابعة الميدانية',
+        category: 'DOMAIN_ENGINE',
+        status: 'READY',
+        capabilities: [
+          'operations_tracking',
+          'field_actions',
+          'appeals_management',
+          'spatial_dispatch',
+          'sla_monitoring',
+          'routing_orchestration',
+          'duplicate_detection'
+        ],
+        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'NOTIFICATION_ENGINE'],
+        instance: wocService,
+        exposedOperations: {
+          getOperations: (f, u) => wocService.getOperations(f, u),
+          getOperationById: (id) => wocService.getOperationById(id),
+          createOperation: (d, u) => wocService.createOperation(d, u),
+          updateOperation: (id, d, u) => wocService.updateOperation(id, d, u),
+          deleteOperation: (id, u) => wocService.deleteOperation(id, u),
+          executeRoutingAction: (p) => wocService.executeRoutingAction(p),
+          addEndorsementNote: (p) => wocService.addEndorsementNote(p),
+          finalizeAndApprove: (p) => wocService.finalizeAndApprove(p),
+          getExecutiveStats: (u) => wocService.getExecutiveStats(u),
+          getNearbySpatialContext: (p) => wocService.getNearbySpatialContext(p),
+          checkDuplicates: (p) => wocService.checkDuplicates(p),
+          saveFieldReport: (id, r, u) => wocService.saveFieldReport(id, r, u),
+          addComment: (id, t, u) => wocService.addComment(id, t, u),
+          updateSubtasks: (id, s, u) => wocService.updateSubtasks(id, s, u),
+          addAttachments: (id, f, u) => wocService.addAttachments(id, f, u),
+          deleteAttachment: (id, a) => wocService.deleteAttachment(id, a)
+        },
+        healthCheck: () => wocService.healthCheck()
+      });
+    }
+
+    const inspectionEngine = safeRequire('./inspectionEngineService');
+    if (inspectionEngine) {
       this.register({
         engineId: 'INSPECTION_ENGINE',
-        engineName: 'محرك التفتيش والرقابة الميدانية وضبط الجودة',
-        version: '4.1.0',
+        engineName: 'محرك التفتيش الميداني وضبط الجودة',
         category: 'DOMAIN_ENGINE',
         status: 'READY',
-        capabilities: ['field_inspections', 'defect_logging', 'quality_compliance', 'incident_notifications'],
+        capabilities: ['field_inspections', 'defect_logging'],
         dependencies: ['DATABASE_ENGINE', 'NOTIFICATION_ENGINE'],
-        instance: inspectionsRouter,
+        instance: inspectionEngine,
         exposedOperations: {
-          getInspections: (filters) => inspectionEngineService.getInspections(filters),
-          recordInspection: (data, user) => inspectionEngineService.recordInspection(data, user)
+          getInspections: (f) => inspectionEngine.getInspections(f),
+          getInspectionById: (id) => inspectionEngine.getInspectionById(id),
+          recordInspection: (d, u) => inspectionEngine.recordInspection(d, u),
+          resolveInspection: (id, d, u) => inspectionEngine.resolveInspection(id, d, u),
+          deleteInspection: (id, u) => inspectionEngine.deleteInspection(id, u),
+          getInspectionStats: () => inspectionEngine.getInspectionStats()
         },
-        healthCheck: () => inspectionEngineService.healthCheck()
+        healthCheck: () => inspectionEngine.healthCheck()
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register INSPECTION_ENGINE: ${e.message}`);
     }
 
-    // Technical Committees Engine
-    try {
-      const committeesEngineService = require('./committeesEngineService');
-      const committeesRouter = require('../Committees/API/committeesEngine');
-      this.register({
-        engineId: 'COMMITTEES_ENGINE',
-        engineName: 'محرك اللجان الفنية ولجان الاستلام ودراسة العطاءات',
-        version: '4.1.0',
-        category: 'DOMAIN_ENGINE',
-        status: 'READY',
-        capabilities: ['committee_minutes', 'preliminary_handover', 'final_handover', 'tender_studies_evaluation'],
-        dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE', 'BUSINESS_RULES_ENGINE'],
-        instance: committeesRouter,
-        exposedOperations: {
-          getReports: (filters) => committeesEngineService.getReports(filters),
-          createReport: (data, user) => committeesEngineService.createReport(data, user)
-        },
-        healthCheck: () => committeesEngineService.healthCheck()
-      });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register COMMITTEES_ENGINE: ${e.message}`);
-    }
+    const committeesEngine = safeRequire('./committeesEngineService') || safeRequire('../Committees/API/committeesEngine');
+    this.register({
+      engineId: 'COMMITTEES_ENGINE',
+      engineName: 'محرك اللجان ومحاضر الاستلام الفنية',
+      category: 'DOMAIN_ENGINE',
+      status: 'READY',
+      capabilities: ['committees_management', 'minutes_logging', 'handover_protocols', 'tender_evaluation'],
+      dependencies: ['DATABASE_ENGINE', 'NUMBERING_ENGINE'],
+      instance: committeesEngine,
+      exposedOperations: {
+        getCommittees: (f, u) => committeesEngine.getCommittees ? committeesEngine.getCommittees(f, u) : [],
+        getCommitteeById: (id) => committeesEngine.getCommitteeById ? committeesEngine.getCommitteeById(id) : null,
+        createCommittee: (d, u) => committeesEngine.createCommittee ? committeesEngine.createCommittee(d, u) : null,
+        getReports: (f) => committeesEngine.getReports ? committeesEngine.getReports(f) : [],
+        getStudies: (f) => committeesEngine.getStudies ? committeesEngine.getStudies(f) : [],
+        createStudy: (d, u) => committeesEngine.createStudy ? committeesEngine.createStudy(d, u) : null
+      },
+      healthCheck: async () => (committeesEngine.healthCheck ? committeesEngine.healthCheck() : { status: 'READY' })
+    });
 
-    // Government Gateway Engine (G2G)
-    try {
-      const g2gGatewayEngineService = require('./g2gGatewayEngineService');
-      const g2gRouter = require('../Administration/API/g2gGateway');
+    const g2gGateway = safeRequire('./g2gGatewayEngineService');
+    if (g2gGateway) {
       this.register({
         engineId: 'G2G_GATEWAY_ENGINE',
-        engineName: 'محرك بوابة الربط الحكومي والتكامل مع الوزارات',
-        version: '4.1.0',
+        engineName: 'بوابة الربط الحكومي والتكامل مع الوزارات',
         category: 'INTEGRATION_GATEWAY',
         status: 'READY',
-        capabilities: ['ministry_dispatch', 'audit_handshake', 'e_government_sync'],
-        dependencies: ['DATABASE_ENGINE', 'AUTHORIZATION_ENGINE'],
-        instance: g2gRouter,
+        capabilities: ['ministry_dispatch', 'data_hash_verification'],
+        dependencies: ['DATABASE_ENGINE'],
+        instance: g2gGateway,
         exposedOperations: {
-          dispatchPayload: (min, type, data, user) => g2gGatewayEngineService.dispatchPayload(min, type, data, user)
+          dispatchPayload: (min, type, data, user) => g2gGateway.dispatchPayload(min, type, data, user)
         },
-        healthCheck: () => g2gGatewayEngineService.healthCheck()
+        healthCheck: () => g2gGateway.healthCheck()
       });
-    } catch (e) {
-      logWarn('EngineRegistry', `Failed to register G2G_GATEWAY_ENGINE: ${e.message}`);
     }
 
     this._initialized = true;
-
     logInfo('EngineRegistry', `✅ All ${this._engines.size} Enterprise Engines successfully registered.`);
   }
 }
 
+// تصدير الكائن الفردي
 const globalRegistry = new EngineRegistry();
-globalRegistry.autoRegisterAll();
-
 module.exports = globalRegistry;

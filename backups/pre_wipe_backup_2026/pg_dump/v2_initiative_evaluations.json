@@ -1,0 +1,36 @@
+[
+  {
+    "evaluation_id": "49f3fe14-378d-45c3-a645-6c38d758bc8a",
+    "initiative_id": "8c1eed8f-d162-4958-ad38-b5470dba3b82",
+    "evaluator": "eval_committee_chair",
+    "evaluation_date": "2026-09-05T13:45:39.075Z",
+    "total_score": "84.17",
+    "priority_band": "BAND_B",
+    "recommendation": "مبادرة متميزة ذات جاهزية تنفيذية عالية",
+    "status": "COMPLETED",
+    "metadata": {},
+    "created_by": "eval_committee_chair",
+    "created_at": "2026-09-05T13:45:39.075Z",
+    "updated_by": "eval_committee_chair",
+    "updated_at": "2026-09-05T13:45:39.075Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "evaluation_id": "32d3a354-9def-4f3b-aea0-8694c7e92510",
+    "initiative_id": "c1b2a887-df93-41d2-8004-236ccf0cad02",
+    "evaluator": "committee_head",
+    "evaluation_date": "2026-09-05T13:45:39.220Z",
+    "total_score": "82.50",
+    "priority_band": "BAND_B",
+    "recommendation": "تقييم المبادرة بدرجة 82.5% وتصنيف BAND_B",
+    "status": "COMPLETED",
+    "metadata": {},
+    "created_by": "committee_head",
+    "created_at": "2026-09-05T13:45:39.220Z",
+    "updated_by": "committee_head",
+    "updated_at": "2026-09-05T13:45:39.220Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "receipt_id": "9e70791d-d14d-4196-b2c9-3103e80ce6d5",
+    "receipt_number": "REC-2026-0001",
+    "purchase_order_id": "84361536-9521-4637-bc77-e09a4070403a",
+    "receipt_date": "2026-09-05T13:45:38.249Z",
+    "received_by": "أمين مستودع البلدية",
+    "location": "المستودع المركزي",
+    "delivery_note_number": "DN-SUP-2026-881",
+    "supplier_reference": "DELIV-BATCH-01",
+    "status": "ACCEPTED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "warehouse_officer",
+    "created_at": "2026-09-05T13:45:38.249Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:38.296Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "receipt_id": "459574bd-922b-4e26-ae67-312e9b27d765",
+    "receipt_number": "REC-2026-0003",
+    "purchase_order_id": "7a6dab0d-e916-4d3f-a4b5-c7b4d6409636",
+    "receipt_date": "2026-09-05T13:45:38.462Z",
+    "received_by": "أمين مستودع المشاريع",
+    "location": "موقع المشروع - كفرنجة",
+    "delivery_note_number": "DN-E2E-PIPE-01",
+    "supplier_reference": null,
+    "status": "ACCEPTED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "storekeeper",
+    "created_at": "2026-09-05T13:45:38.462Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:38.478Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

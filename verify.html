@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بوابة التحقق الرقمي من الوثائق - بلدية كفرنجة الجديدة</title>
+  <title>بوابة التحقق الرقمي من الوثائق — بلدية كفرنجة الجديدة</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,17 +16,15 @@
       --warning: #d97706;
       --danger: #dc2626;
       --bg: #0b1120;
-      --card-bg: rgba(15, 23, 42, 0.85);
-      --border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(15, 23, 42, 0.88);
+      --border: rgba(255, 255, 255, 0.12);
       --text: #f8fafc;
       --text-muted: #94a3b8;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-
     body {
       background: var(--bg);
-      background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15), transparent 50%);
+      background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.18), transparent 50%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -35,20 +33,17 @@
       justify-content: center;
       padding: 20px;
     }
-
     .verify-card {
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: 24px;
-      max-width: 600px;
+      max-width: 620px;
       width: 100%;
       padding: 35px 30px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
       text-align: center;
-      position: relative;
     }
-
     .header-seal {
       width: 90px;
       height: 90px;
@@ -59,130 +54,42 @@
       border: 2px solid var(--primary-light);
       box-shadow: 0 0 25px rgba(59, 130, 246, 0.3);
     }
-
-    .header-seal img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 50%;
-    }
-
+    .header-seal img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
     h1 { font-size: 1.4rem; font-weight: 800; color: #60a5fa; margin-bottom: 4px; }
     .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
-
-    .search-box {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 25px;
-    }
-
+    .search-box { display: flex; gap: 8px; margin-bottom: 25px; }
     .search-box input {
-      flex: 1;
-      padding: 12px 16px;
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #fff;
-      font-size: 1rem;
-      text-align: center;
-      direction: ltr;
+      flex: 1; padding: 12px 16px; background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--border); border-radius: 12px; color: #fff;
+      font-size: 1rem; text-align: center; direction: ltr; outline: none;
     }
-
     .search-box button {
-      padding: 12px 24px;
-      background: var(--primary-light);
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 12px 24px; background: var(--primary-light); border: none;
+      border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
     }
-
     .search-box button:hover { background: #2563eb; }
-
-    .result-container {
-      display: none;
-      text-align: right;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    .result-container { display: none; text-align: right; animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .status-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 1rem;
-      margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px; border-radius: 12px; font-weight: 800; font-size: 1rem; margin-bottom: 20px;
     }
-
-    .status-badge.valid {
-      background: rgba(5, 150, 105, 0.2);
-      border: 1px solid rgba(5, 150, 105, 0.6);
-      color: #34d399;
-    }
-
-    .status-badge.invalid {
-      background: rgba(220, 38, 38, 0.2);
-      border: 1px solid rgba(220, 38, 38, 0.6);
-      color: #f87171;
-    }
-
+    .status-badge.valid { background: rgba(5, 150, 105, 0.2); border: 1px solid rgba(5, 150, 105, 0.6); color: #34d399; }
+    .status-badge.invalid { background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.6); color: #f87171; }
     .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
+      width: 100%; border-collapse: collapse; margin-bottom: 20px;
+      background: rgba(30, 41, 59, 0.6); border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
     }
-
-    .data-table th, .data-table td {
-      padding: 10px 14px;
-      font-size: 0.9rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .data-table th {
-      width: 35%;
-      color: var(--text-muted);
-      font-weight: 600;
-      background: rgba(15, 23, 42, 0.4);
-    }
-
-    .data-table td {
-      font-weight: 700;
-      color: #f1f5f9;
-    }
-
+    .data-table th, .data-table td { padding: 10px 14px; font-size: 0.88rem; border-bottom: 1px solid var(--border); }
+    .data-table th { width: 35%; color: var(--text-muted); font-weight: 600; background: rgba(15, 23, 42, 0.4); }
+    .data-table td { font-weight: 700; color: #f1f5f9; }
     .security-stamp {
-      font-family: monospace;
-      font-size: 0.8rem;
-      color: #94a3b8;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-align: center;
-      direction: ltr;
-      border: 1px dashed rgba(255, 255, 255, 0.15);
-      word-break: break-all;
+      font-family: monospace; font-size: 0.78rem; color: #94a3b8;
+      background: rgba(15, 23, 42, 0.7); padding: 10px 12px; border-radius: 8px;
+      text-align: center; direction: ltr; border: 1px dashed rgba(255, 255, 255, 0.15); word-break: break-all;
     }
-
-    .footer-note {
-      margin-top: 25px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+    .footer-note { margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -201,10 +108,7 @@
     </form>
 
     <div id="loading" style="display:none;padding:20px;color:#60a5fa;font-weight:bold;">⏳ جاري التحقق من السجلات الرسمية...</div>
-
-    <div class="result-container" id="resultBox">
-      <!-- Injected by JS -->
-    </div>
+    <div class="result-container" id="resultBox"></div>
 
     <div class="footer-note">
       🏛️ هذه البوابة الرسمية تابعة لمديرية الأشغال والخدمات الهندسية في بلدية كفرنجة الجديدة للتحقق الفوري من التوقيع الرقمي وبصمة الـ SHA-256 للمستندات والمحررات الرسمية.
@@ -212,6 +116,16 @@
   </div>
 
   <script>
+    function escapeHtml(str) {
+      if (!str) return '—';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const docId = urlParams.get('id') || urlParams.get('ref');
@@ -248,17 +162,17 @@
               <span>مستند رسمي معتمد ومصادق عليه أصولاً</span>
             </div>
             <table class="data-table">
-              <tr><th>نوع المستند</th><td>${d.docType}</td></tr>
-              <tr><th>الرقم المرجعي</th><td style="color:#60a5fa;font-family:monospace;">${d.id}</td></tr>
-              <tr><th>بيان المعاملة</th><td>${d.title}</td></tr>
-              <tr><th>الجهة المستفيدة / المنفذة</th><td>${d.entityName}</td></tr>
-              <tr><th>القيمة المعتمدة</th><td style="color:#34d399;font-size:1.05rem;">${d.amount}</td></tr>
-              <tr><th>تاريخ الاعتماد / الإصدار</th><td>${d.date}</td></tr>
-              <tr><th>حالة المعاملة</th><td><span style="color:#38bdf8;">● ${d.status}</span></td></tr>
-              <tr><th>جهة الإصدار</th><td>${d.directorate} — ${d.authority}</td></tr>
+              <tr><th>نوع المستند</th><td>${escapeHtml(d.docType)}</td></tr>
+              <tr><th>الرقم المرجعي</th><td style="color:#60a5fa;font-family:monospace;">${escapeHtml(d.id)}</td></tr>
+              <tr><th>بيان المعاملة</th><td>${escapeHtml(d.title)}</td></tr>
+              <tr><th>الجهة المستفيدة / المنفذة</th><td>${escapeHtml(d.entityName)}</td></tr>
+              <tr><th>القيمة المعتمدة</th><td style="color:#34d399;font-size:1.05rem;">${escapeHtml(d.amount)}</td></tr>
+              <tr><th>تاريخ الاعتماد / الإصدار</th><td>${escapeHtml(d.date)}</td></tr>
+              <tr><th>حالة المعاملة</th><td><span style="color:#38bdf8;">● ${escapeHtml(d.status)}</span></td></tr>
+              <tr><th>جهة الإصدار</th><td>${escapeHtml(d.directorate)} — ${escapeHtml(d.authority)}</td></tr>
             </table>
             <div class="security-stamp">
-              <b>SHA-256 Verification Stamp:</b><br>${d.verificationHash}
+              <b>SHA-256 Verification Stamp:</b><br>${escapeHtml(d.verificationHash)}
             </div>
           `;
         } else {
@@ -267,7 +181,7 @@
               <span>⚠️</span>
               <span>المستند غير مسجل أو تعذر التحقق من صحته</span>
             </div>
-            <p style="color:#cbd5e1;font-size:0.9rem;text-align:center;">${json.error || 'لم يتم العثور على سجلات مطابقة للرقم المدخل في قاعدة بيانات البلدية.'}</p>
+            <p style="color:#cbd5e1;font-size:0.9rem;text-align:center;">${escapeHtml(json.error || 'لم يتم العثور على سجلات مطابقة للرقم المدخل في قاعدة بيانات البلدية.')}</p>
           `;
         }
       } catch (err) {
@@ -276,7 +190,7 @@
         resultBox.innerHTML = `
           <div class="status-badge invalid">
             <span>❌</span>
-            <span>خطأ في الاتصال بالخادم</span>
+            <span>خطأ في الاتصال بخادم التحقق</span>
           </div>
         `;
       }

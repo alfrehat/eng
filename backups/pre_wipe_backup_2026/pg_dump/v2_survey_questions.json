@@ -1,0 +1,18 @@
+[
+  {
+    "question_id": "da5c8eb6-df13-4af1-a84b-6031ebe431f9",
+    "survey_id": "8a0d328b-3856-44bc-aa30-4208ad142c18",
+    "question_text": "ما هو القطاع الأكثر أولوية في حيّك السكني؟",
+    "question_type": "SELECT",
+    "options": [
+      "ROADS",
+      "LIGHTING",
+      "DRAINAGE",
+      "PARKS",
+      "CLEANLINESS"
+    ],
+    "sort_order": 1,
+    "is_active": true,
+    "created_at": "2026-09-05T13:45:39.085Z"
+  }
+]

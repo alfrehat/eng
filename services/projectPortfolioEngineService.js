@@ -1,14 +1,7 @@
 /**
  * services/projectPortfolioEngineService.js
- * 📁 محرك إدارة محافظ وخطط المشاريع الهندسية (PROJECT_PORTFOLIO_ENGINE — Phase 04-A Foundation)
- * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
- * 
- * المبادئ المعمارية والتنظيمية:
- * 1. إدارة المحافظ الرأسمالية والخطط السنوية والاستراتيجية دون استنساخ بيانات المشاريع.
- * 2. الحفاظ الكامل على PROJECTS_ENGINE كمصدر الحقيقة والبيانات لكافة سجلات المشاريع الفردية.
- * 3. الترقيم الذري التلقائي عبر NUMBERING_ENGINE بصيغ (POR-YYYY-XXXX) و (PLN-YYYY-XXXX).
- * 4. الحذف الآمن الذي ينظف الجداول الوسيطة دون المساس بالمشاريع الهندسية.
- * 5. التدقيق الشامل والرقابة على كافة عمليات الإنشاء والربط والتعديل.
+ * 📁 محرك إدارة محافظ وخطط المشاريع الهندسية (PROJECT_PORTFOLIO_ENGINE)
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية v2.0 - Anti-Gravity Enterprise Patch
  */
 
 const {
@@ -27,7 +20,7 @@ class ProjectPortfolioEngineService {
   constructor() {
     this.engineId = 'PROJECT_PORTFOLIO_ENGINE';
     this.engineName = 'Enterprise Project Portfolio & Planning Engine';
-    this.version = '1.0.0';
+    this.version = '2.0.0';
     this.category = 'DOMAIN_ENGINE';
     this.status = 'READY';
     this.capabilities = [
@@ -43,23 +36,15 @@ class ProjectPortfolioEngineService {
   async _recordAudit(userId, entityId, action, oldValue, newValue, ip = '127.0.0.1') {
     try {
       const details = `إجراء المحافظ والخطط [${action}] على المعرف [${entityId}]: ${JSON.stringify({ old: oldValue, new: newValue })}`;
-      if (isPostgresActive()) {
-        await dbRun(
-          'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-          [userId || 'SYSTEM', action, 'محافظ وخطط المشاريع', entityId, details, ip]
-        );
-      } else if (memDb && memDb.activity_log) {
-        memDb.activity_log.push({
-          id: 'LOG-POR-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-          userId: userId || 'SYSTEM',
-          action,
-          entity: 'محافظ وخطط المشاريع',
-          entityId,
-          details,
-          ip,
-          createdAt: new Date().toISOString()
-        });
-      }
+      const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+      await recordFn({
+        userId: userId || 'SYSTEM',
+        action,
+        entity: 'المحافظ والخطط الاستثمارية',
+        entityId: String(entityId),
+        details,
+        ip
+      });
     } catch (e) {
       logWarn('ProjectPortfolioEngine', `Audit log failed: ${e.message}`);
     }
@@ -147,11 +132,11 @@ class ProjectPortfolioEngineService {
       list.sort((a, b) => new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0));
     }
 
-    return list;
+    return list || [];
   }
 
   /**
-   * استرجاع محفظة مفردة مع قائمة المشاريع المرتبطة بها
+   * استرجاع محفظة مفردة مع المشاريع بنمط الاستعلام الدفعي السريع (Batch Loading)
    */
   async getPortfolioById(portfolioId) {
     if (!portfolioId) return null;
@@ -170,28 +155,31 @@ class ProjectPortfolioEngineService {
     let projectIds = [];
     if (isPostgresActive()) {
       const rows = await dbQuery('SELECT project_id FROM public.project_portfolio_projects WHERE portfolio_id = $1', [actualId]);
-      projectIds = rows.map(r => r.project_id);
+      projectIds = (rows || []).map(r => r.project_id);
     } else {
       const relations = (memDb.project_portfolio_projects || []).filter(r => r.portfolio_id === actualId || r.portfolioId === actualId);
       projectIds = relations.map(r => r.project_id || r.projectId);
     }
 
-    // جلب بيانات المشاريع من PROJECTS_ENGINE دون تكرار أو استنساخ
-    const projects = [];
-    for (const pId of projectIds) {
-      const p = await projectsEngineService.getProjectById(pId);
-      if (p) projects.push(p);
+    // جلب بيانات المشاريع دفعة واحدة دون استعلامات متداخلة N+1
+    let projects = [];
+    if (projectIds.length > 0) {
+      if (isPostgresActive()) {
+        projects = await dbQuery('SELECT * FROM public.projects WHERE id = ANY($1)', [projectIds]);
+      } else {
+        projects = (memDb.projects || []).filter(p => projectIds.includes(p.id) || projectIds.includes(p.project_number));
+      }
     }
 
     return {
       ...portfolio,
-      projectCount: projects.length,
-      projects
+      projectCount: (projects || []).length,
+      projects: projects || []
     };
   }
 
   /**
-   * تعديل محفظة
+   * تعديل محفظة مع تنظيف الحقول الافتراضية لمنع تلوث الذاكرة
    */
   async updatePortfolio(portfolioId, updates, user = null) {
     const existing = await this.getPortfolioById(portfolioId);
@@ -199,12 +187,17 @@ class ProjectPortfolioEngineService {
       throw new Error(`المحفظة [${portfolioId}] غير موجودة.`);
     }
 
+    const actualId = existing.id;
     const updated = {
       ...existing,
       ...updates,
       updated_by: user?.id || 'SYSTEM',
       updated_at: new Date().toISOString()
     };
+
+    // تجريد الحقول المشتقة لمنع تلوث الجداول
+    delete updated.projects;
+    delete updated.projectCount;
 
     if (isPostgresActive()) {
       await dbRun(`
@@ -218,22 +211,22 @@ class ProjectPortfolioEngineService {
         updated.directorate_id || updated.directorateId,
         updated.department_id || updated.departmentId,
         user?.id || 'SYSTEM',
-        existing.id
+        actualId
       ]);
     } else {
-      const idx = (memDb.project_portfolios || []).findIndex(p => p.id === existing.id);
+      const idx = (memDb.project_portfolios || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.project_portfolios[idx] = { ...memDb.project_portfolios[idx], ...updated };
         saveMemTable('project_portfolios');
       }
     }
 
-    await this._recordAudit(user?.id, existing.id, 'PORTFOLIO_UPDATED', existing, updated);
+    await this._recordAudit(user?.id, actualId, 'PORTFOLIO_UPDATED', existing, updated);
     return updated;
   }
 
   /**
-   * حذف محفظة (حذف آمن: ينظف العلاقات فقط دون حذف المشاريع)
+   * حذف محفظة (حذف آمن ينظف العلاقات فقط دون المساس بالمشاريع)
    */
   async deletePortfolio(portfolioId, user = null) {
     const existing = await this.getPortfolioById(portfolioId);
@@ -261,13 +254,12 @@ class ProjectPortfolioEngineService {
   }
 
   /**
-   * ربط مشروع بمحفظة
+   * ربط مشروع بمحفظة بطريقة ذرية تمنع التكرار
    */
   async addProjectToPortfolio(portfolioId, projectId, user = null) {
     const portfolio = await this.getPortfolioById(portfolioId);
     if (!portfolio) throw new Error(`المحفظة [${portfolioId}] غير موجودة.`);
 
-    // التحقق من وجود المشروع عبر PROJECTS_ENGINE
     const project = await projectsEngineService.getProjectById(projectId);
     if (!project) throw new Error(`المشروع الهندسي [${projectId}] غير موجود في قاعدة المشاريع.`);
 
@@ -277,10 +269,13 @@ class ProjectPortfolioEngineService {
     // فحص منع التكرار
     let alreadyExists = false;
     if (isPostgresActive()) {
-      const existingRel = await dbGet('SELECT * FROM public.project_portfolio_projects WHERE portfolio_id = $1 AND project_id = $2', [actualPortfolioId, actualProjectId]);
-      alreadyExists = !!existingRel;
+      const existingRel = await dbGet('SELECT 1 FROM public.project_portfolio_projects WHERE portfolio_id = $1 AND project_id = $2', [actualPortfolioId, actualProjectId]);
+      alreadyExists = Boolean(existingRel);
     } else {
-      alreadyExists = (memDb.project_portfolio_projects || []).some(r => (r.portfolio_id === actualPortfolioId || r.portfolioId === actualPortfolioId) && (r.project_id === actualProjectId || r.projectId === actualProjectId));
+      alreadyExists = (memDb.project_portfolio_projects || []).some(r => 
+        (r.portfolio_id === actualPortfolioId || r.portfolioId === actualPortfolioId) && 
+        (r.project_id === actualProjectId || r.projectId === actualProjectId)
+      );
     }
 
     if (alreadyExists) {
@@ -295,7 +290,11 @@ class ProjectPortfolioEngineService {
     };
 
     if (isPostgresActive()) {
-      await dbRun('INSERT INTO public.project_portfolio_projects (id, portfolio_id, project_id, created_at) VALUES ($1, $2, $3, $4)', Object.values(relRecord));
+      await dbRun(`
+        INSERT INTO public.project_portfolio_projects (id, portfolio_id, project_id, created_at)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (portfolio_id, project_id) DO NOTHING
+      `, Object.values(relRecord));
     } else {
       if (!memDb.project_portfolio_projects) memDb.project_portfolio_projects = [];
       memDb.project_portfolio_projects.push(relRecord);
@@ -307,23 +306,29 @@ class ProjectPortfolioEngineService {
   }
 
   /**
-   * فك ارتباط مشروع من محفظة
+   * فك ارتباط مشروع من محفظة مع توحيد مطابقة المفاتيح
    */
   async removeProjectFromPortfolio(portfolioId, projectId, user = null) {
     const portfolio = await this.getPortfolioById(portfolioId);
     if (!portfolio) throw new Error(`المحفظة [${portfolioId}] غير موجودة.`);
 
+    const project = await projectsEngineService.getProjectById(projectId);
     const actualPortfolioId = portfolio.id;
+    const actualProjectId = project ? project.id : projectId;
+
     if (isPostgresActive()) {
-      await dbRun('DELETE FROM public.project_portfolio_projects WHERE portfolio_id = $1 AND (project_id = $2 OR project_id IN (SELECT id FROM public.projects WHERE project_number = $2))', [actualPortfolioId, projectId]);
+      await dbRun('DELETE FROM public.project_portfolio_projects WHERE portfolio_id = $1 AND project_id = $2', [actualPortfolioId, actualProjectId]);
     } else {
       if (memDb.project_portfolio_projects) {
-        memDb.project_portfolio_projects = memDb.project_portfolio_projects.filter(r => !( (r.portfolio_id === actualPortfolioId || r.portfolioId === actualPortfolioId) && (r.project_id === projectId || r.projectId === projectId) ));
+        memDb.project_portfolio_projects = memDb.project_portfolio_projects.filter(r => 
+          !( (r.portfolio_id === actualPortfolioId || r.portfolioId === actualPortfolioId) && 
+             (r.project_id === actualProjectId || r.projectId === actualProjectId) )
+        );
         saveMemTable('project_portfolio_projects');
       }
     }
 
-    await this._recordAudit(user?.id, actualPortfolioId, 'PROJECT_REMOVED_FROM_PORTFOLIO', { portfolioId: actualPortfolioId, projectId }, null);
+    await this._recordAudit(user?.id, actualPortfolioId, 'PROJECT_REMOVED_FROM_PORTFOLIO', { portfolioId: actualPortfolioId, projectId: actualProjectId }, null);
     return { success: true, message: 'تمت إزالة المشروع من المحفظة بنجاح.' };
   }
 
@@ -421,11 +426,11 @@ class ProjectPortfolioEngineService {
       list.sort((a, b) => new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0));
     }
 
-    return list;
+    return list || [];
   }
 
   /**
-   * استرجاع تفاصيل خطة مفردة مع المشاريع المبرمجة فيها
+   * استرجاع تفاصيل خطة مفردة بنمط الاستعلام الدفعي
    */
   async getPlanById(planId) {
     if (!planId) return null;
@@ -444,28 +449,31 @@ class ProjectPortfolioEngineService {
     let projectIds = [];
     if (isPostgresActive()) {
       const rows = await dbQuery('SELECT project_id FROM public.project_plan_projects WHERE plan_id = $1', [actualId]);
-      projectIds = rows.map(r => r.project_id);
+      projectIds = (rows || []).map(r => r.project_id);
     } else {
       const relations = (memDb.project_plan_projects || []).filter(r => r.plan_id === actualId || r.planId === actualId);
       projectIds = relations.map(r => r.project_id || r.projectId);
     }
 
-    // جلب بيانات المشاريع من PROJECTS_ENGINE
-    const projects = [];
-    for (const pId of projectIds) {
-      const p = await projectsEngineService.getProjectById(pId);
-      if (p) projects.push(p);
+    // جلب بيانات المشاريع دفعة واحدة
+    let projects = [];
+    if (projectIds.length > 0) {
+      if (isPostgresActive()) {
+        projects = await dbQuery('SELECT * FROM public.projects WHERE id = ANY($1)', [projectIds]);
+      } else {
+        projects = (memDb.projects || []).filter(p => projectIds.includes(p.id) || projectIds.includes(p.project_number));
+      }
     }
 
     return {
       ...plan,
-      projectCount: projects.length,
-      projects
+      projectCount: (projects || []).length,
+      projects: projects || []
     };
   }
 
   /**
-   * تعديل خطة هندسية
+   * تعديل خطة هندسية وتجريد الحقول المشتقة
    */
   async updatePlan(planId, updates, user = null) {
     const existing = await this.getPlanById(planId);
@@ -473,12 +481,16 @@ class ProjectPortfolioEngineService {
       throw new Error(`الخطة [${planId}] غير موجودة.`);
     }
 
+    const actualId = existing.id;
     const updated = {
       ...existing,
       ...updates,
       updated_by: user?.id || 'SYSTEM',
       updated_at: new Date().toISOString()
     };
+
+    delete updated.projects;
+    delete updated.projectCount;
 
     if (isPostgresActive()) {
       await dbRun(`
@@ -497,22 +509,22 @@ class ProjectPortfolioEngineService {
         updated.directorate_id || updated.directorateId,
         updated.department_id || updated.departmentId,
         user?.id || 'SYSTEM',
-        existing.id
+        actualId
       ]);
     } else {
-      const idx = (memDb.project_plans || []).findIndex(p => p.id === existing.id);
+      const idx = (memDb.project_plans || []).findIndex(p => p.id === actualId);
       if (idx !== -1) {
         memDb.project_plans[idx] = { ...memDb.project_plans[idx], ...updated };
         saveMemTable('project_plans');
       }
     }
 
-    await this._recordAudit(user?.id, existing.id, 'PLAN_UPDATED', existing, updated);
+    await this._recordAudit(user?.id, actualId, 'PLAN_UPDATED', existing, updated);
     return updated;
   }
 
   /**
-   * حذف خطة (حذف آمن: ينظف علاقات الخطة فقط دون حذف المشاريع)
+   * حذف خطة وتنظيف العلاقات
    */
   async deletePlan(planId, user = null) {
     const existing = await this.getPlanById(planId);
@@ -540,7 +552,7 @@ class ProjectPortfolioEngineService {
   }
 
   /**
-   * إضافة مشروع إلى خطة
+   * إضافة مشروع إلى خطة بطريقة ذرية
    */
   async addProjectToPlan(planId, projectId, user = null) {
     const plan = await this.getPlanById(planId);
@@ -552,13 +564,15 @@ class ProjectPortfolioEngineService {
     const actualPlanId = plan.id;
     const actualProjectId = project.id;
 
-    // فحص منع التكرار
     let alreadyExists = false;
     if (isPostgresActive()) {
-      const existingRel = await dbGet('SELECT * FROM public.project_plan_projects WHERE plan_id = $1 AND project_id = $2', [actualPlanId, actualProjectId]);
-      alreadyExists = !!existingRel;
+      const existingRel = await dbGet('SELECT 1 FROM public.project_plan_projects WHERE plan_id = $1 AND project_id = $2', [actualPlanId, actualProjectId]);
+      alreadyExists = Boolean(existingRel);
     } else {
-      alreadyExists = (memDb.project_plan_projects || []).some(r => (r.plan_id === actualPlanId || r.planId === actualPlanId) && (r.project_id === actualProjectId || r.projectId === actualProjectId));
+      alreadyExists = (memDb.project_plan_projects || []).some(r => 
+        (r.plan_id === actualPlanId || r.planId === actualPlanId) && 
+        (r.project_id === actualProjectId || r.projectId === actualProjectId)
+      );
     }
 
     if (alreadyExists) {
@@ -573,7 +587,11 @@ class ProjectPortfolioEngineService {
     };
 
     if (isPostgresActive()) {
-      await dbRun('INSERT INTO public.project_plan_projects (id, plan_id, project_id, created_at) VALUES ($1, $2, $3, $4)', Object.values(relRecord));
+      await dbRun(`
+        INSERT INTO public.project_plan_projects (id, plan_id, project_id, created_at)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (plan_id, project_id) DO NOTHING
+      `, Object.values(relRecord));
     } else {
       if (!memDb.project_plan_projects) memDb.project_plan_projects = [];
       memDb.project_plan_projects.push(relRecord);
@@ -591,22 +609,28 @@ class ProjectPortfolioEngineService {
     const plan = await this.getPlanById(planId);
     if (!plan) throw new Error(`الخطة [${planId}] غير موجودة.`);
 
+    const project = await projectsEngineService.getProjectById(projectId);
     const actualPlanId = plan.id;
+    const actualProjectId = project ? project.id : projectId;
+
     if (isPostgresActive()) {
-      await dbRun('DELETE FROM public.project_plan_projects WHERE plan_id = $1 AND (project_id = $2 OR project_id IN (SELECT id FROM public.projects WHERE project_number = $2))', [actualPlanId, projectId]);
+      await dbRun('DELETE FROM public.project_plan_projects WHERE plan_id = $1 AND project_id = $2', [actualPlanId, actualProjectId]);
     } else {
       if (memDb.project_plan_projects) {
-        memDb.project_plan_projects = memDb.project_plan_projects.filter(r => !( (r.plan_id === actualPlanId || r.planId === actualPlanId) && (r.project_id === projectId || r.projectId === projectId) ));
+        memDb.project_plan_projects = memDb.project_plan_projects.filter(r => 
+          !( (r.plan_id === actualPlanId || r.planId === actualPlanId) && 
+             (r.project_id === actualProjectId || r.projectId === actualProjectId) )
+        );
         saveMemTable('project_plan_projects');
       }
     }
 
-    await this._recordAudit(user?.id, actualPlanId, 'PROJECT_REMOVED_FROM_PLAN', { planId: actualPlanId, projectId }, null);
+    await this._recordAudit(user?.id, actualPlanId, 'PROJECT_REMOVED_FROM_PLAN', { planId: actualPlanId, projectId: actualProjectId }, null);
     return { success: true, message: 'تمت إزالة المشروع من الخطة بنجاح.' };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 3️⃣ مؤشرات الأداء الكلية للمحافظ والمشاريع (Integrated Portfolio KPIs — Phase 04-F)
+  // 3️⃣ مؤشرات الأداء الكلية للمحافظ والخطط (Integrated KPIs)
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
@@ -620,35 +644,51 @@ class ProjectPortfolioEngineService {
     let totalBudget = 0;
     let totalActualCost = 0;
     let totalProgressSum = 0;
-    const statusCounts = { DRAFT: 0, SUBMITTED: 0, UNDER_REVIEW: 0, APPROVED: 0, IN_PROGRESS: 0, SUSPENDED: 0, COMPLETED: 0, CLOSED: 0, CANCELLED: 0 };
+    let activeProjectsCount = 0;
+
+    const statusCounts = { 
+      DRAFT: 0, SUBMITTED: 0, UNDER_REVIEW: 0, APPROVED: 0, 
+      IN_PROGRESS: 0, SUSPENDED: 0, COMPLETED: 0, CLOSED: 0, CANCELLED: 0 
+    };
 
     allProjects.forEach(p => {
-      totalBudget += parseFloat(p.approved_budget || p.approvedBudget || p.budget_amount || p.budgetAmount || 0);
-      totalActualCost += parseFloat(p.actual_cost || p.actualCost || 0);
-      totalProgressSum += parseFloat(p.physical_progress || p.physicalProgress || p.completion_percentage || 0);
       const st = p.status || 'DRAFT';
       if (statusCounts[st] !== undefined) statusCounts[st]++;
       else statusCounts[st] = 1;
+
+      // استبعاد المشاريع الملغاة من الحسابات المالية التراكمية
+      if (st !== 'CANCELLED') {
+        activeProjectsCount++;
+        totalBudget += parseFloat(p.approved_budget || p.approvedBudget || p.budget_amount || p.budgetAmount || 0);
+        totalActualCost += parseFloat(p.actual_cost || p.actualCost || 0);
+        totalProgressSum += parseFloat(p.physical_progress || p.physicalProgress || p.completion_percentage || 0);
+      }
     });
 
-    const avgProgress = allProjects.length > 0 ? Math.round((totalProgressSum / allProjects.length) * 100) / 100 : 0;
+    const avgProgress = activeProjectsCount > 0 ? Math.round((totalProgressSum / activeProjectsCount) * 100) / 100 : 0;
 
-    // تكامل الأولويات
+    // تكامل الأولويات الرسمي
     let topPrioritized = [];
     try {
       const projectPrioritizationEngineService = require('./projectPrioritizationEngineService');
-      const ranked = await projectPrioritizationEngineService.rankProjects();
-      topPrioritized = (ranked || []).slice(0, 5);
+      if (typeof projectPrioritizationEngineService.rankProjects === 'function') {
+        const ranked = await projectPrioritizationEngineService.rankProjects();
+        topPrioritized = (ranked || []).slice(0, 5);
+      }
     } catch (e) {
       topPrioritized = [];
     }
 
-    // تكامل البرمجة المالية
+    // تكامل البرمجة المالية عبر الاستعلام الحقيقي وليس فحص الجاهزية
     let totalProgrammed = 0;
     try {
-      const projectFinancialProgrammingEngineService = require('./projectFinancialProgrammingEngineService');
-      const finHealth = await projectFinancialProgrammingEngineService.healthCheck();
-      totalProgrammed = finHealth.totalProgrammedAmount || 0;
+      if (isPostgresActive()) {
+        const finRes = await dbGet("SELECT COALESCE(SUM(programmed_amount), 0) as total FROM public.project_financial_programs WHERE status != 'CANCELLED'");
+        totalProgrammed = parseFloat(finRes?.total || 0);
+      } else {
+        const progs = (memDb.project_financial_programs || []).filter(p => p.status !== 'CANCELLED');
+        totalProgrammed = progs.reduce((sum, p) => sum + parseFloat(p.programmed_amount || p.programmedAmount || 0), 0);
+      }
     } catch (e) {
       totalProgrammed = 0;
     }
@@ -658,21 +698,28 @@ class ProjectPortfolioEngineService {
     let conflictsCount = 0;
     try {
       const projectSchedulingEngineService = require('./projectSchedulingEngineService');
-      const critRes = await projectSchedulingEngineService.getCriticalPath();
-      criticalPathCount = critRes.totalCritical || 0;
-      const confRes = await projectSchedulingEngineService.detectScheduleConflicts();
-      conflictsCount = confRes.conflictsCount || 0;
+      if (typeof projectSchedulingEngineService.getCriticalPath === 'function') {
+        const critRes = await projectSchedulingEngineService.getCriticalPath();
+        criticalPathCount = critRes.totalCritical || 0;
+      }
+      if (typeof projectSchedulingEngineService.detectScheduleConflicts === 'function') {
+        const confRes = await projectSchedulingEngineService.detectScheduleConflicts();
+        conflictsCount = confRes.conflictsCount || 0;
+      }
     } catch (e) {
       criticalPathCount = 0;
       conflictsCount = 0;
     }
 
-    // تكامل الاعتماديات
+    // تكامل الاعتماديات عبر الاستعلام المباشر
     let dependenciesCount = 0;
     try {
-      const projectDependencyEngineService = require('./projectDependencyEngineService');
-      const depHealth = await projectDependencyEngineService.healthCheck();
-      dependenciesCount = depHealth.activeDependencies || depHealth.totalDependencies || 0;
+      if (isPostgresActive()) {
+        const depRes = await dbGet("SELECT COUNT(*) as active FROM public.project_dependencies WHERE status = 'ACTIVE'");
+        dependenciesCount = parseInt(depRes?.active || 0, 10);
+      } else {
+        dependenciesCount = (memDb.project_dependencies || []).filter(d => d.status === 'ACTIVE').length;
+      }
     } catch (e) {
       dependenciesCount = 0;
     }
@@ -684,6 +731,7 @@ class ProjectPortfolioEngineService {
         totalPlans: plans.length,
         activePlans: plans.filter(p => p.status === 'ACTIVE' || p.status === 'APPROVED').length,
         totalProjects: allProjects.length,
+        activeProjectsCount,
         averagePhysicalProgress: avgProgress
       },
       financialKPIs: {
@@ -706,7 +754,7 @@ class ProjectPortfolioEngineService {
   }
 
   /**
-   * استرجاع مؤشرات الأداء لمحفظة محددة
+   * استرجاع مؤشرات الأداء لمحفظة محددة مع استبعاد المشاريع الملغاة
    */
   async getPortfolioKPIs(portfolioId) {
     const portfolio = await this.getPortfolioById(portfolioId);
@@ -716,14 +764,18 @@ class ProjectPortfolioEngineService {
     let portfolioBudget = 0;
     let portfolioActualCost = 0;
     let progressSum = 0;
+    let activeProjects = 0;
 
     projects.forEach(p => {
-      portfolioBudget += parseFloat(p.approved_budget || p.approvedBudget || p.budget_amount || p.budgetAmount || 0);
-      portfolioActualCost += parseFloat(p.actual_cost || p.actualCost || 0);
-      progressSum += parseFloat(p.physical_progress || p.physicalProgress || p.completion_percentage || 0);
+      if (p.status !== 'CANCELLED') {
+        activeProjects++;
+        portfolioBudget += parseFloat(p.approved_budget || p.approvedBudget || p.budget_amount || p.budgetAmount || 0);
+        portfolioActualCost += parseFloat(p.actual_cost || p.actualCost || 0);
+        progressSum += parseFloat(p.physical_progress || p.physicalProgress || p.completion_percentage || 0);
+      }
     });
 
-    const avgProgress = projects.length > 0 ? Math.round((progressSum / projects.length) * 100) / 100 : 0;
+    const avgProgress = activeProjects > 0 ? Math.round((progressSum / activeProjects) * 100) / 100 : 0;
 
     return {
       portfolioId: portfolio.id,
@@ -731,6 +783,7 @@ class ProjectPortfolioEngineService {
       portfolioName: portfolio.name,
       status: portfolio.status,
       projectsCount: projects.length,
+      activeProjectsCount: activeProjects,
       totalBudget: Math.round(portfolioBudget * 100) / 100,
       totalActualCost: Math.round(portfolioActualCost * 100) / 100,
       averageProgress: avgProgress,
@@ -780,5 +833,4 @@ class ProjectPortfolioEngineService {
   }
 }
 
-const projectPortfolioEngineService = new ProjectPortfolioEngineService();
-module.exports = projectPortfolioEngineService;
+module.exports = new ProjectPortfolioEngineService();

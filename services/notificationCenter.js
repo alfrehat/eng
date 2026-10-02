@@ -1,18 +1,48 @@
 /**
  * services/notificationCenter.js
  * مركز الإشعارات الفوري متعدد القنوات (Event-Driven Notification Center)
- * يضمن تشغيل مهام الإرسال الخارجي والشبكي بشكل غير متزامن تماماً لعزلها عن المسار الرئيسي للاستجابة.
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
+ * v2.0 - Anti-Gravity Enterprise Notification Patch
  */
+
+'use strict';
 
 const EventEmitter = require('events');
 const fs = require('fs');
 const path = require('path');
+const { logInfo, logWarn, logError } = require('./loggerService');
+const notificationChannels = require('../config/notificationChannels');
 
 class NotificationCenter extends EventEmitter {
   constructor() {
     super();
+    this.engineId = 'NOTIFICATION_ENGINE';
+    this.engineName = 'Enterprise Event-Driven Notification Center';
+    this.version = '2.0.0';
+    this.category = 'CORE_SERVICE';
+    this.status = 'READY';
+    this.capabilities = [
+      'event_dispatch',
+      'user_notifications',
+      'role_broadcast',
+      'async_channel_dispatch',
+      'persistent_audit_logging'
+    ];
+
+    this.logDir = path.join(process.cwd(), 'logs');
+    this._ensureLogDirectory();
     this.registerDefaultListeners();
     this.registerAdditionalListeners();
+  }
+
+  _ensureLogDirectory() {
+    try {
+      if (!fs.existsSync(this.logDir)) {
+        fs.mkdirSync(this.logDir, { recursive: true });
+      }
+    } catch (e) {
+      console.error('Failed to create logs directory:', e.message);
+    }
   }
 
   registerDefaultListeners() {
@@ -49,9 +79,8 @@ class NotificationCenter extends EventEmitter {
     );
   }
 
-  // Additional listeners for GIS and field task events
   registerAdditionalListeners() {
-    // 5. فشل فحص ميداني (Inspection Failure)
+    // 5. فشل فحص ميداني
     this.on('INSPECTION_FAILED', (data) =>
       this.dispatchAsync('INSPECTION_FAILED', data, async (payload) => {
         await this.sendInternalAlert(`🚨 فشل فحص ميداني: ${payload.issue} على الطريق ${payload.roadId}`, payload);
@@ -59,7 +88,7 @@ class NotificationCenter extends EventEmitter {
       })
     );
 
-    // 6. مشكلة جودة الطريق (Road Quality Issue)
+    // 6. مشكلة جودة الطريق
     this.on('ROAD_QUALITY_ISSUE', (data) =>
       this.dispatchAsync('ROAD_QUALITY_ISSUE', data, async (payload) => {
         await this.sendInternalAlert(`⚠️ مشكلة جودة طريق: ${payload.description} على الطريق ${payload.roadId}`, payload);
@@ -67,7 +96,7 @@ class NotificationCenter extends EventEmitter {
       })
     );
 
-    // 7. إنشاء مهمة ميدانية جديدة (Field Task Created)
+    // 7. إنشاء مهمة ميدانية جديدة
     this.on('FIELD_TASK_CREATED', (data) =>
       this.dispatchAsync('FIELD_TASK_CREATED', data, async (payload) => {
         await this.sendInternalAlert(`✅ تم إنشاء مهمة ميدانية: ${payload.taskId}`, payload);
@@ -77,43 +106,40 @@ class NotificationCenter extends EventEmitter {
   }
 
   /**
-   * تشغيل مهمة المعالجة غير المتزامنة لعزل قنوات الإرسال الخارجية عن مسار خادم الويب
+   * تشغيل مهمة المعالجة غير المتزامنة لعزل قنوات الإرسال الخارجية عن مسار الخادم
    */
   dispatchAsync(eventName, payload, actionFn) {
     setImmediate(async () => {
       try {
-        console.log(`✉️ [Notification Center] Processing channel dispatch for event: ${eventName}`);
+        logInfo('NotificationCenter', `Processing channel dispatch for event: ${eventName}`);
         await actionFn(payload);
       } catch (err) {
-        this.logNotificationError(`Error dispatching event ${eventName}`, err);
+        await this.logNotificationError(`Error dispatching event ${eventName}`, err);
       }
     });
   }
 
-  // --- قنوات الإرسال المخصصة (Stub Dispatchers) ---
-
-  /**
-   * ربط مركز الإشعارات بمحرك البث الحي والإشعارات بالسيرفر
-   */
   setSystemNotifier(sendNotificationFn, broadcastEventFn) {
     this._sendNotification = sendNotificationFn;
     this._broadcastEvent = broadcastEventFn;
   }
 
   async sendInternalAlert(message, payload = {}) {
-    console.log(`🔔 [Internal Alert] ${message}`);
-    this.appendNotificationLog(`[INTERNAL ALERT] ${message} | Payload: ${JSON.stringify(payload)}`);
+    logInfo('NotificationCenter', `[Internal Alert] ${message}`);
+    await this.appendNotificationLog(`[INTERNAL ALERT] ${message} | Payload: ${JSON.stringify(payload)}`);
     
     if (typeof this._sendNotification === 'function') {
       try {
-        this._sendNotification({
+        await this._sendNotification({
           userId: payload.userId || 'all',
           title: payload.title || 'تنبيه نظام هندسي',
           message: message,
           link: payload.link || '',
           type: payload.type || 'warning'
         });
-      } catch (e) {}
+      } catch (e) {
+        logError('NotificationCenter', `Failed in _sendNotification callback: ${e.message}`);
+      }
     }
   }
 
@@ -122,42 +148,53 @@ class NotificationCenter extends EventEmitter {
   }
 
   async sendEmailSkeleton(to, subject, body) {
-    console.log(`📧 [Email Outbox] Sending to: ${to} | Subject: ${subject}`);
-    this.appendNotificationLog(`[EMAIL] To: ${to} | Subject: ${subject} | Body: ${body}`);
+    logInfo('NotificationCenter', `[Email Outbox] Sending to: ${to} | Subject: ${subject}`);
+    await this.appendNotificationLog(`[EMAIL] To: ${to} | Subject: ${subject} | Body: ${body}`);
   }
 
   async sendSmsSkeleton(phoneNumber, text) {
-    console.log(`📱 [SMS/WhatsApp Webhook] Sending to: ${phoneNumber} | Content: ${text}`);
-    this.appendNotificationLog(`[SMS] To: ${phoneNumber} | Content: ${text}`);
+    logInfo('NotificationCenter', `[SMS/WhatsApp] Sending to: ${phoneNumber} | Content: ${text}`);
+    await this.appendNotificationLog(`[SMS] To: ${phoneNumber} | Content: ${text}`);
   }
 
-  // --- دوال المساعدة وحفظ السجلات ---
-
-  appendNotificationLog(logLine) {
+  async appendNotificationLog(logLine) {
     try {
-      const logDir = path.join(__dirname, '..', 'logs');
-      if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-      const logPath = path.join(logDir, 'notifications.log');
+      const logPath = path.join(this.logDir, 'notifications.log');
       const timestamp = new Date().toISOString();
-      fs.appendFileSync(logPath, `[${timestamp}] ${logLine}\n`);
+      await fs.promises.appendFile(logPath, `[${timestamp}] ${logLine}\n`, 'utf-8');
     } catch (e) {
       console.error('Failed to write notification log:', e.message);
     }
   }
 
-  logNotificationError(message, err) {
+  async logNotificationError(message, err) {
     try {
-      const logDir = path.join(__dirname, '..', 'logs');
-      if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-      const logPath = path.join(logDir, 'migration.log');
+      const logPath = path.join(this.logDir, 'migration.log');
       const timestamp = new Date().toISOString();
-      fs.appendFileSync(logPath, `[${timestamp}] [NOTIFICATION ERROR] ${message} | Error: ${err.message}\n${err.stack}\n`);
+      const errorDump = `[${timestamp}] [NOTIFICATION ERROR] ${message} | Error: ${err.message}\n${err.stack}\n`;
+      await fs.promises.appendFile(logPath, errorDump, 'utf-8');
+      logError('NotificationCenter', message);
     } catch (e) {
       console.error('Failed to log notification error:', e.message);
     }
   }
+
+  getSupportedChannels() {
+    return notificationChannels.getAvailableChannels();
+  }
+
+  isChannelSupported(channel) {
+    return notificationChannels.isChannelSupported(channel);
+  }
+
+  async healthCheck() {
+    return {
+      healthy: true,
+      status: 'READY',
+      engineId: this.engineId,
+      timestamp: new Date().toISOString()
+    };
+  }
 }
 
-// تصدير كائن مركز الإشعارات الفردي (Singleton Pattern)
 module.exports = new NotificationCenter();
-

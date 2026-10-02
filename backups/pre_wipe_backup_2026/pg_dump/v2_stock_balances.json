@@ -1,0 +1,32 @@
+[
+  {
+    "balance_id": "4e832b1b-0e0d-4a5b-b6d9-010f40f510a0",
+    "item_code": "BITUM-EMULS-01",
+    "item_description": "مادة لاصقة RC2 براميل",
+    "location": "المستودع المركزي",
+    "received_quantity": "20.000",
+    "issued_quantity": "0.000",
+    "available_quantity": "20.000",
+    "last_updated": "2026-09-05T13:45:38.278Z"
+  },
+  {
+    "balance_id": "499da5f5-30d4-4c56-9b84-7d078e62a376",
+    "item_code": "ASPH-COLD-01",
+    "item_description": "خلطة إسفلتية باردة معبأة بأكياس",
+    "location": "المستودع المركزي",
+    "received_quantity": "50.000",
+    "issued_quantity": "15.000",
+    "available_quantity": "35.000",
+    "last_updated": "2026-09-05T13:45:38.310Z"
+  },
+  {
+    "balance_id": "9b330469-dd71-4785-ae7e-e3bffd22d64a",
+    "item_code": "PIPE-CONC-600",
+    "item_description": "مواسير خرسانية مسلحة 600 ملم",
+    "location": "موقع المشروع - كفرنجة",
+    "received_quantity": "100.000",
+    "issued_quantity": "100.000",
+    "available_quantity": "0.000",
+    "last_updated": "2026-09-05T13:45:38.485Z"
+  }
+]

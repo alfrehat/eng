@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "portfolio_name": "خطة مشاريع البنية التحتية السنوية لعام 2026",
+    "description": null,
+    "fiscal_year": 2026,
+    "owner": "DIRECTOR_ENGINEERING",
+    "status": "ACTIVE",
+    "created_at": "2026-09-04T17:07:17.566Z",
+    "version": 1,
+    "created_by": "SYSTEM"
+  },
+  {
+    "id": 2,
+    "portfolio_name": "خطة مشاريع البنية التحتية السنوية لعام 2026",
+    "description": null,
+    "fiscal_year": 2026,
+    "owner": "DIRECTOR_ENGINEERING",
+    "status": "ACTIVE",
+    "created_at": "2026-09-04T17:07:30.875Z",
+    "version": 1,
+    "created_by": "SYSTEM"
+  },
+  {
+    "id": 3,
+    "portfolio_name": "خطة مشاريع البنية التحتية السنوية لعام 2026",
+    "description": null,
+    "fiscal_year": 2026,
+    "owner": "DIRECTOR_ENGINEERING",
+    "status": "ACTIVE",
+    "created_at": "2026-09-04T17:07:37.915Z",
+    "version": 1,
+    "created_by": "SYSTEM"
+  }
+]

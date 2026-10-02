@@ -1,0 +1,40 @@
+[
+  {
+    "issue_id": "2ab2abd0-08d4-4e33-98a7-17637bc66542",
+    "issue_number": "ISS-2026-0001",
+    "issue_date": "2026-09-05T13:45:38.306Z",
+    "recipient_type": "PROJECT",
+    "recipient_id": "PROJ_KAFR_2026_01",
+    "purpose": "صرف 15 طن خلطة إسفلتية لورشة ترقيعات طريق عجلون-كفرنجة",
+    "issued_by": "أمين المستودع المركزي",
+    "received_by": "مراقب الورش الميدانية",
+    "status": "ISSUED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "warehouse_officer",
+    "created_at": "2026-09-05T13:45:38.306Z",
+    "updated_by": "warehouse_officer",
+    "updated_at": "2026-09-05T13:45:38.307Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "issue_id": "79801ea2-7ba1-4159-9725-55025f32f354",
+    "issue_number": "ISS-2026-0002",
+    "issue_date": "2026-09-05T13:45:38.481Z",
+    "recipient_type": "PROJECT",
+    "recipient_id": "PROJ_KAFR_2026_01",
+    "purpose": "تسليم المواسير لمهندس الموقع للتركيب المباشر في الخندق",
+    "issued_by": "أمين المستودع",
+    "received_by": "مهندس الموقع الإنشائي",
+    "status": "ISSUED",
+    "remarks": null,
+    "metadata": {},
+    "created_by": "storekeeper",
+    "created_at": "2026-09-05T13:45:38.481Z",
+    "updated_by": "storekeeper",
+    "updated_at": "2026-09-05T13:45:38.481Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "criterion_id": "crit_inv_1",
+    "criterion_code": "InvestmentValue",
+    "name_ar": "القيمة الاستثمارية للمشروع",
+    "category": "FINANCIAL",
+    "weight": "15.00",
+    "max_score": 100,
+    "description": "حجم رأس المال الموظف في المشروع الاستثماري",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_2",
+    "criterion_code": "EconomicImpact",
+    "name_ar": "الأثر الاقتصادي المحلي",
+    "category": "ECONOMIC",
+    "weight": "15.00",
+    "max_score": 100,
+    "description": "تنشيط الحركة التجارية والاقتصادية في بلدية كفرنجة",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_3",
+    "criterion_code": "CommunityImpact",
+    "name_ar": "الأثر المجتمعي والخدمي",
+    "category": "COMMUNITY",
+    "weight": "10.00",
+    "max_score": 100,
+    "description": "الخدمات المباشرة والمنافع العائدة على أبناء المجتمع المحلي",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_4",
+    "criterion_code": "FinancialReturn",
+    "name_ar": "العائد المالي للبلدية",
+    "category": "FINANCIAL",
+    "weight": "15.00",
+    "max_score": 100,
+    "description": "نسبة وحجم الإيرادات السنوية وحصة البلدية من الأرباح",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_5",
+    "criterion_code": "StrategicAlignment",
+    "name_ar": "المواءمة الاستراتيجية",
+    "category": "STRATEGIC",
+    "weight": "10.00",
+    "max_score": 100,
+    "description": "التوافق مع المخطط الشمولي والرؤية التنموية للمديرية",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_6",
+    "criterion_code": "Feasibility",
+    "name_ar": "الجدوى الفنية والتنفيذية",
+    "category": "TECHNICAL",
+    "weight": "10.00",
+    "max_score": 100,
+    "description": "واقعية المخططات والتنفيذ والكفاءة الهندسية للبدائل المطروحة",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_7",
+    "criterion_code": "Risk",
+    "name_ar": "تقييم المخاطر وقدرة التحمل",
+    "category": "RISK",
+    "weight": "10.00",
+    "max_score": 100,
+    "description": "مستوى المخاطر التشغيلية والمالية والضمانات البنكية المقدمة",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_8",
+    "criterion_code": "Sustainability",
+    "name_ar": "الاستدامة والأثر البيئي",
+    "category": "ENVIRONMENTAL",
+    "weight": "5.00",
+    "max_score": 100,
+    "description": "المحافظة على الموارد وكفاءة الطاقة وحماية البيئة الطبيعية",
+    "status": "ACTIVE"
+  },
+  {
+    "criterion_id": "crit_inv_9",
+    "criterion_code": "EmploymentImpact",
+    "name_ar": "أثر تشغيل العمالة المحلية",
+    "category": "SOCIAL",
+    "weight": "10.00",
+    "max_score": 100,
+    "description": "عدد فرص العمل المباشرة وغير المباشرة لأهالي المنطقة",
+    "status": "ACTIVE"
+  }
+]

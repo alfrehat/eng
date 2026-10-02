@@ -1,0 +1,118 @@
+[
+  {
+    "asset_id": "89576268-ba21-442a-b55e-7ad004ddb1fb",
+    "asset_number": "INV-ASSET-2026-0002",
+    "asset_code": "AST-MTOFQZUX",
+    "asset_name": "أرض منتزه تل كفرنجة السياحي",
+    "asset_type": "LAND",
+    "asset_category": "MUNICIPAL_PROPERTY",
+    "description": null,
+    "ownership_status": "MUNICIPALITY_OWNED",
+    "legal_status": "CLEAN_TITLE",
+    "location": "تل كفرنجة الأثري",
+    "gis_feature_id": "GIS-INV-89576268",
+    "area": "5000.00",
+    "built_area": "0.00",
+    "permitted_use": null,
+    "current_use": null,
+    "estimated_market_value": "0.00",
+    "estimated_investment_value": "0.00",
+    "annual_expected_revenue": "0.00",
+    "availability_status": "AVAILABLE",
+    "project_id": null,
+    "metadata": {
+      "wkt": "POLYGON((35.78 32.3, 35.79 32.3, 35.79 32.31, 35.78 32.31, 35.78 32.3))",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              35.78,
+              32.3
+            ],
+            [
+              35.79,
+              32.3
+            ],
+            [
+              35.79,
+              32.31
+            ],
+            [
+              35.78,
+              32.31
+            ],
+            [
+              35.78,
+              32.3
+            ]
+          ]
+        ]
+      }
+    },
+    "created_by": "gis_officer",
+    "created_at": "2026-09-05T13:45:39.849Z",
+    "updated_by": "gis_officer",
+    "updated_at": "2026-09-05T13:45:39.850Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "asset_id": "b7af9ac9-8d4e-40e3-a246-ca06ec4e95dd",
+    "asset_number": "INV-ASSET-2026-0001",
+    "asset_code": "AST-MTOFQZUR",
+    "asset_name": "مجمع أسواق كفرنجة التجاري - الموقع الأوسط",
+    "asset_type": "LAND",
+    "asset_category": "MUNICIPAL_PROPERTY",
+    "description": "قطعة أرض تابعة لبلدية كفرنجة مهيأة لبناء مجمع استثماري تجاري وخدمي",
+    "ownership_status": "MUNICIPALITY_OWNED",
+    "legal_status": "CLEAN_TITLE",
+    "location": "شارع الملك حسين، وسط البلد",
+    "gis_feature_id": null,
+    "area": "2500.00",
+    "built_area": "0.00",
+    "permitted_use": "تجاري متعدد الاستعمالات",
+    "current_use": "ساحة شاغرة",
+    "estimated_market_value": "350000.00",
+    "estimated_investment_value": "800000.00",
+    "annual_expected_revenue": "45000.00",
+    "availability_status": "LEASED",
+    "project_id": null,
+    "metadata": {},
+    "created_by": "inv_manager",
+    "created_at": "2026-09-05T13:45:39.844Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.041Z",
+    "version": 3,
+    "is_deleted": false
+  },
+  {
+    "asset_id": "924b3ab1-689e-4fa0-9216-cf36b75991db",
+    "asset_number": "INV-ASSET-2026-0003",
+    "asset_code": "AST-MTOFR00C",
+    "asset_name": "أرض استثمار محطة وقود وخدمات طريق كفرنجة الرئيسي",
+    "asset_type": "LAND",
+    "asset_category": "MUNICIPAL_PROPERTY",
+    "description": null,
+    "ownership_status": "MUNICIPALITY_OWNED",
+    "legal_status": "CLEAN_TITLE",
+    "location": null,
+    "gis_feature_id": null,
+    "area": "3200.00",
+    "built_area": "0.00",
+    "permitted_use": null,
+    "current_use": null,
+    "estimated_market_value": "0.00",
+    "estimated_investment_value": "400000.00",
+    "annual_expected_revenue": "30000.00",
+    "availability_status": "LEASED",
+    "project_id": null,
+    "metadata": {},
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.044Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.078Z",
+    "version": 2,
+    "is_deleted": false
+  }
+]

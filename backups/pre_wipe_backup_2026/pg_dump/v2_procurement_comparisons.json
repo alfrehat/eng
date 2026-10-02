@@ -1,0 +1,77 @@
+[
+  {
+    "comparison_id": "ecb0b921-196c-46ca-9068-ad1d3da61429",
+    "purchase_request_id": "bd5b517d-5d27-457c-a53d-f6f1af68cc7d",
+    "comparison_date": "2026-09-05T13:45:38.204Z",
+    "conducted_by": "procurement_officer",
+    "criteria": [
+      {
+        "code": "PRICE",
+        "label": "السعر المالي الإجمالي",
+        "weight": 50
+      },
+      {
+        "code": "TECHNICAL",
+        "label": "المطابقة الفنية والمواصفات",
+        "weight": 20
+      },
+      {
+        "code": "DELIVERY",
+        "label": "مدة وشروط التوريد",
+        "weight": 20
+      }
+    ],
+    "weights": {
+      "price": 50,
+      "delivery": 20,
+      "warranty": 10,
+      "technical": 20
+    },
+    "status": "COMPLETED",
+    "remarks": "تمت المقارنة والتقييم الفني والمالي استناداً للمعايير المعتمدة",
+    "metadata": {},
+    "created_by": "procurement_officer",
+    "created_at": "2026-09-05T13:45:38.204Z",
+    "updated_by": "procurement_officer",
+    "updated_at": "2026-09-05T13:45:38.205Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "comparison_id": "c6e1e963-5006-497d-853f-87413f5cfb83",
+    "purchase_request_id": "68d89e8e-6d16-4e2c-8d93-3fd9e009a718",
+    "comparison_date": "2026-09-05T13:45:38.425Z",
+    "conducted_by": "officer",
+    "criteria": [
+      {
+        "code": "PRICE",
+        "label": "السعر المالي الإجمالي",
+        "weight": 50
+      },
+      {
+        "code": "TECHNICAL",
+        "label": "المطابقة الفنية والمواصفات",
+        "weight": 30
+      },
+      {
+        "code": "DELIVERY",
+        "label": "مدة وشروط التوريد",
+        "weight": 20
+      }
+    ],
+    "weights": {
+      "price": 50,
+      "delivery": 20,
+      "technical": 30
+    },
+    "status": "COMPLETED",
+    "remarks": "تمت المقارنة والتقييم الفني والمالي استناداً للمعايير المعتمدة",
+    "metadata": {},
+    "created_by": "officer",
+    "created_at": "2026-09-05T13:45:38.425Z",
+    "updated_by": "officer",
+    "updated_at": "2026-09-05T13:45:38.425Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

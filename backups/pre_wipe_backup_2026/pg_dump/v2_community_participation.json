@@ -1,0 +1,21 @@
+[
+  {
+    "participation_id": "0edd3a5d-926a-499b-9c03-e17c7fbfc0cc",
+    "initiative_id": "8c1eed8f-d162-4958-ad38-b5470dba3b82",
+    "case_id": "f255997d-938a-45f4-b116-ae25279eaef8",
+    "participation_type": "CONSULTATION",
+    "participant": "جمعية البيئة والتنمية المحلية بكفرنجة",
+    "participant_type": "CITIZEN",
+    "contact": null,
+    "participation_date": "2026-09-05T13:45:39.080Z",
+    "response": "تأييد كامل للمشروع مع اقتراح إضافة حاويات فرز نفايات بيئية",
+    "comment": "المشروع يخدم أهداف الاستدامة ويوفر فرص عمل خضراء",
+    "support_level": "STRONG_SUPPORT",
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "citizen_rep",
+    "created_at": "2026-09-05T13:45:39.080Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

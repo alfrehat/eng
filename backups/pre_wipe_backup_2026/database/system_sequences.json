@@ -1,0 +1,68 @@
+[
+  {
+    "seq_key": "documents_2026",
+    "prefix": "AGR",
+    "fiscal_year": 2026,
+    "last_value": 6
+  },
+  {
+    "seq_key": "tasks_2026",
+    "prefix": "TSK",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "general_2026",
+    "prefix": "TEST",
+    "fiscal_year": 2026,
+    "last_value": 7
+  },
+  {
+    "seq_key": "municipal_assets_2026",
+    "prefix": "AST",
+    "fiscal_year": 2026,
+    "last_value": 3
+  },
+  {
+    "seq_key": "roles_2026",
+    "prefix": "R",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "org_units_2026",
+    "prefix": "OU",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "user_org_units_2026",
+    "prefix": "UOU",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "structural_assets_2026",
+    "prefix": "STR",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "infrastructure_networks_2026",
+    "prefix": "INF",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "energy_assets_2026",
+    "prefix": "LGT",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "excavation_permits_2026",
+    "prefix": "PERM",
+    "fiscal_year": 2026,
+    "last_value": 1
+  }
+]

@@ -44,10 +44,16 @@ const checkPerm = (permCode) => (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ success: false, error: 'يرجى تسجيل الدخول أولاً' });
   }
-  if (req.user.role === 'admin' || req.user.id === 'U-001' || req.user.role === 'director_public_works') {
+  const role = String(req.user.role || '').toLowerCase();
+  if (role === 'admin' || role === 'super_admin' || role === 'director_public_works') {
     return next();
   }
-  if (rbacManager.hasPermission(req.user, permCode) || rbacManager.hasPermission(req.user, `OPERATIONS.${permCode.replace('TASKS.', '')}`)) {
+  const altPerm = `OPERATIONS.${permCode.replace('TASKS.', '')}`;
+  if (
+    rbacManager.hasPermission(req.user, permCode) ||
+    rbacManager.hasPermission(req.user, altPerm) ||
+    (permCode === 'TASKS.FILES.UPLOAD' && rbacManager.hasPermission(req.user, 'TASKS.EDIT'))
+  ) {
     return next();
   }
   return res.status(403).json({
@@ -227,7 +233,7 @@ router.delete('/:id', verifyAuth, checkPerm('TASKS.DELETE'), async (req, res) =>
  * 6. التوجيه والإسناد والتفويض والتصعيد والإرجاع الديناميكي
  * POST /api/v4/operations-center/:id/route
  */
-router.post('/:id/route', verifyAuth, async (req, res) => {
+router.post('/:id/route', verifyAuth, checkPerm('TASKS.VIEW'), async (req, res) => {
   try {
     const { action, targetUserId, remarks, plannedDurationHours } = req.body;
     if (!action) return res.status(400).json({ success: false, error: 'نوع الإجراء التوجيهي مطلوب (action)' });
@@ -248,8 +254,14 @@ router.post('/:id/route', verifyAuth, async (req, res) => {
     });
   } catch (err) {
     const errMsg = err.message || '';
+    if (errMsg.includes('غير مصرح') || errMsg.includes('جلسة نشطة')) {
+      return res.status(401).json({ success: false, error: errMsg });
+    }
     if (errMsg.includes('لا يملك صلاحية') || errMsg.includes('فصل المهام') || errMsg.includes('Forbidden')) {
       return res.status(403).json({ success: false, error: errMsg });
+    }
+    if (errMsg.includes('غير موجودة')) {
+      return res.status(404).json({ success: false, error: errMsg });
     }
     res.status(400).json({ success: false, error: errMsg });
   }
@@ -259,7 +271,7 @@ router.post('/:id/route', verifyAuth, async (req, res) => {
  * 6.1 إضافة مشروحة / كشف هندسي / تنسيب رسمي مع رفع ملفات ملحقة
  * POST /api/v4/operations-center/:id/endorsement
  */
-router.post('/:id/endorsement', verifyAuth, upload.array('files', 10), async (req, res) => {
+router.post('/:id/endorsement', verifyAuth, checkPerm('TASKS.EDIT'), upload.array('files', 10), async (req, res) => {
   try {
     const { noteText, recommendation, actionType, targetUserId } = req.body;
     if (!noteText && (!req.files || !req.files.length)) {
@@ -292,7 +304,9 @@ router.post('/:id/endorsement', verifyAuth, upload.array('files', 10), async (re
       data: updated
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    const errMsg = err.message || '';
+    if (errMsg.includes('غير موجود')) return res.status(404).json({ success: false, error: errMsg });
+    res.status(500).json({ success: false, error: errMsg });
   }
 });
 
@@ -300,7 +314,7 @@ router.post('/:id/endorsement', verifyAuth, upload.array('files', 10), async (re
  * 6.2 الاعتماد النهائي وتثبيت المعاملة
  * POST /api/v4/operations-center/:id/finalize
  */
-router.post('/:id/finalize', verifyAuth, async (req, res) => {
+router.post('/:id/finalize', verifyAuth, checkPerm('TASKS.APPROVE'), async (req, res) => {
   try {
     const { decisionText, decisionStatus, executionNotes } = req.body;
     const updated = await workOperationsCenterService.finalizeAndApprove({
@@ -317,7 +331,10 @@ router.post('/:id/finalize', verifyAuth, async (req, res) => {
       data: updated
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    const errMsg = err.message || '';
+    if (errMsg.includes('فصل المهام')) return res.status(403).json({ success: false, error: errMsg });
+    if (errMsg.includes('غير موجود')) return res.status(404).json({ success: false, error: errMsg });
+    res.status(500).json({ success: false, error: errMsg });
   }
 });
 

@@ -19,7 +19,7 @@
   "marginRightMm": 10,
   "watermarkEnabled": true,
   "watermarkType": "logo",
-  "watermarkText": "بلدية كفرنجة الجديدة - وثيقة رسمية معتمدة",
+  "watermarkText": "بلدية كفرنجة الجديدة - وثيقة رسمية معتمدة وموثقة 2026",
   "watermarkOpacity": 0.04,
   "watermarkScale": 280,
   "qrEnabled": true,
@@ -28,5 +28,5 @@
   "showPrintTimestamp": true,
   "showUserName": true,
   "showSecuritySeal": true,
-  "updated_at": "2026-08-29T21:11:13.590Z"
+  "updated_at": "2026-09-12T18:18:15.430Z"
 }

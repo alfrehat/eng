@@ -1,0 +1,12 @@
+[
+  {
+    "response_id": "a29db45a-491b-4bda-8506-d0833bca3f5c",
+    "survey_id": "8a0d328b-3856-44bc-aa30-4208ad142c18",
+    "question_id": "da5c8eb6-df13-4af1-a84b-6031ebe431f9",
+    "participant": "cit_vote_001",
+    "answer_value": "ROADS",
+    "numeric_rating": null,
+    "response_date": "2026-09-05T13:45:39.086Z",
+    "metadata": {}
+  }
+]

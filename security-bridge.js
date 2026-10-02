@@ -1,69 +1,61 @@
 /**
  * security-bridge.js
- * الجسر الأمني لإدارة تشفير كلمات المرور والترقية التلقائية (On-the-fly BCrypt Hashing)
+ * 🛡️ الجسر الأمني لإدارة تشفير كلمات المرور والترقية التلقائية غير التزامنية
+ * بلدية كفرنجة الجديدة - مديرية الأشغال والخدمات الهندسية
+ * v2.0 - Anti-Gravity Async Cryptographic Bridge
  */
+
+'use strict';
 
 const bcrypt = require('bcryptjs');
 
 /**
- * تشفير كلمة المرور النصية باستخدام BCrypt بـ 12 جولة
- * @param {string} password كلمة المرور النصية
- * @returns {string} الهاش المولد
+ * تشفير كلمة المرور النصية بشكل لا تزامني لحماية الـ Event Loop
  */
-function hashPassword(password) {
-  return bcrypt.hashSync(password, 12);
+async function hashPassword(password) {
+  return await bcrypt.hash(password, 10);
 }
 
 /**
- * مقارنة كلمة مرور نصية مع الهاش المشفر
- * @param {string} password كلمة المرور النصية
- * @param {string} hash الهاش المخزن
- * @returns {boolean} النتيجة
+ * مقارنة كلمة مرور نصية مع الهاش المشفر لا تزامناً
  */
-function comparePassword(password, hash) {
+async function comparePassword(password, hash) {
+  if (!password || !hash) return false;
   try {
-    return bcrypt.compareSync(password, hash);
+    return await bcrypt.compare(password, hash);
   } catch (e) {
     return false;
   }
 }
 
 /**
- * التحقق من كلمة المرور وترقيتها تلقائياً للظل الأمني عند الدخول الناجح
- * @param {string} username اسم المستخدم
- * @param {string} password كلمة المرور النصية
- * @param {object} legacyUser بيانات المستخدم من الطبقة القديمة
- * @param {object} pgClient عميل اتصال PostgreSQL (إن وجد)
+ * التحقق من كلمة المرور وترقيتها تلقائياً عند الدخول
  */
-async function verifyAndUpgradeOnTheFly(username, password, legacyUser, pgClient) {
-  if (!pgClient) {
-    return false;
-  }
+async function verifyAndUpgradeOnTheFly(username, password, pgClient) {
+  if (!pgClient || !username || !password) return false;
 
   try {
-    // 1. استعلام عن المستخدم من جدول users العام
-    const res = await pgClient.query('SELECT * FROM public.users WHERE username = $1', [username]);
+    const res = await pgClient.query('SELECT * FROM public.users WHERE LOWER(username) = LOWER($1)', [username.trim()]);
     const user = res.rows && res.rows.length ? res.rows[0] : null;
 
-    if (user) {
-      if (user.password_hash) {
-        // التحقق من صحة كلمة المرور المشفّرة
-        return comparePassword(password, user.password_hash);
-      } else if (user.password) {
-        // التحقق أولاً من المطابقة مع كلمة المرور النصية
-        const isMatch = (user.password === password);
-        if (isMatch) {
-          // ترقية وتشفير كلمة المرور على الطاير (On-the-fly) وحفظ الهاش
-          const hash = hashPassword(password);
-          await pgClient.query('UPDATE public.users SET password_hash = $1 WHERE id = $2', [hash, user.id]);
-          return true;
-        }
-        return false;
+    if (!user) return false;
+
+    // فحص ما إذا كانت كلمة المرور مشفرة مسبقاً بـ BCrypt
+    const isEncrypted = user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$'));
+
+    if (isEncrypted) {
+      return await comparePassword(password.trim(), user.password);
+    } else {
+      // تطابق نصي قديم -> ترقية فورية وتخزين الهاش
+      if (user.password === password.trim()) {
+        const newHash = await hashPassword(password.trim());
+        await pgClient.query('UPDATE public.users SET password = $1, "updatedAt" = NOW() WHERE id = $2', [newHash, user.id]);
+        return true;
       }
     }
     return false;
   } catch (err) {
-    console.warn('⚠️ [Security Bridge] Shadow sync notice:', err.message);
+    console.warn('⚠️ [Security Bridge] Password check error:', err.message);
     return false;
   }
 }

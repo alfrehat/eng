@@ -426,8 +426,7 @@ function normalizePermissionCode(rawCode) {
  */
 async function reloadDynamicPermissions(pool = null, memDb = null) {
   try {
-    const { getPool, isPostgresActive, memDb: activeMemDb } = require('../utils/database');
-    const p = pool || getPool();
+    const { dbQuery, isPostgresActive, memDb: activeMemDb } = require('../utils/database');
     const isPg = isPostgresActive();
     const mem = memDb || activeMemDb;
 
@@ -451,8 +450,14 @@ async function reloadDynamicPermissions(pool = null, memDb = null) {
       });
 
       if (Array.isArray(rolePermsList) && rolePermsList.length > 0) {
-        // Clear dynamic non-admin entries only when valid perms exist
-        Object.keys(ROLE_PERMISSIONS).forEach(k => {
+        // Clear only the roles that have explicit database configurations, preserving defaults for others
+        const configuredRoles = new Set();
+        rolePermsList.forEach(rp => {
+          const roleIdentifier = rp.role_id || rp.roleId || rp.role_name;
+          const targetKeys = roleKeyMap[roleIdentifier] || [String(roleIdentifier).toLowerCase()];
+          targetKeys.forEach(k => configuredRoles.add(k));
+        });
+        configuredRoles.forEach(k => {
           if (k !== 'admin') ROLE_PERMISSIONS[k] = [];
         });
 
@@ -475,10 +480,10 @@ async function reloadDynamicPermissions(pool = null, memDb = null) {
       }
     };
 
-    if (isPg && p) {
-      const rolesRes = await p.query('SELECT id, name, label FROM roles');
-      const rpRes = await p.query('SELECT COALESCE(role_id, "roleId") as role_id, COALESCE(permission_id, "permissionId") as permission_id FROM role_permissions');
-      registerRoleMapping(rolesRes.rows || [], rpRes.rows || []);
+    if (isPg) {
+      const rolesRes = await dbQuery('SELECT id, name, label FROM roles');
+      const rpRes = await dbQuery('SELECT COALESCE(role_id, "roleId") as role_id, COALESCE(permission_id, "permissionId") as permission_id FROM role_permissions');
+      registerRoleMapping(rolesRes || [], rpRes || []);
     } else if (mem && mem.roles && mem.role_permissions) {
       registerRoleMapping(mem.roles || [], mem.role_permissions || []);
     }
@@ -497,7 +502,7 @@ async function reloadDynamicPermissions(pool = null, memDb = null) {
 function parseUserPermissions(user) {
   if (!user) return [];
   const userRole = String(user.role || '').toLowerCase();
-  if (userRole === 'admin' || user.id === 'U-001') return ['*'];
+  if (userRole === 'admin' || userRole === 'super_admin') return ['*'];
 
   let perms = [];
   if (Array.isArray(user.permissions)) {
@@ -538,11 +543,11 @@ function hasPermission(roleOrUser, permission) {
 
   if (typeof roleOrUser === 'string') {
     role = roleOrUser.toLowerCase();
-    if (role === 'admin') return true;
+    if (role === 'admin' || role === 'super_admin') return true;
     userPerms = (ROLE_PERMISSIONS[role] || []).map(normalizePermissionCode);
   } else if (typeof roleOrUser === 'object') {
     role = String(roleOrUser.role || '').toLowerCase();
-    if (role === 'admin' || roleOrUser.id === 'U-001') return true;
+    if (role === 'admin' || role === 'super_admin') return true;
     userPerms = parseUserPermissions(roleOrUser);
   }
 
@@ -569,7 +574,8 @@ function hasPermission(roleOrUser, permission) {
  */
 function checkSeparationOfDuties(user, entity, action) {
   if (!user || !entity) return { allowed: true };
-  if (user.role === 'admin' || user.id === 'U-001') return { allowed: true };
+  const userRole = String(user.role || '').toLowerCase();
+  if (userRole === 'admin' || userRole === 'super_admin') return { allowed: true };
 
   // قاعدة: منشئ المعاملة لا يجوز له اعتمادها كجهة تصديق نهائية منفصلة
   if (action === 'APPROVE' || action === 'FINAL_SIGN') {
@@ -601,24 +607,16 @@ async function recordAuthAudit(req, permissionRequired, success, reason = null) 
       ? `تم السماح للمستخدم (${user.fullName || user.username || user.id}) بتنفيذ [${permissionRequired}] على [${method} ${endpoint}]`
       : `محاولة وصول غير مصرح بها: طلب [${permissionRequired}] للمستخدم (${user.fullName || user.username || user.id}) على [${method} ${endpoint}]. السبب: ${reason || 'عدم امتلاك الصلاحية'}`;
 
-    if (isPostgresActive()) {
-      await dbRun(
-        'INSERT INTO activity_log ("userId", action, entity, "entityId", details, ip, "createdAt") VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-        [user.id || 'ANONYMOUS', action, 'الأمان والصلاحيات', permissionRequired, details, ip]
-      );
-    } else if (memDb && memDb.activity_log) {
-      memDb.activity_log.push({
-        id: 'LOG-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-        userId: user.id || 'ANONYMOUS',
-        userName: user.fullName || user.username || user.id,
-        action,
-        entity: 'الأمان والصلاحيات',
-        entityId: permissionRequired,
-        details,
-        ip,
-        createdAt: new Date().toISOString()
-      });
-    }
+    const recordFn = global.recordActivity || require('../Administration/API/activityEngine').recordActivity;
+    await recordFn({
+      userId: user.id || 'ANONYMOUS',
+      userName: user.fullName || user.username || user.id,
+      action,
+      entity: 'الأمان والصلاحيات',
+      entityId: permissionRequired,
+      details,
+      ip
+    });
   } catch (e) {
     // Silently ignore audit log failures to prevent blocking core logic
   }
@@ -645,7 +643,8 @@ function requirePermission(permission, options = {}) {
 
     // 2. حساب الصلاحيات الفعالة
     const userPerms = parseUserPermissions(user);
-    if (user.role === 'admin' || user.id === 'U-001' || userPerms.includes('*')) {
+    const userRole = String(user.role || '').toLowerCase();
+    if (userRole === 'admin' || userRole === 'super_admin' || userPerms.includes('*')) {
       return next();
     }
 
@@ -717,7 +716,7 @@ async function getEffectiveUserPermissions(userOrId) {
 
   const role = String(user.role || '').toLowerCase();
   const rawRole = String(user.role || '');
-  const isSuperAdmin = role === 'admin' || user.id === 'U-001';
+  const isSuperAdmin = role === 'admin' || role === 'super_admin';
   const rolePerms = Array.from(new Set([
     ...(ROLE_PERMISSIONS[role] || []),
     ...(ROLE_PERMISSIONS[rawRole] || [])
@@ -819,7 +818,7 @@ const rbacManager = {
         return res.status(401).json({ success: false, error: 'غير مصرح: يرجى تسجيل الدخول.' });
       }
       const userRole = String(user.role || '').toLowerCase();
-      if (userRole === 'admin' || user.id === 'U-001' || rolesArray.includes(userRole)) {
+      if (userRole === 'admin' || userRole === 'super_admin' || rolesArray.includes(userRole)) {
         return next();
       }
       return res.status(403).json({
@@ -829,7 +828,7 @@ const rbacManager = {
     };
   },
 
-  verifyToken: (req, res, next) => {
+  verifyToken: async (req, res, next) => {
     const fullPath = req.originalUrl || req.baseUrl + req.path || req.path;
     if (
       fullPath === '/api/login' ||
@@ -846,6 +845,18 @@ const rbacManager = {
     if (token) {
       try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.jti) {
+          try {
+            const authService = require('../services/authorizationEngineService');
+            if (authService && typeof authService.isTokenBlacklisted === 'function') {
+              const blacklisted = await authService.isTokenBlacklisted(decoded.jti);
+              if (blacklisted) {
+                req.user = null;
+                return res.status(401).json({ success: false, error: 'جلسة العمل ملغاة أو منتهية، يرجى إعادة تسجيل الدخول.' });
+              }
+            }
+          } catch (blErr) {}
+        }
         req.user = decoded;
         req.user.permissionsList = parseUserPermissions(decoded);
         return next();
@@ -868,6 +879,24 @@ const rbacManager = {
       return jwt.verify(token, JWT_SECRET);
     } catch (e) {
       return null;
+    }
+  },
+
+  isTokenBlacklisted: async (jtiOrToken) => {
+    try {
+      const authService = require('../services/authorizationEngineService');
+      return await authService.isTokenBlacklisted(jtiOrToken);
+    } catch (e) {
+      return false;
+    }
+  },
+
+  revokeToken: async (jtiOrToken, userId = 'SYSTEM') => {
+    try {
+      const authService = require('../services/authorizationEngineService');
+      return await authService.revokeToken(jtiOrToken, userId);
+    } catch (e) {
+      return false;
     }
   },
 

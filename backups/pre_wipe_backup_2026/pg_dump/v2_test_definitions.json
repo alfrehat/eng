@@ -1,0 +1,519 @@
+[
+  {
+    "test_definition_id": "d1cb57a1-aca0-4678-9851-156932224337",
+    "test_code": "ASPHALT_MARSHALL_1788559824400",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:10:24.404Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:10:24.404Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "e110df58-daea-4d03-98b0-e0ed8beae720",
+    "test_code": "ASPHALT_MARSHALL_1788559845870",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:10:45.875Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:10:45.875Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "792a0fbd-1b21-411d-a596-623b72b02956",
+    "test_code": "ASPHALT_MARSHALL_1788559875791",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:11:15.793Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:11:15.793Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "435b2b56-5e5a-4869-968f-efcb9697d283",
+    "test_code": "ASPHALT_MARSHALL_1788559913062",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:11:53.071Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:11:53.071Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "6001ff1c-216b-4622-a8f3-73efefcda824",
+    "test_code": "ASPHALT_MARSHALL_1788559934671",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:12:14.677Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:12:14.677Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "cbcc2b57-58fb-4837-bf71-2b623675a1a5",
+    "test_code": "ASPHALT_MARSHALL_1788559961315",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:12:41.324Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:12:41.324Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "458638d9-a267-4bd8-b573-2fa9d8f686c4",
+    "test_code": "ASPHALT_MARSHALL_1788559983402",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:13:03.403Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:13:03.403Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "086da88d-350e-445b-b468-288490cb11d6",
+    "test_code": "CUSTOM_AGGREGATE_TEST",
+    "test_name": "Custom Aggregate Test",
+    "test_name_en": null,
+    "test_category": "AGGREGATE_TESTS",
+    "material_type": "RECYCLED_AGGREGATE",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": null,
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "max": 2.5,
+        "min": 0.5,
+        "name": "WaterAbsorption",
+        "type": "Numeric",
+        "unit": "%"
+      },
+      {
+        "max": 2.8,
+        "min": 2.5,
+        "name": "SpecificGravity",
+        "type": "Numeric",
+        "unit": "G/CM3"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "sys_admin",
+    "created_at": "2026-09-04T22:12:14.789Z",
+    "updated_by": "sys_admin",
+    "updated_at": "2026-09-05T13:45:37.392Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "cc8e3c2f-0580-492a-8b3b-1cbb0023787c",
+    "test_code": "ASPHALT_MARSHALL_1788560033973",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-04T22:13:53.975Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-04T22:13:53.975Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "1e3d3714-9d1c-4be9-99a9-670d9ce45f0c",
+    "test_code": "ASPHALT_MARSHALL_1788614346106",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-05T13:19:06.107Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-05T13:19:06.107Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "c734af4a-2e36-471b-a044-ec734cc5b51d",
+    "test_code": "ASPHALT_MARSHALL_1788605497232",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-05T10:51:37.244Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-05T10:51:37.244Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "8e0b9e66-2f8c-4a58-8e8a-c41372da0481",
+    "test_code": "ASPHALT_MARSHALL_1788612287782",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-05T12:44:47.787Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-05T12:44:47.787Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "test_definition_id": "d8b3b457-86a4-4ce4-9f88-c855684dfc23",
+    "test_code": "ASPHALT_MARSHALL_1788615937273",
+    "test_name": "فحص مارشال للخلطات الإسفلتية",
+    "test_name_en": "Marshall Stability and Flow Test",
+    "test_category": "ASPHALT_TESTS",
+    "material_type": "ASPHALT",
+    "test_method_id": null,
+    "specification_id": null,
+    "unit": "KN",
+    "expected_result_type": "COMPOSITE",
+    "required_fields": [],
+    "parameters": [
+      {
+        "min": 8,
+        "name": "Stability",
+        "unit": "KN"
+      },
+      {
+        "max": 4,
+        "min": 2,
+        "name": "Flow",
+        "unit": "MM"
+      },
+      {
+        "max": 5,
+        "min": 3,
+        "name": "AirVoids",
+        "unit": "%"
+      }
+    ],
+    "status": "ACTIVE",
+    "metadata": {},
+    "created_by": "lab_director",
+    "created_at": "2026-09-05T13:45:37.288Z",
+    "updated_by": "lab_director",
+    "updated_at": "2026-09-05T13:45:37.288Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

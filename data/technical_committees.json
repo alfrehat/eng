@@ -1,0 +1,482 @@
+[
+  {
+    "id": "COM-2026-032",
+    "committee_number": "COM-2026-032",
+    "report_number": "لج/2026/032",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-12T08:46:30.773Z",
+    "updated_at": "2026-09-12T08:46:32.233Z",
+    "committeeNumber": "COM-2026-032",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-027",
+    "committee_number": "COM-2026-027",
+    "report_number": "لج/2026/027",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-12T08:39:29.331Z",
+    "updated_at": "2026-09-12T08:39:30.823Z",
+    "committeeNumber": "COM-2026-027",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-022",
+    "committee_number": "COM-2026-022",
+    "report_number": "لج/2026/022",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-12T07:56:22.109Z",
+    "updated_at": "2026-09-12T07:56:23.683Z",
+    "committeeNumber": "COM-2026-022",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-017",
+    "committee_number": "COM-2026-017",
+    "report_number": "لج/2026/017",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-12T07:18:58.278Z",
+    "updated_at": "2026-09-12T07:18:59.773Z",
+    "committeeNumber": "COM-2026-017",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-012",
+    "committee_number": "COM-2026-012",
+    "report_number": "لج/2026/012",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-11T21:30:50.762Z",
+    "updated_at": "2026-09-11T21:30:52.292Z",
+    "committeeNumber": "COM-2026-012",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-007",
+    "committee_number": "COM-2026-007",
+    "report_number": "لج/2026/007",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "CLOSED",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-11T21:27:15.036Z",
+    "updated_at": "2026-09-11T21:27:16.528Z",
+    "committeeNumber": "COM-2026-007",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-003",
+    "committee_number": "COM-2026-003",
+    "report_number": "لج/2026/003",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-08-31T21:00:00.000Z",
+    "inspection_date": "2026-09-09T21:00:00.000Z",
+    "status": "PENDING_COMPLIANCE",
+    "completion_percentage": 95,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [
+      {
+        "item": "استكمال تسوية مناهل تصريف الأمطار",
+        "status": "PENDING"
+      }
+    ],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": "",
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-11T21:27:00.450Z",
+    "updated_at": "2026-09-11T21:27:00.464Z",
+    "committeeNumber": "COM-2026-003",
+    "tenderId": "TEN-2026-0001",
+    "projectId": null
+  },
+  {
+    "id": "COM-2026-003",
+    "committee_number": "COM-2026-003",
+    "report_number": "لج/2026/003",
+    "title": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "name": "محضر استلام أولي لعطاء صيانة وتعبيد شوارع كفرنجة",
+    "report_type": "INITIAL_HANDOVER",
+    "committee_type": "HANDOVER",
+    "tender_id": "TEN-2026-0001",
+    "tender_name": "مشروع صيانة وتعبيد شوارع حي نمر والقلعة",
+    "project_id": null,
+    "contractor": "شركة الشمال للإنشاءات وتعبيد الطرق",
+    "project_cost": 145000,
+    "formation_order_number": "ت/أش/2026/105",
+    "formation_order_date": "2026-09-01",
+    "inspection_date": "2026-09-10",
+    "status": "APPROVED",
+    "completion_percentage": 100,
+    "recommendation": "قررت اللجنة الفنية الاستلام الأولي ومطابقة نسب الدمك الأسفلتي المخبرية للمواصفات الأردنية.",
+    "committee_members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "members": [
+      {
+        "name": "م. سامر الفريحات",
+        "role": "رئيس اللجنة الفنية",
+        "decision": "موافق"
+      },
+      {
+        "name": "م. أحمد الشويات",
+        "role": "عضو فني ومقرر",
+        "decision": "موافق"
+      }
+    ],
+    "punch_list": [],
+    "minutes": [],
+    "lab_tests": "مطابقة لمواصفات وزارة الإدارة المحلية والجمعية العلمية الملكية",
+    "guarantee_period_months": 12,
+    "guarantee_end_date": null,
+    "notes": "",
+    "created_by": "م. سامر الفريحات",
+    "created_at": "2026-09-11T21:26:34.316Z",
+    "updated_at": "2026-09-11T21:26:34.316Z"
+  }
+]

@@ -2643,191 +2643,591 @@ class UnifiedTendersManager {
     const linkedClaims = this.claimsData.filter(c => String(c.tenderId) === String(item.id) || String(c.tender_id) === String(item.id));
     const totalClaimsPaid = linkedClaims.reduce((acc, c) => acc + parseFloat(c.amount || 0), 0);
     const remainingContractBal = Math.max(0, totalContract - totalClaimsPaid);
+    const claimsDisbursedPct = totalContract > 0 ? ((totalClaimsPaid / totalContract) * 100).toFixed(1) : '0.0';
     const completionPct = parseFloat(item.completionPercentage || 0);
+
+    // حساب تاريخ الإنجاز المتوقع بناءً على تاريخ المباشرة والمدة العقدية
+    let expectedEndDate = '—';
+    if (item.commencementDate && item.durationDays) {
+      try {
+        const cDate = new Date(item.commencementDate);
+        if (!isNaN(cDate.getTime())) {
+          cDate.setDate(cDate.getDate() + parseInt(item.durationDays));
+          expectedEndDate = cDate.toISOString().split('T')[0];
+        }
+      } catch(e) {}
+    }
+
+    // تلوين وشارة الحالة
+    const st = item.status || 'مفتوح';
+    let stBg = 'rgba(2, 132, 199, 0.15)', stColor = '#38bdf8', stBorder = 'rgba(2, 132, 199, 0.4)';
+    if (st === 'قيد التنفيذ' || st === 'مُحال') {
+      stBg = 'rgba(139, 92, 246, 0.15)'; stColor = '#a78bfa'; stBorder = 'rgba(139, 92, 246, 0.4)';
+    } else if (st === 'مُنجز' || st === 'منتهي') {
+      stBg = 'rgba(16, 185, 129, 0.15)'; stColor = '#34d399'; stBorder = 'rgba(16, 185, 129, 0.4)';
+    } else if (st === 'ملغي' || st === 'مرفوض') {
+      stBg = 'rgba(239, 68, 68, 0.15)'; stColor = '#f87171'; stBorder = 'rgba(239, 68, 68, 0.4)';
+    } else if (st === 'قيد الدراسة') {
+      stBg = 'rgba(245, 158, 11, 0.15)'; stColor = '#fbbf24'; stBorder = 'rgba(245, 158, 11, 0.4)';
+    }
+
+    // بند الموازنة
+    const bLine = (this.budgetLines || []).find(b => String(b.id) === String(item.budget_line_id || item.budgetLineId));
+    const budgetDisplay = bLine 
+      ? `[${bLine.line_code || bLine.id}] ${bLine.line_name}` 
+      : 'غير محدد بموازنة رسمية';
 
     let boqRows = [];
     try {
       boqRows = typeof item.boqItemsJson === 'string' ? JSON.parse(item.boqItemsJson || '[]') : (item.boqItemsJson || []);
     } catch(e) {}
 
+    const lat = parseFloat(item.lat || 32.3301);
+    const lng = parseFloat(item.lng || 35.7501);
+
     hubView.innerHTML = `
-      <div style="max-width:1150px; margin:0 auto; padding-bottom:40px;">
+      <style>
+        .tender-hub-wrapper {
+          width: 100%;
+          max-width: 1600px;
+          margin: 0 auto;
+          padding: 4px 6px 40px;
+          box-sizing: border-box;
+        }
+        .tender-hub-header-card {
+          background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.95) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.25);
+          border-radius: 14px;
+          padding: 20px 24px;
+          margin-bottom: 20px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        .tender-kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+          margin-bottom: 22px;
+        }
+        .tender-kpi-card {
+          background: var(--bg-card, rgba(30, 41, 59, 0.6));
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          border-radius: 12px;
+          padding: 18px 20px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .tender-kpi-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .tender-tabs-bar {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 20px;
+          padding: 6px;
+          background: var(--bg-surface, rgba(15, 23, 42, 0.6));
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          border-radius: 12px;
+          overflow-x: auto;
+        }
+        .tender-tab-nav-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          border-radius: 9px;
+          font-weight: 700;
+          font-size: 0.9rem;
+          cursor: pointer;
+          border: 1px solid transparent;
+          background: transparent;
+          color: var(--text-muted, #94a3b8);
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+        .tender-tab-nav-btn:hover {
+          color: var(--text-main, #f8fafc);
+          background: rgba(255, 255, 255, 0.05);
+        }
+        .tender-tab-nav-btn.active {
+          background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+          border-color: rgba(56, 189, 248, 0.4);
+        }
+        .tender-hub-layout-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+          gap: 20px;
+          align-items: start;
+        }
+        @media (max-width: 1100px) {
+          .tender-hub-layout-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .tender-info-grid-tiles {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+          gap: 12px;
+        }
+        .tender-info-tile {
+          background: var(--bg-surface, rgba(15, 23, 42, 0.5));
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          border-radius: 10px;
+          padding: 12px 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.2s ease;
+        }
+        .tender-info-tile:hover {
+          transform: translateY(-2px);
+          border-color: rgba(56, 189, 248, 0.35);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+        .tender-tile-icon-box {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          flex-shrink: 0;
+        }
+      </style>
+
+      <div class="tender-hub-wrapper">
         
-        <!-- الهيدر والرجوع -->
-        <div class="card" style="padding:16px 20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-right:4px solid #8b5cf6;">
-          <div>
-            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:bold;">
-              <a href="javascript:void(0)" onclick="tendersManager._switchView('list')" style="color:var(--primary); text-decoration:none;">قائمة العطاءات</a> / بطاقة المشروع 360°
-            </span>
-            <h3 style="margin:4px 0 0; font-size:1.3rem; font-weight:800; color:var(--text-main);">
-              🏛️ ${item.name} (${item.id || item.tenderNumber})
-            </h3>
+        <!-- الهيدر التنفيذي لبطاقة المشروع 360° -->
+        <div class="tender-hub-header-card">
+          <div style="flex: 1; min-width: 280px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">
+              <a href="javascript:void(0)" onclick="tendersManager._switchView('list')" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <span>📋</span> قائمة العطاءات والمشاريع
+              </a>
+              <span>/</span>
+              <span style="color: #a78bfa;">بطاقة المشروع الشاملة 360°</span>
+            </div>
+
+            <h2 style="margin: 0 0 10px; font-size: 1.45rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; line-height: 1.4;">
+              <span>🏛️ ${item.name}</span>
+            </h2>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.82rem;">
+              <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35); padding: 4px 10px; border-radius: 6px; font-weight: 800;">
+                # ${item.id || item.tenderNumber}
+              </span>
+              <span class="badge" style="background: ${stBg}; color: ${stColor}; border: 1px solid ${stBorder}; padding: 4px 10px; border-radius: 6px; font-weight: 800;">
+                ● حالة العطاء: ${st}
+              </span>
+              <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700;">
+                🏗️ ${item.tenderType || 'أشغال هندسية'}
+              </span>
+              <span class="badge" style="background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700;">
+                📍 ${item.district || 'بلدية كفرنجة'}
+              </span>
+              ${bLine ? `
+                <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700;">
+                  💵 موازنة: [${bLine.line_code || bLine.id}] ${bLine.line_name}
+                </span>
+              ` : ''}
+            </div>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn btn-outline" onclick="tendersManager.printTenderDossier('${item.id}')" style="display:inline-flex; align-items:center; gap:6px;">
+
+          <!-- شريط الإجراءات السريعة -->
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline" onclick="tendersManager.printTenderDossier('${item.id}')" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 8px 14px; border-radius: 8px;">
               <span>🖨️</span> طباعة ملف المشروع
             </button>
+            ${this.can('status', item) ? `
+              <button type="button" class="btn btn-outline" onclick="tendersManager.openStatusModal('${item.id}')" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 8px 14px; border-radius: 8px; border-color: rgba(139, 92, 246, 0.5); color: #a78bfa;">
+                <span>🔄</span> تغيير الحالة
+              </button>
+            ` : ''}
             ${this.can('edit', item) ? `
-              <button class="btn btn-primary" onclick="tendersManager.openEditForm('${item.id}')" style="display:inline-flex; align-items:center; gap:6px; font-weight:700;">
+              <button type="button" class="btn btn-primary" onclick="tendersManager.openEditForm('${item.id}')" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 800; padding: 8px 16px; border-radius: 8px;">
                 <span>✏️</span> تعديل بيانات العطاء
               </button>
             ` : ''}
-            <button class="btn btn-outline" onclick="tendersManager._switchView('list')">✕ رجوع</button>
+            <button type="button" class="btn btn-outline" onclick="tendersManager._switchView('list')" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px;" title="العودة للقائمة">
+              <span>✕</span> رجوع
+            </button>
           </div>
         </div>
 
-        <!-- ملخص مؤشرات المشروع المالية والزمنية -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:16px;">
+        <!-- بطاقات المؤشرات المالية والزمنية التنفيذية (KPI Cards) -->
+        <div class="tender-kpi-grid">
           
-          <div class="card" style="padding:14px; border-right:3px solid #10b981;">
-            <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">قيمة العقد الإجمالية</span>
-            <div style="font-size:1.4rem; font-weight:800; color:#10b981; margin-top:2px;">${totalContract.toFixed(3)} د.أ</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">أساسي: ${val.toFixed(3)} + أوامر: ${vo.toFixed(3)}</div>
+          <!-- بطاقة القيمة الإجمالية للعقد -->
+          <div class="tender-kpi-card" style="border-right: 4px solid #10b981;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">قيمة العقد الإجمالية</span>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                💰
+              </div>
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 900; color: #10b981; line-height: 1.2;">
+              ${totalContract.toLocaleString('ar-JO', { minimumFractionDigits: 3 })} <span style="font-size: 0.9rem; font-weight: 700;">د.أ</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+              <span>أساسي: ${val.toLocaleString('ar-JO', { minimumFractionDigits: 3 })} د.أ</span>
+              <span>أوامر: ${vo.toLocaleString('ar-JO', { minimumFractionDigits: 3 })} د.أ</span>
+            </div>
           </div>
 
-          <div class="card" style="padding:14px; border-right:3px solid #0284c7;">
-            <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">إجمالي المطالبات المصروفة</span>
-            <div style="font-size:1.4rem; font-weight:800; color:#0284c7; margin-top:2px;">${totalClaimsPaid.toFixed(3)} د.أ</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">${linkedClaims.length} دفعات ومطالبات</div>
+          <!-- بطاقة المطالبات المصروفة -->
+          <div class="tender-kpi-card" style="border-right: 4px solid #0284c7;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">إجمالي المطالبات المصروفة</span>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(2, 132, 199, 0.12); color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                💳
+              </div>
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 900; color: #0284c7; line-height: 1.2;">
+              ${totalClaimsPaid.toLocaleString('ar-JO', { minimumFractionDigits: 3 })} <span style="font-size: 0.9rem; font-weight: 700;">د.أ</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+              <span>${linkedClaims.length} دفعات ومطالبات</span>
+              <span style="color: #38bdf8; font-weight: 700;">${claimsDisbursedPct}% من العقد</span>
+            </div>
           </div>
 
-          <div class="card" style="padding:14px; border-right:3px solid #f59e0b;">
-            <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">الرصيد المالي المتبقي</span>
-            <div style="font-size:1.4rem; font-weight:800; color:#f59e0b; margin-top:2px;">${remainingContractBal.toFixed(3)} د.أ</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">المتبقي من سقف العقد</div>
+          <!-- بطاقة الرصيد المالي المتبقي -->
+          <div class="tender-kpi-card" style="border-right: 4px solid #f59e0b;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">الرصيد المالي المتبقي</span>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                ⚖️
+              </div>
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 900; color: #f59e0b; line-height: 1.2;">
+              ${remainingContractBal.toLocaleString('ar-JO', { minimumFractionDigits: 3 })} <span style="font-size: 0.9rem; font-weight: 700;">د.أ</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+              <span>المتبقي من سقف العقد</span>
+              <span style="color: #fbbf24; font-weight: 700;">${(100 - parseFloat(claimsDisbursedPct)).toFixed(1)}% متبقي</span>
+            </div>
           </div>
 
-          <div class="card" style="padding:14px; border-right:3px solid #8b5cf6;">
-            <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">نسبة الإنجاز الفعلي</span>
-            <div style="font-size:1.4rem; font-weight:800; color:#8b5cf6; margin-top:2px;">${completionPct}%</div>
-            <div style="background:var(--bg-card-hover); height:6px; border-radius:3px; margin-top:6px; overflow:hidden;">
-              <div style="background:#8b5cf6; width:${Math.min(100, completionPct)}%; height:100%;"></div>
+          <!-- بطاقة نسبة الإنجاز الفعلي -->
+          <div class="tender-kpi-card" style="border-right: 4px solid #8b5cf6;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">نسبة الإنجاز الفعلي</span>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                📈
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <div style="font-size: 1.55rem; font-weight: 900; color: #8b5cf6; line-height: 1.2;">
+                ${completionPct}%
+              </div>
+              <span style="font-size: 0.76rem; color: var(--text-muted);">
+                المدة: ${item.durationDays || '—'} يوم
+              </span>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.08); height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden; position: relative;">
+              <div style="background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 100%); width: ${Math.min(100, completionPct)}%; height: 100%; border-radius: 4px; transition: width 0.6s ease;"></div>
             </div>
           </div>
 
         </div>
 
-        <!-- أشرطة التبويبات الفرعية لبطاقة المشروع الشاملة 360° -->
-        <div style="display:flex; gap:10px; margin-bottom:18px; border-bottom:2px solid var(--border); padding-bottom:8px; overflow-x:auto;">
-          <button type="button" id="tender-tab-btn-overview" class="btn btn-primary" onclick="tendersManager.switchHubSubTab('overview')" style="display:flex; align-items:center; gap:6px; font-weight:700; border-radius:8px;">
+        <!-- أشرطة التبويبات الفرعية لبطاقة المشروع 360° -->
+        <div class="tender-tabs-bar">
+          <button type="button" id="tender-tab-btn-overview" class="tender-tab-nav-btn active" onclick="tendersManager.switchHubSubTab('overview')">
             <span>📋</span> البيانات التعاقدية وجدول الكميات (BOQ)
           </button>
-          <button type="button" id="tender-tab-btn-daily-reports" class="btn btn-outline" onclick="tendersManager.switchHubSubTab('daily-reports')" style="display:flex; align-items:center; gap:6px; font-weight:700; border-radius:8px;">
+          <button type="button" id="tender-tab-btn-daily-reports" class="tender-tab-nav-btn" onclick="tendersManager.switchHubSubTab('daily-reports')">
             <span>📝</span> التقارير اليومية وسجل الموقع (<span id="tender-hub-reports-count">...</span>)
           </button>
-          <button type="button" id="tender-tab-btn-claims" class="btn btn-outline" onclick="tendersManager.switchHubSubTab('claims')" style="display:flex; align-items:center; gap:6px; font-weight:700; border-radius:8px;">
+          <button type="button" id="tender-tab-btn-claims" class="tender-tab-nav-btn" onclick="tendersManager.switchHubSubTab('claims')">
             <span>💰</span> المطالبات والدفعات المالية (${linkedClaims.length})
           </button>
         </div>
 
         <!-- 1. تبويب البيانات التعاقدية وجدول الكميات والخريطة -->
         <div id="tender-hub-subtab-overview" class="tender-hub-subtab-pane">
-          <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+          <div class="tender-hub-layout-grid">
             
-            <!-- العمود الأيمن: تفاصيل العقد، السجل المالي، والمطالبات -->
-            <div style="display:flex; flex-direction:column; gap:16px;">
+            <!-- العمود الأيمن: تفاصيل العقد والبيانات الهندسية وجدول الكميات -->
+            <div style="display: flex; flex-direction: column; gap: 18px;">
               
-              <!-- بطاقة البيانات التعاقدية الكاملة -->
-              <div class="card" style="padding:18px;">
-                <h4 style="margin:0 0 12px; font-weight:800; color:var(--text-main); font-size:0.95rem; border-bottom:1px solid var(--border); padding-bottom:6px;">
-                  📋 البيانات التعاقدية والتنفيذية
-                </h4>
+              <!-- بطاقة البيانات التعاقدية والتنفيذية المصنفة -->
+              <div class="card" style="padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                  <h4 style="margin: 0; font-weight: 800; color: var(--text-main); font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                    <span>📋</span> البيانات التعاقدية والتنفيذية
+                  </h4>
+                  <span style="font-size: 0.78rem; color: var(--text-muted);">سجل معتمد بمديرية الأشغال</span>
+                </div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem;">
-                  <div><span style="color:var(--text-muted);">المقاول المنفذ:</span> <b>${item.contractor || '—'}</b></div>
-                  <div><span style="color:var(--text-muted);">المهندس المشرف:</span> <b>${item.supervisorEngineer || '—'}</b></div>
-                  <div><span style="color:var(--text-muted);">بند الموازنة المرتبط:</span> <b style="color:var(--primary);">${(this.budgetLines || []).find(b => String(b.id) === String(item.budget_line_id || item.budgetLineId)) ? `[${(this.budgetLines || []).find(b => String(b.id) === String(item.budget_line_id || item.budgetLineId)).line_code || ''}] ${(this.budgetLines || []).find(b => String(b.id) === String(item.budget_line_id || item.budgetLineId)).line_name}` : 'غير محدد'}</b></div>
-                  <div><span style="color:var(--text-muted);">نوع العطاء:</span> <b>${item.tenderType || 'أشغال'}</b></div>
-                  <div><span style="color:var(--text-muted);">طريقة الشراء:</span> <b>${item.purchaseMethod || 'مناقصة عامة'}</b></div>
-                  <div><span style="color:var(--text-muted);">لجنة الشراء:</span> <b>${item.purchaseCommittee || 'لجنة الشراء المحلية'}</b></div>
-                  <div><span style="color:var(--text-muted);">المنطقة / الحي:</span> <b>${item.district || 'كفرنجة'}</b></div>
-                  <div><span style="color:var(--text-muted);">تاريخ الطرح:</span> <b>${item.openDate || '—'}</b></div>
-                  <div><span style="color:var(--text-muted);">تاريخ أمر المباشرة:</span> <b>${item.commencementDate || '—'}</b></div>
-                  <div><span style="color:var(--text-muted);">المدة العقدية:</span> <b>${item.durationDays || '—'} يوم</b></div>
-                  <div><span style="color:var(--text-muted);">كفالة حسن التنفيذ:</span> <b>${item.performanceBondNumber || '—'} (${parseFloat(item.performanceBondValue || 0).toFixed(3)} د.أ)</b></div>
+                <div class="tender-info-grid-tiles">
+                  
+                  <!-- المقاول المنفذ -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(2, 132, 199, 0.12); color: #38bdf8;">🏢</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">المقاول المنفذ</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.contractor || '—'}">
+                        ${item.contractor || '—'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- المهندس المشرف -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #34d399;">👷</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">المهندس المشرف</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.supervisorEngineer || '—'}">
+                        ${item.supervisorEngineer || '—'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- بند الموازنة المرتبط -->
+                  <div class="tender-info-tile" style="grid-column: span 2;">
+                    <div class="tender-tile-icon-box" style="background: rgba(245, 158, 11, 0.12); color: #fbbf24;">💵</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">بند الموازنة المرتبط</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${budgetDisplay}">
+                        ${budgetDisplay}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- نوع العطاء -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(139, 92, 246, 0.12); color: #a78bfa;">🏗️</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">نوع وتصنيف العطاء</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.tenderType || 'أشغال'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- طريقة الشراء -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(6, 182, 212, 0.12); color: #22d3ee;">🏷️</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">طريقة الشراء</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.purchaseMethod || 'مناقصة عامة'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- لجنة الشراء -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(236, 72, 153, 0.12); color: #f472b6;">🏛️</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">لجنة الشراء المختصة</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.purchaseCommittee || 'لجنة الشراء المحلية'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- المنطقة / الحي -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(34, 197, 94, 0.12); color: #4ade80;">📍</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">المنطقة / الحي</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.district || 'كفرنجة'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- تاريخ الطرح -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(99, 102, 241, 0.12); color: #818cf8;">📅</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">تاريخ الطرح</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.openDate || '—'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- أمر المباشرة -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(234, 88, 12, 0.12); color: #fb923c;">🚀</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">تاريخ أمر المباشرة</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.commencementDate || '—'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- المدة العقدية وتاريخ الانتهاء -->
+                  <div class="tender-info-tile">
+                    <div class="tender-tile-icon-box" style="background: rgba(168, 85, 247, 0.12); color: #c084fc;">⏳</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">المدة العقدية</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        ${item.durationDays || '—'} يوم ${expectedEndDate !== '—' ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(حتى ${expectedEndDate})</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- كفالة حسن التنفيذ -->
+                  <div class="tender-info-tile" style="grid-column: span 2;">
+                    <div class="tender-tile-icon-box" style="background: rgba(20, 184, 166, 0.12); color: #2dd4bf;">🛡️</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">كفالة حسن التنفيذ</div>
+                      <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">
+                        رقم: <b>${item.performanceBondNumber || '—'}</b> | القيمة: <b style="color:#10b981;">${parseFloat(item.performanceBondValue || 0).toLocaleString('ar-JO', { minimumFractionDigits: 3 })} د.أ</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  ${item.notes ? `
+                    <!-- ملاحظات وقرارات -->
+                    <div class="tender-info-tile" style="grid-column: 1 / -1; align-items: flex-start;">
+                      <div class="tender-tile-icon-box" style="background: rgba(100, 116, 139, 0.12); color: #94a3b8;">📝</div>
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">ملاحظات وقرارات المجلس البلدي</div>
+                        <div style="font-size: 0.84rem; color: var(--text-main); line-height: 1.5; white-space: pre-line;">
+                          ${item.notes}
+                        </div>
+                      </div>
+                    </div>
+                  ` : ''}
+
                 </div>
               </div>
 
               <!-- جدول بنود الكميات والمواصفات (إن وجدت) -->
               ${boqRows.length ? `
-                <div class="card" style="padding:18px;">
-                  <h4 style="margin:0 0 12px; font-weight:800; color:var(--text-main); font-size:0.95rem; border-bottom:1px solid var(--border); padding-bottom:6px;">
-                    📑 بنود الأعمال والكميات التعاقدية (BOQ)
-                  </h4>
-                  <table style="width:100%; border-collapse:collapse; text-align:right; font-size:0.83rem;">
-                    <thead>
-                      <tr style="background:var(--bg-card-hover);">
-                        <th style="padding:6px;">#</th>
-                        <th style="padding:6px;">وصف البند</th>
-                        <th style="padding:6px; text-align:center;">الوحدة</th>
-                        <th style="padding:6px; text-align:center;">الكمية</th>
-                        <th style="padding:6px; text-align:center;">السعر (د.أ)</th>
-                        <th style="padding:6px; text-align:center;">الإجمالي (د.أ)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${boqRows.map((b, i) => `
-                        <tr style="border-bottom:1px solid var(--border);">
-                          <td style="padding:6px; text-align:center;">${i+1}</td>
-                          <td style="padding:6px; font-weight:600;">${b.itemDescription || '—'}</td>
-                          <td style="padding:6px; text-align:center;">${b.unit || '—'}</td>
-                          <td style="padding:6px; text-align:center;">${b.qty || 0}</td>
-                          <td style="padding:6px; text-align:center;">${parseFloat(b.unitPrice || 0).toFixed(3)}</td>
-                          <td style="padding:6px; text-align:center; font-weight:bold; color:#10b981;">
-                            ${(parseFloat(b.qty || 0) * parseFloat(b.unitPrice || 0)).toFixed(3)}
-                          </td>
+                <div class="card" style="padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                    <h4 style="margin: 0; font-weight: 800; color: var(--text-main); font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                      <span>📑</span> بنود الأعمال والكميات التعاقدية (BOQ)
+                    </h4>
+                    <span class="badge" style="background: rgba(2, 132, 199, 0.15); color: #38bdf8; font-weight: 800; padding: 3px 8px; border-radius: 6px;">
+                      ${boqRows.length} بند
+                    </span>
+                  </div>
+                  <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.85rem;">
+                      <thead>
+                        <tr style="background: var(--bg-surface); border-bottom: 2px solid var(--border);">
+                          <th style="padding: 8px 10px; text-align: center; width: 40px;">#</th>
+                          <th style="padding: 8px 10px;">وصف البند الهندسي</th>
+                          <th style="padding: 8px 10px; text-align: center; width: 70px;">الوحدة</th>
+                          <th style="padding: 8px 10px; text-align: center; width: 80px;">الكمية</th>
+                          <th style="padding: 8px 10px; text-align: center; width: 100px;">السعر (د.أ)</th>
+                          <th style="padding: 8px 10px; text-align: center; width: 110px;">الإجمالي (د.أ)</th>
                         </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        ${boqRows.map((b, i) => `
+                          <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 8px 10px; text-align: center; color: var(--text-muted); font-weight: 700;">${i+1}</td>
+                            <td style="padding: 8px 10px; font-weight: 700; color: var(--text-main);">${b.itemDescription || '—'}</td>
+                            <td style="padding: 8px 10px; text-align: center;">${b.unit || '—'}</td>
+                            <td style="padding: 8px 10px; text-align: center; font-weight: 700;">${b.qty || 0}</td>
+                            <td style="padding: 8px 10px; text-align: center;">${parseFloat(b.unitPrice || 0).toFixed(3)}</td>
+                            <td style="padding: 8px 10px; text-align: center; font-weight: 800; color: #10b981;">
+                              ${(parseFloat(b.qty || 0) * parseFloat(b.unitPrice || 0)).toFixed(3)}
+                            </td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ` : ''}
 
             </div>
 
-            <!-- العمود الأيسر: الخريطة والملفات الرسمية -->
-            <div style="display:flex; flex-direction:column; gap:16px;">
+            <!-- العمود الأيسر: الخريطة الجغرافية والملفات والمرفقات الرسمية -->
+            <div style="display: flex; flex-direction: column; gap: 18px;">
               
-              <!-- موقع المشروع على الخريطة -->
-              <div class="card" style="padding:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                  <h4 style="margin:0; font-weight:800; color:var(--text-main); font-size:0.9rem;">
-                    🗺️ موقع المشروع على الخريطة
+              <!-- موقع المشروع على الخريطة الجغرافية (GIS) -->
+              <div class="card" style="padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                  <h4 style="margin: 0; font-weight: 800; color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                    <span>🗺️</span> موقع المشروع على الخريطة (GIS)
                   </h4>
-                  <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">
-                    ${parseFloat(item.lat || 32.3301).toFixed(4)}, ${parseFloat(item.lng || 35.7501).toFixed(4)}
-                  </span>
+                  <div style="display: flex; gap: 6px; align-items: center;">
+                    <span style="font-size: 0.74rem; background: var(--bg-surface); padding: 3px 8px; border-radius: 6px; color: var(--primary); font-family: monospace; font-weight: 700; border: 1px solid var(--border);">
+                      ${lat.toFixed(4)}, ${lng.toFixed(4)}
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.72rem;" onclick="navigator.clipboard.writeText('${lat}, ${lng}'); if (typeof showToast==='function') showToast('تم نسخ الإحداثيات 📋', 'success');" title="نسخ الإحداثيات">
+                      نسخ
+                    </button>
+                    <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.72rem; text-decoration: none;" title="فتح في Google Maps">
+                      🌐
+                    </a>
+                  </div>
                 </div>
-                <div id="tender-hub-map" style="height:350px; width:100%; border-radius:8px; border:2px solid var(--border); z-index:1;"></div>
+                <div id="tender-hub-map" style="height: 460px; width: 100%; border-radius: 10px; border: 1px solid var(--border); z-index: 1;"></div>
               </div>
 
               <!-- الوثائق والمرفقات الرسمية -->
-              <div class="card" style="padding:16px;">
-                <h4 style="margin:0 0 10px; font-weight:800; color:var(--text-main); font-size:0.95rem; border-bottom:1px solid var(--border); padding-bottom:6px;">
-                  📎 الوثائق والمرفقات الرسمية
-                </h4>
+              <div class="card" style="padding: 18px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                  <h4 style="margin: 0; font-weight: 800; color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                    <span>📎</span> الوثائق والمرفقات الرسمية
+                  </h4>
+                  ${attach ? `
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">
+                      ملف معتمد
+                    </span>
+                  ` : ''}
+                </div>
+
                 ${attach ? `
-                  <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:10px;">
-                    <div style="font-weight:bold; font-size:0.85rem; margin-bottom:8px; word-break:break-all; direction:ltr; text-align:right;">
-                      📄 ${attach.split(/[/\\]/).pop()}
+                  <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                      <div style="width: 42px; height: 42px; border-radius: 8px; background: rgba(2, 132, 199, 0.15); color: #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                        📄
+                      </div>
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 800; font-size: 0.88rem; color: var(--text-main); word-break: break-all; direction: ltr; text-align: right;" title="${attach}">
+                          ${attach.split(/[/\\]/).pop()}
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+                          وثيقة رسمية مرفقة بالعطاء
+                        </div>
+                      </div>
                     </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                      <button type="button" class="btn btn-sm btn-primary" style="flex:1; display:flex; justify-content:center; align-items:center; gap:4px;" onclick="tendersManager.previewDocument('${item.id}', '${attach}')">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <button type="button" class="btn btn-sm btn-primary" style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 6px 12px; font-weight: 700;" onclick="tendersManager.previewDocument('${item.id}', '${attach}')">
                         <span>👁️</span> معاينة فورية
                       </button>
-                      <a href="/api/tenders/${item.id}/download" target="_blank" class="btn btn-sm btn-outline" style="flex:1; display:flex; justify-content:center; align-items:center; gap:4px;">
-                        <span>📥</span> تحميل
+                      <a href="/api/tenders/${item.id}/download" target="_blank" class="btn btn-sm btn-outline" style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 6px 12px; font-weight: 700; text-decoration: none;">
+                        <span>📥</span> تحميل الملف
                       </a>
                       ${this.can('delete_attachment', item) ? `
-                        <button type="button" class="btn btn-sm btn-danger" style="flex:1; display:flex; justify-content:center; align-items:center; gap:4px;" onclick="tendersManager.deleteAttachment('${item.id}')" title="حذف المرفق نهائياً">
-                          <span>🗑️</span> حذف المرفق
+                        <button type="button" class="btn btn-sm btn-danger" style="display: flex; justify-content: center; align-items: center; gap: 4px; padding: 6px 10px;" onclick="tendersManager.deleteAttachment('${item.id}')" title="حذف المرفق نهائياً">
+                          <span>🗑️</span>
                         </button>
                       ` : ''}
                     </div>
                   </div>
                 ` : `
-                  <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:14px; background:var(--bg-surface); border-radius:8px;">
-                    لا توجد وثائق مرفقة لهذا العطاء بعد.
+                  <div style="font-size: 0.84rem; color: var(--text-muted); text-align: center; padding: 24px 14px; background: var(--bg-surface); border-radius: 10px; border: 1px dashed var(--border);">
+                    <div style="font-size: 1.8rem; margin-bottom: 6px;">📂</div>
+                    <div>لا توجد وثائق مرفقة لهذا العطاء حالياً</div>
+                    ${this.can('edit', item) ? `
+                      <button type="button" class="btn btn-sm btn-outline" style="margin-top: 10px; font-size: 0.76rem;" onclick="tendersManager.openEditForm('${item.id}')">
+                        + إرفاق ملف من شاشة التعديل
+                      </button>
+                    ` : ''}
                   </div>
                 `}
               </div>
@@ -2840,56 +3240,58 @@ class UnifiedTendersManager {
         <!-- 2. تبويب التقارير اليومية للأعمال الميدانية وسجل الموقع -->
         <div id="tender-hub-subtab-daily-reports" class="tender-hub-subtab-pane" style="display:none;">
           <div id="tender-daily-reports-container">
-            <div style="text-align:center; padding:30px;">
-              <div class="spinner" style="margin:0 auto 10px;"></div>
-              <div>جارٍ تحميل سجل التقارير اليومية...</div>
+            <div style="text-align:center; padding:40px;">
+              <div class="spinner" style="margin:0 auto 12px;"></div>
+              <div style="font-weight:700; color:var(--text-muted);">جارٍ تحميل سجل التقارير اليومية الميدانية...</div>
             </div>
           </div>
         </div>
 
         <!-- 3. تبويب سجل المطالبات والدفعات المالية المرتبطة -->
         <div id="tender-hub-subtab-claims" class="tender-hub-subtab-pane" style="display:none;">
-          <div class="card" style="padding:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:6px;">
-              <h4 style="margin:0; font-weight:800; color:var(--text-main); font-size:0.95rem;">
-                💰 سجل المطالبات والدفعات المالية المرتبطة (${linkedClaims.length})
+          <div class="card" style="padding:22px; border-radius:12px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+              <h4 style="margin:0; font-weight:800; color:var(--text-main); font-size:1.05rem; display:flex; align-items:center; gap:8px;">
+                <span>💰</span> سجل المطالبات والدفعات المالية المرتبطة (${linkedClaims.length})
               </h4>
-              <a href="javascript:void(0)" onclick="navigate('claims')" class="btn btn-sm btn-outline" style="font-size:0.75rem;">
+              <a href="javascript:void(0)" onclick="navigate('claims')" class="btn btn-sm btn-outline" style="font-size:0.78rem; font-weight:700;">
                 إدارة المطالبات ➔
               </a>
             </div>
 
             ${linkedClaims.length ? `
-              <table style="width:100%; border-collapse:collapse; text-align:right; font-size:0.83rem;">
-                <thead>
-                  <tr style="background:var(--bg-card-hover);">
-                    <th style="padding:6px 8px;">رقم المطالبة</th>
-                    <th style="padding:6px 8px;">النوع / الدفعة</th>
-                    <th style="padding:6px 8px;">تاريخ التقديم</th>
-                    <th style="padding:6px 8px; text-align:center;">المبلغ (د.أ)</th>
-                    <th style="padding:6px 8px; text-align:center;">الحالة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${linkedClaims.map(c => `
-                    <tr style="border-bottom:1px solid var(--border);">
-                      <td style="padding:6px 8px; font-weight:bold;">${c.id}</td>
-                      <td style="padding:6px 8px;">${c.type || 'مطالبة إنجاز'}</td>
-                      <td style="padding:6px 8px;">${c.submitDate || c.claimDate || '—'}</td>
-                      <td style="padding:6px 8px; text-align:center; font-weight:bold; color:#10b981;">
-                        ${parseFloat(c.amount || 0).toFixed(3)}
-                      </td>
-                      <td style="padding:6px 8px; text-align:center;">
-                        <span class="badge" style="background:#0284c718; color:#0284c7; padding:2px 6px; border-radius:8px; font-size:0.72rem;">
-                          ${c.status || 'معتمدة'}
-                        </span>
-                      </td>
+              <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; text-align:right; font-size:0.86rem;">
+                  <thead>
+                    <tr style="background:var(--bg-surface); border-bottom:2px solid var(--border);">
+                      <th style="padding:8px 12px;">رقم المطالبة</th>
+                      <th style="padding:8px 12px;">النوع / الدفعة</th>
+                      <th style="padding:8px 12px;">تاريخ التقديم</th>
+                      <th style="padding:8px 12px; text-align:center;">المبلغ (د.أ)</th>
+                      <th style="padding:8px 12px; text-align:center;">الحالة</th>
                     </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    ${linkedClaims.map(c => `
+                      <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 12px; font-weight:800; color:var(--text-main);">${c.id}</td>
+                        <td style="padding:8px 12px; font-weight:600;">${c.type || 'مطالبة إنجاز'}</td>
+                        <td style="padding:8px 12px;">${c.submitDate || c.claimDate || '—'}</td>
+                        <td style="padding:8px 12px; text-align:center; font-weight:900; color:#10b981;">
+                          ${parseFloat(c.amount || 0).toLocaleString('ar-JO', { minimumFractionDigits: 3 })}
+                        </td>
+                        <td style="padding:8px 12px; text-align:center;">
+                          <span class="badge" style="background:rgba(2,132,199,0.12); color:#0284c7; padding:3px 8px; border-radius:6px; font-size:0.74rem; font-weight:700;">
+                            ${c.status || 'معتمدة'}
+                          </span>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
             ` : `
-              <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.85rem;">
+              <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.88rem;">
                 لا توجد مطالبات مالية مسجلة لهذا العطاء بعد.
               </div>
             `}
@@ -2914,7 +3316,9 @@ class UnifiedTendersManager {
     const lng = parseFloat(item.lng || 35.7501);
 
     if (this.hubMap) {
-      this.hubMap.remove();
+      try {
+        this.hubMap.remove();
+      } catch(e) {}
       this.hubMap = null;
     }
 
@@ -2926,16 +3330,23 @@ class UnifiedTendersManager {
 
     const marker = L.marker([lat, lng]).addTo(this.hubMap);
     marker.bindPopup(`
-      <div style="direction:rtl; font-family:'Tajawal',sans-serif; text-align:right;">
-        <h4 style="margin:0 0 4px; color:#0284c7;">${item.name}</h4>
-        <div style="font-size:0.8rem; color:#64748b;">رقم: <b>${item.id || item.tenderNumber}</b></div>
-        <div style="font-size:0.8rem;">المقاول: <b>${item.contractor || '—'}</b></div>
-        <div style="font-size:0.8rem; color:#10b981; font-weight:bold; margin-top:2px;">القيمة: ${parseFloat(item.value || item.awardedValue || 0).toLocaleString()} د.أ</div>
+      <div style="direction:rtl; font-family:'Tajawal',sans-serif; text-align:right; min-width:200px;">
+        <h4 style="margin:0 0 6px; color:#0284c7; font-weight:800; font-size:0.95rem;">${item.name}</h4>
+        <div style="font-size:0.8rem; color:#64748b; margin-bottom:2px;">رقم العطاء: <b>${item.id || item.tenderNumber}</b></div>
+        <div style="font-size:0.8rem; margin-bottom:2px;">المقاول: <b>${item.contractor || '—'}</b></div>
+        <div style="font-size:0.82rem; color:#10b981; font-weight:800; margin-top:4px;">القيمة: ${parseFloat(item.value || item.awardedValue || 0).toLocaleString('ar-JO')} د.أ</div>
+        <div style="margin-top:6px; border-top:1px solid #e2e8f0; padding-top:4px;">
+          <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="font-size:0.75rem; color:#0284c7; text-decoration:none; font-weight:bold;">فتح في خرائط Google ↗</a>
+        </div>
       </div>
     `).openPopup();
 
     setTimeout(() => {
-      if (this.hubMap) this.hubMap.invalidateSize();
+      if (this.hubMap) {
+        try {
+          this.hubMap.invalidateSize();
+        } catch(e) {}
+      }
     }, 250);
   }
 
@@ -3196,7 +3607,15 @@ class UnifiedTendersManager {
       const btn = document.getElementById(`tender-tab-btn-${t}`);
       const pane = document.getElementById(`tender-hub-subtab-${t}`);
       if (btn) {
-        btn.className = (t === tabName) ? 'btn btn-primary' : 'btn btn-outline';
+        if (t === tabName) {
+          btn.classList.add('active');
+          btn.classList.add('btn-primary');
+          btn.classList.remove('btn-outline');
+        } else {
+          btn.classList.remove('active');
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-outline');
+        }
       }
       if (pane) {
         pane.style.display = (t === tabName) ? 'block' : 'none';
@@ -3205,6 +3624,11 @@ class UnifiedTendersManager {
 
     if (tabName === 'daily-reports' && this.activeTender) {
       this.loadDailyReports(this.activeTender.id);
+    }
+    if (tabName === 'overview' && this.hubMap) {
+      setTimeout(() => {
+        try { this.hubMap.invalidateSize(); } catch(e) {}
+      }, 120);
     }
   }
 

@@ -30,6 +30,37 @@ router.get('/', requireAuth, rbacManager.requirePermission('PROJECTS.VIEW'), asy
   }
 });
 
+// نقطة فحص الجاهزية التشغيلية للمحرك (Public Health Probe)
+router.get('/health', async (req, res) => {
+  const health = await projectsEngineService.healthCheck();
+  res.status(health.healthy ? 200 : 503).json(health);
+});
+
+// إحصائيات عامة للمشاريع
+router.get('/stats', requireAuth, rbacManager.requirePermission('PROJECTS.VIEW'), async (req, res) => {
+  try {
+    const projects = await projectsEngineService.getProjects({}, req.user);
+    const totalProjects = projects.length;
+    const inProgress = projects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'CONTRACTED').length;
+    const completed = projects.filter(p => p.status === 'COMPLETED' || p.status === 'CLOSED').length;
+    const totalApprovedBudget = projects.reduce((sum, p) => sum + parseFloat(p.approved_budget || p.budget_amount || 0), 0);
+    const totalActualCost = projects.reduce((sum, p) => sum + parseFloat(p.actual_cost || 0), 0);
+
+    res.json({
+      success: true,
+      data: {
+        totalProjects,
+        inProgress,
+        completed,
+        totalApprovedBudget,
+        totalActualCost
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 2. استرجاع بيانات مشروع مفرد مع كافة التفاصيل
 router.get('/:id', requireAuth, rbacManager.requirePermission('PROJECTS.VIEW'), async (req, res) => {
   try {

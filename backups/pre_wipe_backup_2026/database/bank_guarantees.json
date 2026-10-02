@@ -1,0 +1,13 @@
+[
+  {
+    "id": "BG-1789071216029-969",
+    "contract_id": "CNT-2026-0001",
+    "guarantee_number": "BG-KFR-2026-098",
+    "bank_name": "بنك الإسكان للتجارة والتمويل - فرع كفرنجة",
+    "amount": 4500,
+    "expiry_date": "2027-01-31",
+    "guarantee_type": "PERFORMANCE_BOND",
+    "status": "ACTIVE",
+    "created_at": "2026-09-10T20:13:36.029Z"
+  }
+]

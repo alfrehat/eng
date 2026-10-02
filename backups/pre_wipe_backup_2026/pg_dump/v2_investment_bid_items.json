@@ -1,0 +1,32 @@
+[
+  {
+    "item_id": "item_1788615939908_sfr9",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "item_description": "الأعمال الإنشائية والهيكلية للمجمع",
+    "proposed_quantity": "1.00",
+    "unit_price": "500000.00",
+    "total_price": "500000.00",
+    "category": "CIVIL",
+    "remarks": null
+  },
+  {
+    "item_id": "item_1788615939910_azq3",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "item_description": "التشطيبات المعمارية والواجهات",
+    "proposed_quantity": "1.00",
+    "unit_price": "200000.00",
+    "total_price": "200000.00",
+    "category": "ARCHITECTURAL",
+    "remarks": null
+  },
+  {
+    "item_id": "item_1788615939910_edx7",
+    "bid_id": "d33f56f1-8abb-45d5-b64e-e72d88421774",
+    "item_description": "المواقف والساحات والأنظمة الذكية",
+    "proposed_quantity": "1.00",
+    "unit_price": "100000.00",
+    "total_price": "100000.00",
+    "category": "ELECTROMECHANICAL",
+    "remarks": null
+  }
+]

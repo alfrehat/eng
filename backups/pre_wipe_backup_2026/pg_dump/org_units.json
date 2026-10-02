@@ -1,0 +1,56 @@
+[
+  {
+    "id": "OU-3274",
+    "name": "قسم الانشاءات",
+    "type": "قسم",
+    "parentId": null,
+    "description": "قسم الانشاءات والجدران الاستنادية",
+    "created_at": "2026-08-31T14:18:23.280Z",
+    "parent_id": null
+  },
+  {
+    "id": "OU-7997",
+    "name": "قسم الكهرباء والطاقة المتجددة",
+    "type": "قسم",
+    "parentId": null,
+    "description": "الكهرباء والطاقة",
+    "created_at": "2026-08-31T14:45:37.999Z",
+    "parent_id": null
+  },
+  {
+    "id": "OU-01",
+    "name": "مديرية الأشغال والخدمات الهندسية",
+    "type": "directorate",
+    "parentId": null,
+    "description": "الإدارة العليا الهندسية لبلدية كفرنجة الجديدة",
+    "created_at": "2026-08-23T11:47:41.591Z",
+    "parent_id": null
+  },
+  {
+    "id": "OU-02",
+    "name": "قسم الطرق والبنية التحتية",
+    "type": "DEPARTMENT",
+    "parentId": "OU-01",
+    "description": "إدارة وصيانة شبكات الطرق والإنارة وتصريف الأمطار",
+    "created_at": "2026-08-23T11:47:41.595Z",
+    "parent_id": null
+  },
+  {
+    "id": "OU-03",
+    "name": "قسم العطاءات والمشاريع",
+    "type": "DEPARTMENT",
+    "parentId": "OU-01",
+    "description": "متابعة دراسات وطروحات العطاءات والمطالبات والكفالات",
+    "created_at": "2026-08-23T11:47:41.596Z",
+    "parent_id": null
+  },
+  {
+    "id": "OU-04",
+    "name": "قسم الرقابة والتفتيش الميداني",
+    "type": "SECTION",
+    "parentId": "OU-01",
+    "description": "الفحوصات المخبرية وتصاريح الحفريات والرقابة",
+    "created_at": "2026-08-23T11:47:41.597Z",
+    "parent_id": null
+  }
+]

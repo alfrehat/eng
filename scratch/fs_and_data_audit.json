@@ -1,0 +1,71 @@
+{
+  "fsWrites": [
+    {
+      "file": "Reports/API/printTemplatesEngine.js",
+      "line": 32,
+      "code": "fs.writeFileSync(jsonPath, JSON.stringify(list, null, 2), 'utf8');"
+    },
+    {
+      "file": "Reports/API/printTemplatesEngine.js",
+      "line": 330,
+      "code": "fs.writeFileSync(masterConfigPath, JSON.stringify(merged, null, 2), 'utf8');"
+    },
+    {
+      "file": "scripts/prod-backup-helper.js",
+      "line": 84,
+      "code": "fs.writeFileSync(encFilePath, JSON.stringify(finalEncryptedObject, null, 2), 'utf8');"
+    },
+    {
+      "file": "scripts/prod-backup-helper.js",
+      "line": 136,
+      "code": "fs.writeFileSync(p, JSON.stringify(rows, null, 2), 'utf8');"
+    },
+    {
+      "file": "server.js",
+      "line": 128,
+      "code": "fs.writeFileSync(notificationsFile, JSON.stringify(data, null, 2), 'utf8');"
+    },
+    {
+      "file": "server.js",
+      "line": 1334,
+      "code": "fs.writeFileSync(claimWorkflowFile, JSON.stringify(configData, null, 2), 'utf8');"
+    },
+    {
+      "file": "services/archiveEngineService.js",
+      "line": 162,
+      "code": "fs.writeFileSync(targetPath, fileBuffer);"
+    },
+    {
+      "file": "services/dataReconciliationService.js",
+      "line": 174,
+      "code": "fs.writeFileSync(this.archiveLogPath, JSON.stringify(archive, null, 2), 'utf-8');"
+    },
+    {
+      "file": "services/dataReconciliationService.js",
+      "line": 179,
+      "code": "fs.writeFileSync(this.fallbackLogPath, '[]', 'utf-8');"
+    },
+    {
+      "file": "Tenders/API/claimsEngine.js",
+      "line": 626,
+      "code": "fs.writeFileSync(p, JSON.stringify(configData, null, 2), 'utf8');"
+    },
+    {
+      "file": "utils/database.js",
+      "line": 75,
+      "code": "fs.writeFileSync(primaryPath, dataStr, 'utf-8');"
+    },
+    {
+      "file": "utils/database.js",
+      "line": 80,
+      "code": "fs.writeFileSync(fallbackPath, dataStr, 'utf-8');"
+    },
+    {
+      "file": "utils/logger.js",
+      "line": 44,
+      "code": "fs.appendFile(targetFile, line, (err) => {"
+    }
+  ],
+  "directPool": [],
+  "dataReferences": []
+}

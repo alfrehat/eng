@@ -1,0 +1,411 @@
+[
+  {
+    "id": "e6f74fbb-a5e4-4b5c-8078-275ea7dea64b",
+    "request_id": "a1bb8e38-981b-4fd7-b4ce-f93cf24baa7b",
+    "endpoint_id": "1a226f69-4676-46af-94f9-63a016faa0b1",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.734Z",
+    "correlation_id": "0e6c2ea4-81e8-412f-951c-d88df6f287c5",
+    "idempotency_key": "IDEMP-KEY-9999",
+    "status": "COMPLETED",
+    "external_reference": "EXT-GOV-1788615940724-872",
+    "error_code": null,
+    "duration_ms": 7,
+    "before_state": {
+      "name": "مشروع رئيسي",
+      "projectNumber": "PRJ-100"
+    },
+    "after_state": {
+      "status": "RECEIVED_BY_GOVERNMENT",
+      "timestamp": "2026-09-05T13:45:40.725Z",
+      "receivedPayload": {
+        "allocatedBudget": null,
+        "govApprovalDate": null,
+        "externalRefNumber": "PRJ-100"
+      }
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.734Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.734Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "0d2f19d7-cf16-4e29-97f0-5359e2fc6ab9",
+    "request_id": "ee724a06-f516-4243-9ce0-f349084a63d3",
+    "endpoint_id": "1a226f69-4676-46af-94f9-63a016faa0b1",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.754Z",
+    "correlation_id": "ede1afef-704e-40e5-afb5-e5d77b04813d",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "EXT-GOV-1788615940747-894",
+    "error_code": null,
+    "duration_ms": 4,
+    "before_state": {
+      "fileHash": "31ff4938c4fb28ca77aa4e7f8163aa9d41a9bf6fc8bfce7e51538536dbd427cf",
+      "fileName": "tender_award_2026.pdf",
+      "fileSize": 50,
+      "mimeType": "application/pdf",
+      "timestamp": "2026-09-05T13:45:40.743Z",
+      "archiveReference": null
+    },
+    "after_state": {
+      "status": "RECEIVED_BY_GOVERNMENT",
+      "timestamp": "2026-09-05T13:45:40.747Z",
+      "receivedPayload": {
+        "fileHash": "31ff4938c4fb28ca77aa4e7f8163aa9d41a9bf6fc8bfce7e51538536dbd427cf",
+        "fileName": "tender_award_2026.pdf",
+        "fileSize": 50,
+        "mimeType": "application/pdf",
+        "timestamp": "2026-09-05T13:45:40.743Z",
+        "archiveReference": null
+      }
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.754Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.754Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "942c7a04-bc23-4e59-8499-22934978e48b",
+    "request_id": "6453a17f-7667-4d84-9d74-1d7e05c1ea31",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.768Z",
+    "correlation_id": "53178eab-34bf-4c16-bcb3-6100ffe3554a",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940758",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "amount": 50000,
+      "projectId": "p1"
+    },
+    "after_state": {
+      "received": {
+        "amount": 50000,
+        "projectId": "p1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.768Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.768Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "85482f07-5812-4e1d-80d2-09cdf14d09bb",
+    "request_id": "134df2dd-c0a9-4641-8bb9-0aa100816b6d",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.776Z",
+    "correlation_id": "7588ffbb-012b-4d96-9958-2785959553fe",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940769",
+    "error_code": null,
+    "duration_ms": 4,
+    "before_state": {
+      "winner": "شركة المقاولات",
+      "tenderId": "t1"
+    },
+    "after_state": {
+      "received": {
+        "winner": "شركة المقاولات",
+        "tenderId": "t1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.776Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.776Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "c13d2f11-91c3-4dc6-9968-d94ce74fb953",
+    "request_id": "387061f4-0e36-4402-a3ed-9e460de88dbf",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.784Z",
+    "correlation_id": "95138c9c-c6e5-4354-83c4-acd2df0767f5",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940776",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "total": 120000,
+      "contractId": "c1"
+    },
+    "after_state": {
+      "received": {
+        "total": 120000,
+        "contractId": "c1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.784Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.784Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "5bce7496-680e-4fd0-905a-e6b74df8b116",
+    "request_id": "51b1dfef-9273-4b7f-8ba5-52e99e575c4e",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.790Z",
+    "correlation_id": "b330dcb6-1486-4608-a3c7-ba9d8814aeda",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940784",
+    "error_code": null,
+    "duration_ms": 4,
+    "before_state": {
+      "amount": 35000,
+      "paymentId": "pay1"
+    },
+    "after_state": {
+      "received": {
+        "amount": 35000,
+        "paymentId": "pay1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.790Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.790Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "40021bf0-4f3a-4a80-8e58-5ac3b6f45575",
+    "request_id": "9c959c40-6146-4d33-9630-c8477baecf04",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.798Z",
+    "correlation_id": "634695df-8c8a-40b2-a510-ed5a3cd9e4fe",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940791",
+    "error_code": null,
+    "duration_ms": 4,
+    "before_state": {
+      "pci": 78.5,
+      "roadId": "r1"
+    },
+    "after_state": {
+      "received": {
+        "pci": 78.5,
+        "roadId": "r1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.798Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.798Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "2dcdd049-89c5-40bc-a8d9-43f589d1d096",
+    "request_id": "e3bd31d3-cd2c-450c-851e-761752d21a68",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.805Z",
+    "correlation_id": "9d317971-67eb-4f6e-9143-2dbc4d9bcd77",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940798",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "result": "PASS",
+      "testId": "lab1"
+    },
+    "after_state": {
+      "received": {
+        "result": "PASS",
+        "testId": "lab1"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.805Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.805Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "08295e68-7d93-4c77-a378-1c9922aa8565",
+    "request_id": "f7540ad2-787c-4254-8c50-567a3759b067",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.812Z",
+    "correlation_id": "2f5e1194-e853-426a-9cad-f470feb65a7e",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940805",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "poId": "po1",
+      "vendor": "مؤسسة التوريد"
+    },
+    "after_state": {
+      "received": {
+        "poId": "po1",
+        "vendor": "مؤسسة التوريد"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.812Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.812Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "08159396-1ff3-4633-a367-e3df1f8b3e1e",
+    "request_id": "f7f09c86-10a6-468a-ae2b-dd46bae98175",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.818Z",
+    "correlation_id": "d3e2a523-e51e-484c-a28b-a3deb112508e",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940811",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "caseId": "com1",
+      "status": "RESOLVED"
+    },
+    "after_state": {
+      "received": {
+        "caseId": "com1",
+        "status": "RESOLVED"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.818Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.818Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "d37ad404-6c3f-44f3-8728-a344a9ec6048",
+    "request_id": "cbfe637f-7280-4a8c-ae16-fdd23c07c2c4",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.825Z",
+    "correlation_id": "b28838f9-c6d1-4f39-a4a6-f7d5df817feb",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940817",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {
+      "oppId": "inv1",
+      "value": 450000
+    },
+    "after_state": {
+      "received": {
+        "oppId": "inv1",
+        "value": 450000
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.825Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.825Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "24a1ea32-eeb8-4ea5-ad87-71808e756606",
+    "request_id": "d8f45a2e-173f-43b3-a266-78aded305111",
+    "endpoint_id": "8aaecbb8-b3f5-436c-8882-92b49c9fb2c2",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.901Z",
+    "correlation_id": "fcd7e33f-9fa2-46ed-9757-419af2d4c0d2",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "TEST-ACK-1788615940891",
+    "error_code": null,
+    "duration_ms": 11,
+    "before_state": {
+      "ProjectName": "مشروع الفحص الشامل",
+      "ProjectNumber": "PRJ-2026-E2E",
+      "ApprovedBudget": "88000.5"
+    },
+    "after_state": {
+      "received": {
+        "approvedBudget": 88000.5,
+        "externalProjectName": "مشروع الفحص الشامل",
+        "externalProjectNumber": "PRJ-2026-E2E"
+      },
+      "acknowledged": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.901Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.901Z",
+    "version": 1,
+    "is_deleted": false
+  },
+  {
+    "id": "7f35e074-d054-49e5-938c-063581fc4303",
+    "request_id": "e24262ba-07e7-433f-8d9e-519af768f1a1",
+    "endpoint_id": "605876ce-be5d-4172-a38f-a7aaa73bdf88",
+    "direction": "OUTBOUND",
+    "user_id": "SYSTEM",
+    "audit_timestamp": "2026-09-05T13:45:40.922Z",
+    "correlation_id": "f9aecacf-912b-40b4-bff9-a95dd71d1c3a",
+    "idempotency_key": null,
+    "status": "COMPLETED",
+    "external_reference": "RATE-ACK-1788615940914",
+    "error_code": null,
+    "duration_ms": 3,
+    "before_state": {},
+    "after_state": {
+      "ok": true
+    },
+    "created_by": "SYSTEM",
+    "created_at": "2026-09-05T13:45:40.922Z",
+    "updated_by": "SYSTEM",
+    "updated_at": "2026-09-05T13:45:40.922Z",
+    "version": 1,
+    "is_deleted": false
+  }
+]

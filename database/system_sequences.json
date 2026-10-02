@@ -1,0 +1,128 @@
+[
+  {
+    "seq_key": "documents_2026",
+    "prefix": "AGR",
+    "fiscal_year": 2026,
+    "last_value": 25
+  },
+  {
+    "seq_key": "tasks_2026",
+    "prefix": "TSK",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "general_2026",
+    "prefix": "TEST",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "municipal_assets_2026",
+    "prefix": "AST",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "roles_2026",
+    "prefix": "R",
+    "fiscal_year": 2026,
+    "last_value": 5
+  },
+  {
+    "seq_key": "org_units_2026",
+    "prefix": "OU",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "user_org_units_2026",
+    "prefix": "UOU",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "structural_assets_2026",
+    "prefix": "STR",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "infrastructure_networks_2026",
+    "prefix": "INF",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "energy_assets_2026",
+    "prefix": "LGT",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "excavation_permits_2026",
+    "prefix": "PERM",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "tenders_2026",
+    "prefix": "TEN",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "projects_2026",
+    "prefix": "PRJ",
+    "fiscal_year": 2026,
+    "last_value": 0
+  },
+  {
+    "seq_key": "users_sequence",
+    "prefix": "U",
+    "fiscal_year": 2026,
+    "last_value": 7
+  },
+  {
+    "seq_key": "budget_lines_2026",
+    "prefix": "BL",
+    "fiscal_year": 2026,
+    "last_value": 3
+  },
+  {
+    "seq_key": "budget_allocations_2026",
+    "prefix": "ALC",
+    "fiscal_year": 2026,
+    "last_value": 4
+  },
+  {
+    "seq_key": "budget_lines_2027",
+    "prefix": "BL",
+    "fiscal_year": 2027,
+    "last_value": 1
+  },
+  {
+    "seq_key": "committees_2026",
+    "prefix": "COM",
+    "fiscal_year": 2026,
+    "last_value": 3
+  },
+  {
+    "seq_key": "tender_studies_2026",
+    "prefix": "TS",
+    "fiscal_year": 2026,
+    "last_value": 1
+  },
+  {
+    "seq_key": "contracts_2026",
+    "prefix": "CNT",
+    "fiscal_year": 2026,
+    "last_value": 4
+  },
+  {
+    "seq_key": "variation_orders_2026",
+    "prefix": "VO",
+    "fiscal_year": 2026,
+    "last_value": 3
+  }
+]

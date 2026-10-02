@@ -1,0 +1,102 @@
+[
+  {
+    "id": "ct-01",
+    "code": "ROAD_CONSTRUCTION",
+    "name": "عقد إنشاءات وتعبيد طرق",
+    "description": "عقود التعبيد والصيانة والشوارع الإسفلتية",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-14T19:06:46.332Z"
+  },
+  {
+    "id": "ct-02",
+    "code": "EQUIPMENT_SUPPLY",
+    "name": "عقد توريد مواد ومعدات",
+    "description": "توريد خلطات إسفلتية، عبارات خرسانية، أو شواخص",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-14T19:06:46.332Z"
+  },
+  {
+    "id": "ct-03",
+    "code": "ENGINEERING_SERVICES",
+    "name": "عقد خدمات هندسية واستشارية",
+    "description": "الدراسات والمخططات والتصاميم الهندسية والمساحة",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-14T19:06:46.332Z"
+  },
+  {
+    "id": "CONSTRUCTION",
+    "code": "CNT-CONST",
+    "name": "عقد مقاولة إنشاءات ومباني",
+    "description": "عقود الإنشاءات والأبنية العامة",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "MAINTENANCE",
+    "code": "CNT-MAINT",
+    "name": "عقد صيانة وإدامة",
+    "description": "عقود صيانة الطرق وشبكات الإنارة",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "SUPPLY",
+    "code": "CNT-SUPP",
+    "name": "عقد توريد مواد ولوازم",
+    "description": "عقود توريد المواد والمستلزمات",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "SERVICES",
+    "code": "CNT-SERV",
+    "name": "عقد خدمات هندسية واستشارية",
+    "description": "عقود الدراسات والاستشارات الهندسية",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "LEASING",
+    "code": "CNT-LEASE",
+    "name": "عقد استئجار وتأجير آليات",
+    "description": "عقود تأجير واستئجار المعدات والآليات",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "DIRECT_PURCHASE",
+    "code": "CNT-PURCH",
+    "name": "أمر شراء مباشر",
+    "description": "أوامر الشراء والتوريد المباشر",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  },
+  {
+    "id": "FRAMEWORK_AGREEMENT",
+    "code": "CNT-FRAME",
+    "name": "اتفاقية إطارية",
+    "description": "الاتفاقيات السنوية المعتمدة",
+    "default_terms": {},
+    "required_guarantees": [],
+    "required_attachments": [],
+    "created_at": "2026-08-15T21:32:27.063Z"
+  }
+]

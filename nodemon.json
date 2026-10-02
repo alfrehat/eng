@@ -1,0 +1,36 @@
+{
+  "watch": [
+    "server.js",
+    "Administration",
+    "Archive",
+    "Assets",
+    "Budget",
+    "Committees",
+    "Contracts",
+    "GIS",
+    "Inspection",
+    "OperationsCenter",
+    "PavementReturns",
+    "Projects",
+    "Purchases",
+    "Reports",
+    "Roads",
+    "Settings",
+    "Tenders",
+    "Verification",
+    "config",
+    "middlewares",
+    "services",
+    "utils"
+  ],
+  "ignore": [
+    "logs/*",
+    "database/*",
+    "uploads/*",
+    "backups/*",
+    "notifications.json",
+    "*.log",
+    "node_modules/*"
+  ],
+  "ext": "js,json"
+}
